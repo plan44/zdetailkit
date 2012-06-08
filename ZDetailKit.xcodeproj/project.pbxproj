@@ -1,0 +1,406 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		ED12E75D158249BB00DE3ED3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED12E752158249BB00DE3ED3 /* InfoPlist.strings */; };
+		ED12E75E158249BB00DE3ED3 /* ZDVTViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED12E754158249BB00DE3ED3 /* ZDVTViewController.xib */; };
+		ED12E75F158249BB00DE3ED3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E756158249BB00DE3ED3 /* main.m */; };
+		ED12E760158249BB00DE3ED3 /* ZDetailKitDemo-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED12E757158249BB00DE3ED3 /* ZDetailKitDemo-Info.plist */; };
+		ED12E761158249BB00DE3ED3 /* ZDVTAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E75A158249BB00DE3ED3 /* ZDVTAppDelegate.m */; };
+		ED12E762158249BB00DE3ED3 /* ZDVTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E75C158249BB00DE3ED3 /* ZDVTViewController.m */; };
+		ED12E76615824A3B00DE3ED3 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED12E76315824A3B00DE3ED3 /* CoreFoundation.framework */; };
+		ED12E76715824A3B00DE3ED3 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED12E76415824A3B00DE3ED3 /* CoreGraphics.framework */; };
+		ED12E76815824A3B00DE3ED3 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED12E76515824A3B00DE3ED3 /* UIKit.framework */; };
+		ED12E78415824B8200DE3ED3 /* ZButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E76B15824B8200DE3ED3 /* ZButtonCell.m */; };
+		ED12E78515824B8200DE3ED3 /* ZChoiceListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E76D15824B8200DE3ED3 /* ZChoiceListCell.m */; };
+		ED12E78615824B8200DE3ED3 /* ZChoiceListController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E76F15824B8200DE3ED3 /* ZChoiceListController.m */; };
+		ED12E78715824B8200DE3ED3 /* ZChoicesBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77115824B8200DE3ED3 /* ZChoicesBaseCell.m */; };
+		ED12E78815824B8200DE3ED3 /* ZChoicesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77315824B8200DE3ED3 /* ZChoicesManager.m */; };
+		ED12E78915824B8200DE3ED3 /* ZDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */; };
+		ED12E78A15824B8200DE3ED3 /* ZDetailValueConnector.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77815824B8200DE3ED3 /* ZDetailValueConnector.m */; };
+		ED12E78B15824B8200DE3ED3 /* ZDetailViewBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */; };
+		ED12E78C15824B8200DE3ED3 /* ZSegmentChoicesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77C15824B8200DE3ED3 /* ZSegmentChoicesCell.m */; };
+		ED12E78D15824B8200DE3ED3 /* ZSwitchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77E15824B8200DE3ED3 /* ZSwitchCell.m */; };
+		ED12E78E15824B8200DE3ED3 /* ZTextEditBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E78015824B8200DE3ED3 /* ZTextEditBaseCell.m */; };
+		ED12E78F15824B8200DE3ED3 /* ZTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E78115824B8200DE3ED3 /* ZTextFieldCell.m */; };
+		ED12E79015824B8200DE3ED3 /* ZTextViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E78315824B8200DE3ED3 /* ZTextViewCell.m */; };
+		ED12E79415824D5400DE3ED3 /* ZTextExpanderSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */; };
+		ED12E79A15824D9600DE3ED3 /* ZString_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79815824D9600DE3ED3 /* ZString_utils.m */; };
+		ED12E79E15824DE400DE3ED3 /* ZOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79D15824DE400DE3ED3 /* ZOrientation.m */; };
+		ED12E7A015829C0700DE3ED3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED12E79F15829C0700DE3ED3 /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		ED12E7381582494C00DE3ED3 /* ZDetailKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZDetailKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED12E753158249BB00DE3ED3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
+		ED12E755158249BB00DE3ED3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = ZDVTViewController.xib; sourceTree = "<group>"; };
+		ED12E756158249BB00DE3ED3 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		ED12E757158249BB00DE3ED3 /* ZDetailKitDemo-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ZDetailKitDemo-Info.plist"; sourceTree = "<group>"; };
+		ED12E758158249BB00DE3ED3 /* ZDetailKitDemo-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZDetailKitDemo-Prefix.pch"; sourceTree = "<group>"; };
+		ED12E759158249BB00DE3ED3 /* ZDVTAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDVTAppDelegate.h; sourceTree = "<group>"; };
+		ED12E75A158249BB00DE3ED3 /* ZDVTAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDVTAppDelegate.m; sourceTree = "<group>"; };
+		ED12E75B158249BB00DE3ED3 /* ZDVTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDVTViewController.h; sourceTree = "<group>"; };
+		ED12E75C158249BB00DE3ED3 /* ZDVTViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDVTViewController.m; sourceTree = "<group>"; };
+		ED12E76315824A3B00DE3ED3 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		ED12E76415824A3B00DE3ED3 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = "<absolute>"; };
+		ED12E76515824A3B00DE3ED3 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = "<absolute>"; };
+		ED12E76A15824B8200DE3ED3 /* ZButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZButtonCell.h; sourceTree = "<group>"; };
+		ED12E76B15824B8200DE3ED3 /* ZButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZButtonCell.m; sourceTree = "<group>"; };
+		ED12E76C15824B8200DE3ED3 /* ZChoiceListCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZChoiceListCell.h; sourceTree = "<group>"; };
+		ED12E76D15824B8200DE3ED3 /* ZChoiceListCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZChoiceListCell.m; sourceTree = "<group>"; };
+		ED12E76E15824B8200DE3ED3 /* ZChoiceListController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZChoiceListController.h; sourceTree = "<group>"; };
+		ED12E76F15824B8200DE3ED3 /* ZChoiceListController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZChoiceListController.m; sourceTree = "<group>"; };
+		ED12E77015824B8200DE3ED3 /* ZChoicesBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZChoicesBaseCell.h; sourceTree = "<group>"; };
+		ED12E77115824B8200DE3ED3 /* ZChoicesBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZChoicesBaseCell.m; sourceTree = "<group>"; };
+		ED12E77215824B8200DE3ED3 /* ZChoicesManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZChoicesManager.h; sourceTree = "<group>"; };
+		ED12E77315824B8200DE3ED3 /* ZChoicesManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZChoicesManager.m; sourceTree = "<group>"; };
+		ED12E77415824B8200DE3ED3 /* ZDetailEditing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailEditing.h; sourceTree = "<group>"; };
+		ED12E77515824B8200DE3ED3 /* ZDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailTableViewController.h; sourceTree = "<group>"; };
+		ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDetailTableViewController.m; sourceTree = "<group>"; };
+		ED12E77715824B8200DE3ED3 /* ZDetailValueConnector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailValueConnector.h; sourceTree = "<group>"; };
+		ED12E77815824B8200DE3ED3 /* ZDetailValueConnector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDetailValueConnector.m; sourceTree = "<group>"; };
+		ED12E77915824B8200DE3ED3 /* ZDetailViewBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailViewBaseCell.h; sourceTree = "<group>"; };
+		ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDetailViewBaseCell.m; sourceTree = "<group>"; };
+		ED12E77B15824B8200DE3ED3 /* ZSegmentChoicesCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSegmentChoicesCell.h; sourceTree = "<group>"; };
+		ED12E77C15824B8200DE3ED3 /* ZSegmentChoicesCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSegmentChoicesCell.m; sourceTree = "<group>"; };
+		ED12E77D15824B8200DE3ED3 /* ZSwitchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSwitchCell.h; sourceTree = "<group>"; };
+		ED12E77E15824B8200DE3ED3 /* ZSwitchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSwitchCell.m; sourceTree = "<group>"; };
+		ED12E77F15824B8200DE3ED3 /* ZTextEditBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTextEditBaseCell.h; sourceTree = "<group>"; };
+		ED12E78015824B8200DE3ED3 /* ZTextEditBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTextEditBaseCell.m; sourceTree = "<group>"; };
+		ED12E78115824B8200DE3ED3 /* ZTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTextFieldCell.m; sourceTree = "<group>"; };
+		ED12E78215824B8200DE3ED3 /* ZTextViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTextViewCell.h; sourceTree = "<group>"; };
+		ED12E78315824B8200DE3ED3 /* ZTextViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTextViewCell.m; sourceTree = "<group>"; };
+		ED12E79115824D2900DE3ED3 /* ZDBGMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDBGMacros.h; sourceTree = "<group>"; };
+		ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTextExpanderSupport.h; sourceTree = "<group>"; };
+		ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTextExpanderSupport.m; sourceTree = "<group>"; };
+		ED12E79715824D9600DE3ED3 /* ZString_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZString_utils.h; sourceTree = "<group>"; };
+		ED12E79815824D9600DE3ED3 /* ZString_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZString_utils.m; sourceTree = "<group>"; };
+		ED12E79B15824DC700DE3ED3 /* ZTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTextFieldCell.h; sourceTree = "<group>"; };
+		ED12E79C15824DE400DE3ED3 /* ZOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZOrientation.h; sourceTree = "<group>"; };
+		ED12E79D15824DE400DE3ED3 /* ZOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZOrientation.m; sourceTree = "<group>"; };
+		ED12E79F15829C0700DE3ED3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		ED12E7351582494C00DE3ED3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED12E76615824A3B00DE3ED3 /* CoreFoundation.framework in Frameworks */,
+				ED12E76715824A3B00DE3ED3 /* CoreGraphics.framework in Frameworks */,
+				ED12E76815824A3B00DE3ED3 /* UIKit.framework in Frameworks */,
+				ED12E7A015829C0700DE3ED3 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		ED12E72B1582491000DE3ED3 = {
+			isa = PBXGroup;
+			children = (
+				ED12E76915824B8200DE3ED3 /* ZDetailKit */,
+				ED12E7421582494C00DE3ED3 /* ZDetailKitDemo */,
+				ED12E73B1582494C00DE3ED3 /* Frameworks */,
+				ED12E7391582494C00DE3ED3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		ED12E7391582494C00DE3ED3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ED12E7381582494C00DE3ED3 /* ZDetailKitDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ED12E73B1582494C00DE3ED3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				ED12E79F15829C0700DE3ED3 /* Foundation.framework */,
+				ED12E76315824A3B00DE3ED3 /* CoreFoundation.framework */,
+				ED12E76415824A3B00DE3ED3 /* CoreGraphics.framework */,
+				ED12E76515824A3B00DE3ED3 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		ED12E7421582494C00DE3ED3 /* ZDetailKitDemo */ = {
+			isa = PBXGroup;
+			children = (
+				ED12E751158249BB00DE3ED3 /* en.lproj */,
+				ED12E756158249BB00DE3ED3 /* main.m */,
+				ED12E757158249BB00DE3ED3 /* ZDetailKitDemo-Info.plist */,
+				ED12E758158249BB00DE3ED3 /* ZDetailKitDemo-Prefix.pch */,
+				ED12E759158249BB00DE3ED3 /* ZDVTAppDelegate.h */,
+				ED12E75A158249BB00DE3ED3 /* ZDVTAppDelegate.m */,
+				ED12E75B158249BB00DE3ED3 /* ZDVTViewController.h */,
+				ED12E75C158249BB00DE3ED3 /* ZDVTViewController.m */,
+			);
+			path = ZDetailKitDemo;
+			sourceTree = "<group>";
+		};
+		ED12E751158249BB00DE3ED3 /* en.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				ED12E752158249BB00DE3ED3 /* InfoPlist.strings */,
+				ED12E754158249BB00DE3ED3 /* ZDVTViewController.xib */,
+			);
+			path = en.lproj;
+			sourceTree = "<group>";
+		};
+		ED12E76915824B8200DE3ED3 /* ZDetailKit */ = {
+			isa = PBXGroup;
+			children = (
+				ED12E79115824D2900DE3ED3 /* ZDBGMacros.h */,
+				ED12E79715824D9600DE3ED3 /* ZString_utils.h */,
+				ED12E79815824D9600DE3ED3 /* ZString_utils.m */,
+				ED12E79C15824DE400DE3ED3 /* ZOrientation.h */,
+				ED12E79D15824DE400DE3ED3 /* ZOrientation.m */,
+				ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */,
+				ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */,
+				ED12E76A15824B8200DE3ED3 /* ZButtonCell.h */,
+				ED12E76B15824B8200DE3ED3 /* ZButtonCell.m */,
+				ED12E76C15824B8200DE3ED3 /* ZChoiceListCell.h */,
+				ED12E76D15824B8200DE3ED3 /* ZChoiceListCell.m */,
+				ED12E76E15824B8200DE3ED3 /* ZChoiceListController.h */,
+				ED12E76F15824B8200DE3ED3 /* ZChoiceListController.m */,
+				ED12E77015824B8200DE3ED3 /* ZChoicesBaseCell.h */,
+				ED12E77115824B8200DE3ED3 /* ZChoicesBaseCell.m */,
+				ED12E77215824B8200DE3ED3 /* ZChoicesManager.h */,
+				ED12E77315824B8200DE3ED3 /* ZChoicesManager.m */,
+				ED12E77415824B8200DE3ED3 /* ZDetailEditing.h */,
+				ED12E77515824B8200DE3ED3 /* ZDetailTableViewController.h */,
+				ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */,
+				ED12E77715824B8200DE3ED3 /* ZDetailValueConnector.h */,
+				ED12E77815824B8200DE3ED3 /* ZDetailValueConnector.m */,
+				ED12E77915824B8200DE3ED3 /* ZDetailViewBaseCell.h */,
+				ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */,
+				ED12E77B15824B8200DE3ED3 /* ZSegmentChoicesCell.h */,
+				ED12E77C15824B8200DE3ED3 /* ZSegmentChoicesCell.m */,
+				ED12E77D15824B8200DE3ED3 /* ZSwitchCell.h */,
+				ED12E77E15824B8200DE3ED3 /* ZSwitchCell.m */,
+				ED12E77F15824B8200DE3ED3 /* ZTextEditBaseCell.h */,
+				ED12E78015824B8200DE3ED3 /* ZTextEditBaseCell.m */,
+				ED12E79B15824DC700DE3ED3 /* ZTextFieldCell.h */,
+				ED12E78115824B8200DE3ED3 /* ZTextFieldCell.m */,
+				ED12E78215824B8200DE3ED3 /* ZTextViewCell.h */,
+				ED12E78315824B8200DE3ED3 /* ZTextViewCell.m */,
+			);
+			path = ZDetailKit;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		ED12E7371582494C00DE3ED3 /* ZDetailKitDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ED12E74E1582494C00DE3ED3 /* Build configuration list for PBXNativeTarget "ZDetailKitDemo" */;
+			buildPhases = (
+				ED12E7341582494C00DE3ED3 /* Sources */,
+				ED12E7351582494C00DE3ED3 /* Frameworks */,
+				ED12E7361582494C00DE3ED3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ZDetailKitDemo;
+			productName = ZDetailKitDemo;
+			productReference = ED12E7381582494C00DE3ED3 /* ZDetailKitDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		ED12E72D1582491000DE3ED3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+				ORGANIZATIONNAME = plan44.ch;
+			};
+			buildConfigurationList = ED12E7301582491000DE3ED3 /* Build configuration list for PBXProject "ZDetailKit" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = ED12E72B1582491000DE3ED3;
+			productRefGroup = ED12E7391582494C00DE3ED3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				ED12E7371582494C00DE3ED3 /* ZDetailKitDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		ED12E7361582494C00DE3ED3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED12E75D158249BB00DE3ED3 /* InfoPlist.strings in Resources */,
+				ED12E75E158249BB00DE3ED3 /* ZDVTViewController.xib in Resources */,
+				ED12E760158249BB00DE3ED3 /* ZDetailKitDemo-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		ED12E7341582494C00DE3ED3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ED12E75F158249BB00DE3ED3 /* main.m in Sources */,
+				ED12E761158249BB00DE3ED3 /* ZDVTAppDelegate.m in Sources */,
+				ED12E762158249BB00DE3ED3 /* ZDVTViewController.m in Sources */,
+				ED12E78415824B8200DE3ED3 /* ZButtonCell.m in Sources */,
+				ED12E78515824B8200DE3ED3 /* ZChoiceListCell.m in Sources */,
+				ED12E78615824B8200DE3ED3 /* ZChoiceListController.m in Sources */,
+				ED12E78715824B8200DE3ED3 /* ZChoicesBaseCell.m in Sources */,
+				ED12E78815824B8200DE3ED3 /* ZChoicesManager.m in Sources */,
+				ED12E78915824B8200DE3ED3 /* ZDetailTableViewController.m in Sources */,
+				ED12E78A15824B8200DE3ED3 /* ZDetailValueConnector.m in Sources */,
+				ED12E78B15824B8200DE3ED3 /* ZDetailViewBaseCell.m in Sources */,
+				ED12E78C15824B8200DE3ED3 /* ZSegmentChoicesCell.m in Sources */,
+				ED12E78D15824B8200DE3ED3 /* ZSwitchCell.m in Sources */,
+				ED12E78E15824B8200DE3ED3 /* ZTextEditBaseCell.m in Sources */,
+				ED12E78F15824B8200DE3ED3 /* ZTextFieldCell.m in Sources */,
+				ED12E79015824B8200DE3ED3 /* ZTextViewCell.m in Sources */,
+				ED12E79415824D5400DE3ED3 /* ZTextExpanderSupport.m in Sources */,
+				ED12E79A15824D9600DE3ED3 /* ZString_utils.m in Sources */,
+				ED12E79E15824DE400DE3ED3 /* ZOrientation.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		ED12E752158249BB00DE3ED3 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				ED12E753158249BB00DE3ED3 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		ED12E754158249BB00DE3ED3 /* ZDVTViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				ED12E755158249BB00DE3ED3 /* en */,
+			);
+			name = ZDVTViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		ED12E7321582491000DE3ED3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		ED12E7331582491000DE3ED3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		ED12E74F1582494C00DE3ED3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Lukas Zeller";
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ZDetailKitDemo/ZDetailKitDemo-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "ZDetailKitDemo/ZDetailKitDemo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "C8EF8F9F-9C74-4FAE-969D-30659B6BEC1D";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		ED12E7501582494C00DE3ED3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Lukas Zeller";
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ZDetailKitDemo/ZDetailKitDemo-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "ZDetailKitDemo/ZDetailKitDemo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "C8EF8F9F-9C74-4FAE-969D-30659B6BEC1D";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		ED12E7301582491000DE3ED3 /* Build configuration list for PBXProject "ZDetailKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ED12E7321582491000DE3ED3 /* Debug */,
+				ED12E7331582491000DE3ED3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ED12E74E1582494C00DE3ED3 /* Build configuration list for PBXNativeTarget "ZDetailKitDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ED12E74F1582494C00DE3ED3 /* Debug */,
+				ED12E7501582494C00DE3ED3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = ED12E72D1582491000DE3ED3 /* Project object */;
+}
