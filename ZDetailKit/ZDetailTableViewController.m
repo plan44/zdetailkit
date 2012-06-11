@@ -1,5 +1,6 @@
 //
 //  ZDetailTableViewController.m
+//  ZDetailKit
 //
 //  Created by Lukas Zeller on 19.05.12.
 //  Copyright (c) 2012 plan44.ch. All rights reserved.
@@ -159,8 +160,8 @@
   BOOL contentLoaded;
   // window coordinates of where next edit area is (needed to move it in view when keyboard shows)
   CGRect editRect;
-  CGSize kbdSize;
-  CGFloat topOfKbd; // if >=0, keyboard is up and kbdSize valid
+  CGSize inputViewSize;
+  CGFloat topOfInputView; // if >=0, keyboard or custom input view is up and inputViewSize valid
   // auto tap cell
   id<ZDetailViewCell> autoTapCell;
   // cause for view to disappear
@@ -236,9 +237,11 @@
   defaultCellStyle = ZDetailViewCellStyleDefault;
   // not modally displayed
   modalViewWrapper = nil;
+  // no custom input view
+  customInputView = nil;
   // kbd control
-  topOfKbd = -1;
-  kbdSize = CGSizeZero;
+  topOfInputView = -1;
+  inputViewSize = CGSizeZero;
   editRect = CGRectNull;
   // handlers
   cellSetupHandler = nil;
@@ -940,6 +943,10 @@ static NSInteger numObjs = 0;
         // open the detail
         [self pushViewControllerForDetail:editController animated:YES];
       }
+      else {
+        // ask cell to begin in-cell editing
+        [dvc beginEditing];
+      }
     }
   }
 }
@@ -1608,6 +1615,8 @@ static NSInteger numObjs = 0;
 }
 
 
+#pragma mark - Input view management (keyboard, custom)
+
 
 #define MIN_SPACE_ABOVE_KBD 10
 #define MIN_MARGIN_ABOVE_EDITRECT 5
@@ -1617,7 +1626,7 @@ static NSInteger numObjs = 0;
   // see if keyboard will obscure the rectangle being edited
   CGFloat maxYForTopOfKbd = (editRect.origin.y+editRect.size.height+MIN_SPACE_ABOVE_KBD);
   // how much we need to scroll up
-  CGFloat up = maxYForTopOfKbd-topOfKbd;
+  CGFloat up = maxYForTopOfKbd-topOfInputView;
   // scroll if not high enough above keyboard
   if (!CGRectIsNull(editRect)) {
     if (up>0) {
@@ -1651,26 +1660,20 @@ static NSInteger numObjs = 0;
 	// save the rectangle where we are editing
   editRect = [[aNotification object] CGRectValue];
   DBGSHOWRECT(@"editingInRect (screen coords)",editRect);
-  if (topOfKbd>0) {
+  if (topOfInputView>0) {
     [self bringEditRectInView];
   }
 }
 
 
-- (void)keyboardWillShow:(NSNotification *)aNotification
+- (void)makeRoomForInputViewOfSize:(CGSize)aInputViewSize
 {
-  // get info about keyboard and window (received in screen (window base) coordinates)
-  // - keyboard frame
-  CGRect kf = [[[aNotification userInfo] valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue]; // keyboard frame in windows coords
-  kf = [detailTableView convertRect:kf fromView:nil]; // keyboard frame in tableview coordinates
-  DBGSHOWRECT(@"UIKeyboardFrameEndUserInfoKey (in tableview coords)",kf);
-  kbdSize = kf.size;
   // - window frame
   CGRect wf = detailTableView.window.frame; // in windows coords
-  topOfKbd = wf.size.height-kf.size.height; // in windows coords
+  topOfInputView = wf.size.height-aInputViewSize.height; // in windows coords
   // always add a table footer with the size of the keyboard plus min space - this makes the table scrollable up to show last cell above the keyboard
 	if (detailTableView.tableFooterView==nil) {
-    UIView *fv = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kf.size.width, kf.size.height+MIN_SPACE_ABOVE_KBD)];
+    UIView *fv = [[UIView alloc] initWithFrame:CGRectMake(0, 0, aInputViewSize.width, aInputViewSize.height+MIN_SPACE_ABOVE_KBD)];
     detailTableView.tableFooterView = fv;
     [fv release];
   }
@@ -1678,10 +1681,9 @@ static NSInteger numObjs = 0;
 }
 
 
-
-- (void)keyboardWillHide:(NSNotification *)aNotification
+- (void)releaseRoomForInputView
 {
-  topOfKbd = -1; // invalid again
+  topOfInputView = -1; // invalid again
   if (detailTableView.tableFooterView) {
     // move down if we are scrolled such that extra footer is under the keyboard
     CGSize cs = [detailTableView contentSize];
@@ -1695,7 +1697,28 @@ static NSInteger numObjs = 0;
       if (co.y<0) co.y = 0; // but not beyond top
 	    [detailTableView setContentOffset:co animated:YES];
     }
-  }
+  }  
+}
+
+
+
+- (void)keyboardWillShow:(NSNotification *)aNotification
+{
+  // dismiss other input view that might be present
+  [self dismissCustomInputViewAnimated:YES];
+  // get info about keyboard and window (received in screen (window base) coordinates)
+  // - keyboard frame
+  CGRect kf = [[[aNotification userInfo] valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue]; // keyboard frame in windows coords
+  kf = [detailTableView convertRect:kf fromView:nil]; // keyboard frame in tableview coordinates
+  DBGSHOWRECT(@"UIKeyboardFrameEndUserInfoKey (in tableview coords)",kf);
+  inputViewSize = kf.size;
+  [self makeRoomForInputViewOfSize:inputViewSize];
+}
+
+
+- (void)keyboardWillHide:(NSNotification *)aNotification
+{
+  [self releaseRoomForInputView];
 }
 
 
@@ -1704,6 +1727,79 @@ static NSInteger numObjs = 0;
 	// always remove the extra footer
   detailTableView.tableFooterView = nil;    
 }
+
+
+@synthesize customInputView;
+
+- (void)presentCustomInputView:(UIView *)aCustomInputView animated:(BOOL)aAnimated
+{
+  if (aCustomInputView!=customInputView) {
+    // dismiss keyboard
+    [self defocusAllBut:nil];
+    // save (and release old, if any)
+    [customInputView removeFromSuperview];
+    [customInputView release];
+    customInputView = [aCustomInputView retain];
+    // present at bottom of current window
+    CGRect wf = detailTableView.window.frame; // in windows coords
+    CGRect vf = customInputView.frame;
+    // have table adjust for showing input view
+    [self makeRoomForInputViewOfSize:vf.size];
+    // slide up from below like keyboard
+    if (aAnimated) {
+      // starts off-window at bottom
+      vf.origin.y = wf.origin.y+wf.size.height;
+      customInputView.frame = vf;
+      [detailTableView.window addSubview:customInputView];
+      // animate in
+      [UIView animateWithDuration:0.25 animations:^{
+        CGRect avf = vf;
+        avf.origin.y -= avf.size.height;
+        customInputView.frame = avf;
+      }];
+    }
+    else {
+      // do it right now, no animation
+      vf.origin.y = wf.origin.y+wf.size.height-vf.size.height;
+    }
+  }
+}
+
+
+- (void)dismissCustomInputViewAnimated:(BOOL)aAnimated
+{
+  // slide down to disappear
+  if (customInputView) {
+    // have table re-adjust to no input view shown
+    [self releaseRoomForInputView];
+    // remove it
+    if (aAnimated) {
+      // slide out
+      [UIView animateWithDuration:0.25 animations:^{
+        CGRect avf = customInputView.frame;
+        avf.origin.y += avf.size.height;
+        customInputView.frame = avf;
+      }
+      completion:^(BOOL finished) {
+        if (finished) {
+          [customInputView removeFromSuperview];
+        }
+      }];
+    }
+    else {
+      // just remove
+      [customInputView removeFromSuperview];
+    }
+    // forget
+    [customInputView release];
+    customInputView = nil;
+    // finally, always remove the extra footer
+    detailTableView.tableFooterView = nil;
+  }
+}
+
+
+
 
 
 #pragma mark - helper/utility methods for UITableView delegate and datasource methods

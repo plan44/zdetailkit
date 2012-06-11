@@ -16,6 +16,7 @@
 #import "ZSwitchCell.h"
 #import "ZSegmentChoicesCell.h"
 #import "ZChoiceListCell.h"
+#import "ZDateTimeCell.h"
 
 @interface ZDVTViewController ()
 
@@ -112,6 +113,46 @@
       fmt.numberStyle = NSNumberFormatterDecimalStyle;
       t.valueConnector.formatter = fmt;
       t.valueConnector.autoSaveValue = YES;
+    }
+    /* inplace start date editing cell */ {
+      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
+      t.labelText = @"Start date";
+      t.editInDetailView = NO;
+      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
+      NSDateFormatter *fmt = [[[NSDateFormatter alloc] init] autorelease];
+      fmt.dateStyle = NSDateFormatterMediumStyle;
+      fmt.timeStyle = NSDateFormatterMediumStyle;
+      t.valueConnector.formatter = fmt;
+      t.valueConnector.autoSaveValue = YES;
+    }
+    /* inplace start date editing cell */ {
+      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
+      t.labelText = @"End date";
+      t.editInDetailView = NO;
+      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"endDate"];
+      NSDateFormatter *fmt = [[[NSDateFormatter alloc] init] autorelease];
+      fmt.dateStyle = NSDateFormatterMediumStyle;
+      fmt.timeStyle = NSDateFormatterMediumStyle;
+      t.valueConnector.formatter = fmt;
+      t.valueConnector.autoSaveValue = YES;
+    }
+    /* switch cell switch control */ {
+      ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
+      sw.labelText = @"Allday";
+      [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
+      sw.valueConnector.autoSaveValue = YES;
+    }
+    /* dateTime cell */ {
+      ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class]];
+      d.labelText = @"Start\nEnd";
+      d.descriptionLabel.numberOfLines = 2;
+      d.valueLabel.numberOfLines = 2;
+      [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
+      [d.endDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"endDate"];
+      [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
+      d.startDateConnector.autoSaveValue = YES;
+      d.endDateConnector.autoSaveValue = YES;
+      d.dateOnlyConnector.autoSaveValue = YES;
     }
     /* segment choice cell */ {
       ZSegmentChoicesCell *sg = [c detailCell:[ZSegmentChoicesCell class]];

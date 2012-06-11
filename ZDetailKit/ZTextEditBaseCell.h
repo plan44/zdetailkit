@@ -1,5 +1,6 @@
 //
 //  ZTextEditBaseCell.h
+//  ZDetailKit
 //
 //  Created by Lukas Zeller on 25.05.12.
 //  Copyright (c) 2012 plan44.ch. All rights reserved.

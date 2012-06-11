@@ -1,5 +1,6 @@
 //
 //  ZDetailTableViewController.h
+//  ZDetailKit
 //
 //  Created by Lukas Zeller on 19.05.12.
 //  Copyright (c) 2012 plan44.ch. All rights reserved.
@@ -98,6 +99,11 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 - (void)detailViewWillOpen:(BOOL)aAnimated;
 - (void)detailViewWillClose:(BOOL)aAnimated;
 - (void)detailViewDidClose:(BOOL)aAnimated;
+
+// input views (keyboard-alike, for example date chooser)
+@property (readonly, nonatomic) UIView *customInputView;
+- (void)presentCustomInputView:(UIView *)aCustomInputView animated:(BOOL)aAnimated;
+- (void)dismissCustomInputViewAnimated:(BOOL)aAnimated;
 
 // controller-level (rather than cell-level) value connectors
 // - register connectors (usually in the subclass' internalInit)

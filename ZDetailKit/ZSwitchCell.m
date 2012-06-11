@@ -1,5 +1,6 @@
 //
 //  ZSwitchCell.m
+//  ZDetailKit
 //
 //  Created by Lukas Zeller on 31.05.12.
 //  Copyright (c) 2012 plan44.ch. All rights reserved.
@@ -8,6 +9,7 @@
 #import "ZSwitchCell.h"
 
 #import "ZDetailTableViewController.h"
+
 
 @interface ZSwitchCell ( /* class extension */ )
 {
@@ -33,7 +35,6 @@
     switchControl = nil; // created on demand
     self.valueLabel.hidden = YES; // don't show value label
     self.valueViewAdjustment = ZDetailCellItemAdjustRight+ZDetailCellItemAdjustMiddle; // always right-aligned
-    //self.valueViewAdjustment = self.valueViewAdjustment & ~ZDetailCellItemAdjustFillWidth; // don't try to resize switch
     inverse = NO; // not inversed
     bitMask = 0; // not using a bitmask
     updating = NO; // to break recursions

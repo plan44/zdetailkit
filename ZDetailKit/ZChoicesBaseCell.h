@@ -1,5 +1,6 @@
 //
 //  ZChoicesBaseCell.h
+//  ZDetailKit
 //
 //  Created by Lukas Zeller on 01.06.12.
 //  Copyright (c) 2012 plan44.ch. All rights reserved.

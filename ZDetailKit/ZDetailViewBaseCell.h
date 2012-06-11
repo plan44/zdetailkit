@@ -1,5 +1,6 @@
 //
 //  ZDetailViewBaseCell.h
+//  ZDetailKit
 //
 //  Created by Lukas Zeller on 17.05.12.
 //  Copyright (c) 2012 plan44.ch. All rights reserved.

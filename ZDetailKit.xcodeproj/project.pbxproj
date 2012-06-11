@@ -10,7 +10,6 @@
 		ED12E75D158249BB00DE3ED3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED12E752158249BB00DE3ED3 /* InfoPlist.strings */; };
 		ED12E75E158249BB00DE3ED3 /* ZDVTViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED12E754158249BB00DE3ED3 /* ZDVTViewController.xib */; };
 		ED12E75F158249BB00DE3ED3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E756158249BB00DE3ED3 /* main.m */; };
-		ED12E760158249BB00DE3ED3 /* ZDetailKitDemo-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED12E757158249BB00DE3ED3 /* ZDetailKitDemo-Info.plist */; };
 		ED12E761158249BB00DE3ED3 /* ZDVTAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E75A158249BB00DE3ED3 /* ZDVTAppDelegate.m */; };
 		ED12E762158249BB00DE3ED3 /* ZDVTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E75C158249BB00DE3ED3 /* ZDVTViewController.m */; };
 		ED12E76615824A3B00DE3ED3 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED12E76315824A3B00DE3ED3 /* CoreFoundation.framework */; };
@@ -33,6 +32,8 @@
 		ED12E79A15824D9600DE3ED3 /* ZString_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79815824D9600DE3ED3 /* ZString_utils.m */; };
 		ED12E79E15824DE400DE3ED3 /* ZOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79D15824DE400DE3ED3 /* ZOrientation.m */; };
 		ED12E7A015829C0700DE3ED3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED12E79F15829C0700DE3ED3 /* Foundation.framework */; };
+		ED49A99B1585F623007FEBF0 /* ZDateTimeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */; };
+		ED49A99E15860134007FEBF0 /* ZDate_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED49A99D15860134007FEBF0 /* ZDate_utils.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +85,10 @@
 		ED12E79C15824DE400DE3ED3 /* ZOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZOrientation.h; sourceTree = "<group>"; };
 		ED12E79D15824DE400DE3ED3 /* ZOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZOrientation.m; sourceTree = "<group>"; };
 		ED12E79F15829C0700DE3ED3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		ED49A9991585F623007FEBF0 /* ZDateTimeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDateTimeCell.h; sourceTree = "<group>"; };
+		ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDateTimeCell.m; sourceTree = "<group>"; };
+		ED49A99C15860134007FEBF0 /* ZDate_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDate_utils.h; sourceTree = "<group>"; };
+		ED49A99D15860134007FEBF0 /* ZDate_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDate_utils.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,29 +165,21 @@
 				ED12E79115824D2900DE3ED3 /* ZDBGMacros.h */,
 				ED12E79715824D9600DE3ED3 /* ZString_utils.h */,
 				ED12E79815824D9600DE3ED3 /* ZString_utils.m */,
+				ED49A99C15860134007FEBF0 /* ZDate_utils.h */,
+				ED49A99D15860134007FEBF0 /* ZDate_utils.m */,
 				ED12E79C15824DE400DE3ED3 /* ZOrientation.h */,
 				ED12E79D15824DE400DE3ED3 /* ZOrientation.m */,
 				ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */,
 				ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */,
-				ED12E76A15824B8200DE3ED3 /* ZButtonCell.h */,
-				ED12E76B15824B8200DE3ED3 /* ZButtonCell.m */,
-				ED12E76C15824B8200DE3ED3 /* ZChoiceListCell.h */,
-				ED12E76D15824B8200DE3ED3 /* ZChoiceListCell.m */,
-				ED12E76E15824B8200DE3ED3 /* ZChoiceListController.h */,
-				ED12E76F15824B8200DE3ED3 /* ZChoiceListController.m */,
-				ED12E77015824B8200DE3ED3 /* ZChoicesBaseCell.h */,
-				ED12E77115824B8200DE3ED3 /* ZChoicesBaseCell.m */,
-				ED12E77215824B8200DE3ED3 /* ZChoicesManager.h */,
-				ED12E77315824B8200DE3ED3 /* ZChoicesManager.m */,
 				ED12E77415824B8200DE3ED3 /* ZDetailEditing.h */,
-				ED12E77515824B8200DE3ED3 /* ZDetailTableViewController.h */,
-				ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */,
 				ED12E77715824B8200DE3ED3 /* ZDetailValueConnector.h */,
 				ED12E77815824B8200DE3ED3 /* ZDetailValueConnector.m */,
 				ED12E77915824B8200DE3ED3 /* ZDetailViewBaseCell.h */,
 				ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */,
-				ED12E77B15824B8200DE3ED3 /* ZSegmentChoicesCell.h */,
-				ED12E77C15824B8200DE3ED3 /* ZSegmentChoicesCell.m */,
+				ED12E77515824B8200DE3ED3 /* ZDetailTableViewController.h */,
+				ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */,
+				ED12E76A15824B8200DE3ED3 /* ZButtonCell.h */,
+				ED12E76B15824B8200DE3ED3 /* ZButtonCell.m */,
 				ED12E77D15824B8200DE3ED3 /* ZSwitchCell.h */,
 				ED12E77E15824B8200DE3ED3 /* ZSwitchCell.m */,
 				ED12E77F15824B8200DE3ED3 /* ZTextEditBaseCell.h */,
@@ -191,6 +188,18 @@
 				ED12E78115824B8200DE3ED3 /* ZTextFieldCell.m */,
 				ED12E78215824B8200DE3ED3 /* ZTextViewCell.h */,
 				ED12E78315824B8200DE3ED3 /* ZTextViewCell.m */,
+				ED49A9991585F623007FEBF0 /* ZDateTimeCell.h */,
+				ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */,
+				ED12E77215824B8200DE3ED3 /* ZChoicesManager.h */,
+				ED12E77315824B8200DE3ED3 /* ZChoicesManager.m */,
+				ED12E77015824B8200DE3ED3 /* ZChoicesBaseCell.h */,
+				ED12E77115824B8200DE3ED3 /* ZChoicesBaseCell.m */,
+				ED12E77B15824B8200DE3ED3 /* ZSegmentChoicesCell.h */,
+				ED12E77C15824B8200DE3ED3 /* ZSegmentChoicesCell.m */,
+				ED12E76C15824B8200DE3ED3 /* ZChoiceListCell.h */,
+				ED12E76D15824B8200DE3ED3 /* ZChoiceListCell.m */,
+				ED12E76E15824B8200DE3ED3 /* ZChoiceListController.h */,
+				ED12E76F15824B8200DE3ED3 /* ZChoiceListController.m */,
 			);
 			path = ZDetailKit;
 			sourceTree = "<group>";
@@ -248,7 +257,6 @@
 			files = (
 				ED12E75D158249BB00DE3ED3 /* InfoPlist.strings in Resources */,
 				ED12E75E158249BB00DE3ED3 /* ZDVTViewController.xib in Resources */,
-				ED12E760158249BB00DE3ED3 /* ZDetailKitDemo-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +286,8 @@
 				ED12E79415824D5400DE3ED3 /* ZTextExpanderSupport.m in Sources */,
 				ED12E79A15824D9600DE3ED3 /* ZString_utils.m in Sources */,
 				ED12E79E15824DE400DE3ED3 /* ZOrientation.m in Sources */,
+				ED49A99B1585F623007FEBF0 /* ZDateTimeCell.m in Sources */,
+				ED49A99E15860134007FEBF0 /* ZDate_utils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,6 +409,7 @@
 				ED12E7501582494C00DE3ED3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
