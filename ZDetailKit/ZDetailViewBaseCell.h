@@ -95,6 +95,7 @@ typedef enum {
 @property (assign, nonatomic) BOOL showsValidationStatus; // if set, cell will show validation status as it changes
 @property (readonly, nonatomic) ZDetailDisplayMode displayMode;
 @property (readonly, nonatomic) BOOL allowsEditing;
+@property (readonly, nonatomic) BOOL focusedEditing;
 
 // Methods for owner
 // - UITableViewCell compatible, except that style has extended functionality (includes flags)

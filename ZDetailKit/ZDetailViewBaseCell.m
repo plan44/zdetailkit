@@ -14,7 +14,6 @@
   // non-public instance vars
   NSMutableArray *valueConnectors;
   BOOL needsDisplayUpdate;
-  BOOL focusedEditing;
   // normal description label color (used to remember during validation errors)
   UIColor *nonErrorTextColor;
   // measured values for content indenting
@@ -418,6 +417,8 @@ static NSInteger numObjs = 0;
 
 #pragma mark - subclass hooks (methods that can be overridden by subclasses)
 
+@synthesize focusedEditing;
+
 
 // called to have non-value display details being updated (like labels, placeholders etc.)
 - (void)updateForDisplay
@@ -472,7 +473,6 @@ static NSInteger numObjs = 0;
     ];
   }  
 }
-
 
 
 // might be called by subclasses to signal start of in-cell editing (like focusing text field)

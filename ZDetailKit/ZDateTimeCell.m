@@ -22,8 +22,8 @@
 @property (retain, nonatomic) NSDate *endDate;
 @property (assign, nonatomic) BOOL dateOnly;
 @property (retain, nonatomic) NSDate *suggestedDate;
-@property (readonly, nonatomic) UIDatePicker *datePicker;
 @property (retain, nonatomic) NSDate *pickerDate;
+@property (readonly, nonatomic) UIDatePicker *datePicker;
 
 - (void)updateData;
 
@@ -126,12 +126,12 @@
 {
   if (datePicker==nil) {
     datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 0, self.window.frame.size.width , 216)];
-//    datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
-//    datePicker.contentMode = UIViewContentModeBottom;
-//    // report value changes to myself
-//    [datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
-//    // set time zone (note that it must be explicitly assigned, as we use datePicker.timeZone for pickerDate adjustment)
-//    datePicker.timeZone = [NSTimeZone cachedTimezone];
+    datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
+    datePicker.contentMode = UIViewContentModeBottom;
+    // report value changes to myself
+    [datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
+    // set time zone (note that it must be explicitly assigned, as we use datePicker.timeZone for pickerDate adjustment)
+    datePicker.timeZone = [NSTimeZone cachedTimezone];
     // make sure picker has current data from the very beginning
     [self updateData];
   }
@@ -158,12 +158,15 @@
 // will be called from detailviewcontroller on all other cells when a new cell gets focus
 - (void)defocusCell
 {
-  if ([self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
-    ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
-    [dvc dismissCustomInputViewAnimated:YES];
+  // only if already focused editing started, dismiss custom input view.
+  if (self.focusedEditing) {
+    if ([self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
+      ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
+      [dvc dismissCustomInputViewAnimated:YES];
+    }
+    [datePicker release];
+    datePicker = nil;
   }
-  [datePicker release];
-  datePicker = nil;
   [super defocusCell];
 }
 

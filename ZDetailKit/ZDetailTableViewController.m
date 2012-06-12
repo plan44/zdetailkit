@@ -1761,6 +1761,8 @@ static NSInteger numObjs = 0;
     else {
       // do it right now, no animation
       vf.origin.y = wf.origin.y+wf.size.height-vf.size.height;
+      customInputView.frame = vf;
+      [detailTableView.window addSubview:customInputView];
     }
   }
 }
