@@ -86,8 +86,10 @@ typedef enum {
 
 // customizing look and behaviour
 @property (retain, nonatomic) NSString *labelText; // text for description label - defaults to keyPath of first valueConnector
+@property (readonly, nonatomic) NSString *specificLabelText; // returns text specifically set as labelText (is nil if label is autocalculated)
 @property (retain, nonatomic) NSString *detailTitleText; // text for detail editor - defaults to labelText
 @property (retain, nonatomic) NSString *placeholderText; // text for placeholder in editing fields - defaults to detailTitleText
+@property (assign, nonatomic) BOOL keepSelectedAfterTap; // keep selected after tapping cell
 @property (assign, nonatomic) BOOL autoSetDescriptionLabelText; // if not set, description label will not be touched
 @property (assign, nonatomic) BOOL readOnly;
 @property (assign, nonatomic) BOOL alwaysEditable;

@@ -101,6 +101,7 @@ typedef enum {
 - (BOOL)handleTapInAccessory:(BOOL)aInAccessory; // called to handle a tap in the cell (instead of in the cellOwner), return YES if handled
 - (UIViewController *)editorForTapInAccessory:(BOOL)aInAccessory;
 - (void)editorFinishedWithCancel:(BOOL)aCancelled; // called when detail editor for a cell (as obtained by editorForTapInAccessory:) has finished (i.e. closed)
+- (BOOL)keepSelected; // if cell is selected (tapped) and this returns YES, the selection is kept after touch is released
 // save and revert
 - (void)saveCell; // save values of all connectors to their targets
 - (void)loadCell; // revert cell by re-reading values in all connectors from their targets

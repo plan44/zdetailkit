@@ -114,7 +114,7 @@
       t.valueConnector.formatter = fmt;
       t.valueConnector.autoSaveValue = YES;
     }
-    /* inplace start date editing cell */ {
+    /* inplace start date text editing cell */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
       t.labelText = @"Start date";
       t.editInDetailView = NO;
@@ -125,7 +125,7 @@
       t.valueConnector.formatter = fmt;
       t.valueConnector.autoSaveValue = YES;
     }
-    /* inplace start date editing cell */ {
+    /* inplace end date text editing cell */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
       t.labelText = @"End date";
       t.editInDetailView = NO;
@@ -144,9 +144,12 @@
     }
     /* dateTime cell */ {
       ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class]];
-      d.labelText = @"Start\nEnd";
+      d.startDateLabelText = @"Begins";
+      d.endDateLabelText = @"Ends";
+      d.dateOnlyLabelText = @"Allday";
       d.descriptionLabel.numberOfLines = 2;
       d.valueLabel.numberOfLines = 2;
+      d.editInDetailView = YES;
       [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
       [d.endDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"endDate"];
       [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];

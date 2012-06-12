@@ -71,6 +71,7 @@
   readOnly = NO;
   alwaysEditable = NO;
   labelText = nil;
+  keepSelectedAfterTap = NO;
   autoSetDescriptionLabelText = YES; // set descriptionlabel to labelText automatically
   detailTitleText = nil;
   placeholderText = nil;
@@ -286,6 +287,11 @@ static NSInteger numObjs = 0;
   }
 }
 
+
+- (BOOL)keepSelected
+{
+  return self.keepSelectedAfterTap;
+}
 
 
 - (void)saveCell
@@ -512,6 +518,7 @@ static NSInteger numObjs = 0;
 
 #pragma mark - common properties for cell appearance and behaviour control
 
+@synthesize keepSelectedAfterTap;
 
 @synthesize valueView, descriptionView;
 
@@ -670,6 +677,12 @@ static NSInteger numObjs = 0;
   // no label text found
   return @"???";
 }
+
+- (NSString *)specificLabelText
+{
+  return labelText;
+}
+
 
 
 @synthesize detailTitleText;

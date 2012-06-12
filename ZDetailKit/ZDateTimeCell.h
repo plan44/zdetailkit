@@ -15,6 +15,11 @@
 @property (readonly,nonatomic) ZDetailValueConnector *endDateConnector;
 @property (readonly,nonatomic) ZDetailValueConnector *dateOnlyConnector;
 
+@property (retain,nonatomic) NSString *startDateLabelText;
+@property (retain,nonatomic) NSString *endDateLabelText;
+@property (retain,nonatomic) NSString *dateOnlyLabelText;
+
+
 @property (assign,nonatomic) BOOL editInDetailView; // just show the value, edit it in detail view
 @property (readonly,nonatomic) ZDetailValueConnector *suggestedDateConnector;
 @property (assign,nonatomic) NSTimeInterval *suggestionOffset;

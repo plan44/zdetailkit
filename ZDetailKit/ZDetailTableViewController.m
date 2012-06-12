@@ -1933,7 +1933,12 @@ static NSInteger numObjs = 0;
 {
 	UITableViewCell *cell = [self cellForRowAtIndexPath:indexPath];
   [self cellTapped:cell inAccessory:NO];
-  return nil; // don't select row
+  BOOL keepSelected = NO;
+  if ([cell conformsToProtocol:@protocol(ZDetailViewCell)]) {
+  	id<ZDetailViewCell>dvc = (id<ZDetailViewCell>)cell;
+    keepSelected = [dvc keepSelected];
+  }
+  return keepSelected ? indexPath : nil; // return nil to prevent selecting row
 }
 
 

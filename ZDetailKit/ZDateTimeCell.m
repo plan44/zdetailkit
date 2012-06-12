@@ -11,12 +11,13 @@
 #import "ZDate_utils.h"
 
 #import "ZDetailTableViewController.h"
-
+#import "ZSwitchCell.h"
 
 @interface ZDateTimeCell ( /* class extension */ )
 {
   NSDateFormatter *formatter;
   BOOL pickerIsUpdating;
+  BOOL pickerInstalling;
 }
 @property (retain, nonatomic) NSDate *startDate;
 @property (retain, nonatomic) NSDate *endDate;
@@ -46,6 +47,7 @@
     suggestionOffset = 0; // no offset
     editInDetailView = NO; // default to in-place editing
     pickerIsUpdating = NO;
+    pickerInstalling = NO;
     // formatter
     formatter = [[NSDateFormatter alloc] init];
     // valueConnectors
@@ -84,6 +86,27 @@
 #pragma mark - cell configuration
 
 
+@synthesize startDateLabelText, endDateLabelText, dateOnlyLabelText;
+
+
+- (NSString *)labelText
+{
+  // return specific text if any
+  if (self.specificLabelText) return self.specificLabelText;
+  // if none specified, return combination of start/end
+  if (startDateLabelText) {
+    if (endDateLabelText)
+      return [NSString stringWithFormat:@"%@\n%@", startDateLabelText, endDateLabelText];
+    else
+      return startDateLabelText;
+  }
+  // none constructed, use default
+  return [super labelText];
+}
+
+
+
+
 - (void)setEditInDetailView:(BOOL)aEditInDetailView
 {
   if (aEditInDetailView!=editInDetailView) {
@@ -96,7 +119,10 @@
 
 - (void)updateForDisplay
 {
-  // update cell basics
+  // create compound label if none set
+  if (self.labelText)
+
+  // update cell basic layout
   [super updateForDisplay];
   // adjust disclosure
   if (self.editInDetailView && !self.readOnly) {
@@ -144,10 +170,12 @@
 {
   if (!self.editInDetailView && !self.readOnly && [self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
     ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
+    pickerInstalling = YES;
     if (dvc.customInputView!=self.datePicker) {
       [dvc presentCustomInputView:self.datePicker animated:YES];
     }
     [self startedEditing];
+    pickerInstalling = NO;
     return YES;
   }
   return NO; 
@@ -159,7 +187,7 @@
 - (void)defocusCell
 {
   // only if already focused editing started, dismiss custom input view.
-  if (self.focusedEditing) {
+  if (self.focusedEditing && !pickerInstalling) {
     if ([self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
       ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
       [dvc dismissCustomInputViewAnimated:YES];
@@ -335,6 +363,57 @@
   }
 }
 
+
+#pragma mark - detail editor
+
+
+
+- (UIViewController *)editorForTapInAccessory:(BOOL)aInAccessory
+{
+  ZDetailTableViewController *dtvc = nil;
+  if (self.editInDetailView && self.allowsEditing) {
+    dtvc = [ZDetailTableViewController controllerWithTitle:self.detailTitleText];
+    dtvc.defaultCellStyle = ZDetailViewCellStyleEntryDetail;
+    dtvc.navigationMode = ZDetailNavigationModeLeftButtonCancel+ZDetailNavigationModeRightButtonSave;
+    [dtvc setBuildDetailContentHandler:^(ZDetailTableViewController *c) {
+      c.autoStartEditing = YES; // auto-start editing in the first field
+      c.detailTableView.scrollEnabled = NO; // prevent scrolling
+      [c startSection];
+      // Start date
+      ZDateTimeCell *sd = [c detailCell:[ZDateTimeCell class]];
+      sd.labelText = self.startDateLabelText;
+      sd.descriptionLabel.numberOfLines = 1;
+      sd.valueLabel.numberOfLines = 1;
+      sd.editInDetailView = NO;
+      [sd.startDateConnector connectTo:self.startDateConnector keyPath:@"internalValue"];
+      sd.startDateConnector.autoSaveValue = NO;
+      sd.dateOnlyConnector.autoSaveValue = NO;
+      sd.keepSelectedAfterTap = YES;
+      // End date
+      ZDateTimeCell *ed = [c detailCell:[ZDateTimeCell class]];
+      ed.labelText = self.endDateLabelText;
+      ed.descriptionLabel.numberOfLines = 1;
+      ed.valueLabel.numberOfLines = 1;
+      ed.editInDetailView = NO;
+      [ed.startDateConnector connectTo:self.endDateConnector keyPath:@"internalValue"];
+      ed.startDateConnector.autoSaveValue = NO;
+      ed.dateOnlyConnector.autoSaveValue = NO;
+      ed.keepSelectedAfterTap = YES;
+      // Allday switch
+      ZSwitchCell *adsw = [c detailCell:[ZSwitchCell class]];
+      adsw.labelText = self.dateOnlyLabelText;
+      [adsw.valueConnector connectTo:self.dateOnlyConnector keyPath:@"internalValue"];
+      adsw.valueConnector.autoSaveValue = NO;
+      // - connect the allday of the start and end dates to this switch's internal value
+//      [sd.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"internalValue"];
+//      [ed.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"internalValue"];
+      // section done
+      [c endSection];
+      return YES; // built
+    }];
+  }
+  return dtvc;
+}
 
 
 
