@@ -119,9 +119,6 @@
 
 - (void)updateForDisplay
 {
-  // create compound label if none set
-  if (self.labelText)
-
   // update cell basic layout
   [super updateForDisplay];
   // adjust disclosure
@@ -147,19 +144,29 @@
 
 @synthesize datePicker;
 
+#define ZDATETIMECELL_INPUTVIEW_TAG 27142178
 
 - (UIDatePicker *)datePicker
 {
   if (datePicker==nil) {
-    datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 0, self.window.frame.size.width , 216)];
-    datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
-    datePicker.contentMode = UIViewContentModeBottom;
-    // report value changes to myself
-    [datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
-    // set time zone (note that it must be explicitly assigned, as we use datePicker.timeZone for pickerDate adjustment)
-    datePicker.timeZone = [NSTimeZone cachedTimezone];
-    // make sure picker has current data from the very beginning
-    [self updateData];
+    // check if current custom input view is of right type - if so, reuse it
+    if ([self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
+      ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
+      UIView *iv = dvc.customInputView;
+      if (iv && iv.tag==ZDATETIMECELL_INPUTVIEW_TAG && [iv isKindOfClass:[UIDatePicker class]]) {
+        // we can use this as-is
+        datePicker = [(UIDatePicker *)iv retain];
+      }
+    }
+    if (datePicker==nil) {
+      // we need a new one
+      datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 0, self.window.frame.size.width , 216)];
+      datePicker.tag = ZDATETIMECELL_INPUTVIEW_TAG; // mark it as one of mine
+      datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
+      datePicker.contentMode = UIViewContentModeBottom;
+      // set time zone (note that it must be explicitly assigned, as we use datePicker.timeZone for pickerDate adjustment)
+      datePicker.timeZone = [NSTimeZone cachedTimezone];
+    }
   }
   return datePicker;
 }
@@ -171,11 +178,15 @@
   if (!self.editInDetailView && !self.readOnly && [self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
     ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
     pickerInstalling = YES;
-    if (dvc.customInputView!=self.datePicker) {
-      [dvc presentCustomInputView:self.datePicker animated:YES];
-    }
+    // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
+    [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
+    [self.datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
+    // present it (if not already presented)
+    [dvc presentCustomInputView:self.datePicker animated:YES];
     [self startedEditing];
     pickerInstalling = NO;
+    // make sure picker has current data
+    [self updateData];
     return YES;
   }
   return NO; 
@@ -403,10 +414,10 @@
       ZSwitchCell *adsw = [c detailCell:[ZSwitchCell class]];
       adsw.labelText = self.dateOnlyLabelText;
       [adsw.valueConnector connectTo:self.dateOnlyConnector keyPath:@"internalValue"];
-      adsw.valueConnector.autoSaveValue = NO;
+      adsw.valueConnector.autoSaveValue = YES;
       // - connect the allday of the start and end dates to this switch's internal value
-//      [sd.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"internalValue"];
-//      [ed.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"internalValue"];
+      [sd.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"internalValue"];
+      [ed.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"internalValue"];
       // section done
       [c endSection];
       return YES; // built

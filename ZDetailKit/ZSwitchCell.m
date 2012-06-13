@@ -41,7 +41,7 @@
     checkMark = NO; // use switch control, not checkmark
     // valueConnector
     valueConnector = [self registerConnector:
-      [ZDetailValueConnector connectorWithValuePath:nil owner:self]
+      [ZDetailValueConnector connectorWithValuePath:@"switchVal" owner:self]
     ];
     valueConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to show external nil/null as NO
     valueConnector.autoRevertOnValidationError = YES; // just don't allow non-validating state of the switch
@@ -73,8 +73,6 @@
 
 - (void)updateForDisplay
 {
-  // connect textview (also creates it)
-  self.valueConnector.valuePath = @"switchVal";  
   // reconfigure views
   if (checkMark) {
     // boolean value is represented by checkmark

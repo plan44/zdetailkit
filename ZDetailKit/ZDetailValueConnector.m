@@ -92,7 +92,7 @@
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<ZDetailValueConnector '%@' <-> '%@' in owner:%@", self.keyPath, self.valuePath, [owner description]];
+  return [NSString stringWithFormat:@"<ZDetailValueConnector '%@.%@' <-> '%@.%@' in owner:%@", [target class], self.keyPath, [owner class], self.valuePath, [owner description]];
 }
 
 

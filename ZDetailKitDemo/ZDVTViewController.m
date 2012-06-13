@@ -8,6 +8,8 @@
 
 #import "ZDVTViewController.h"
 
+#import "ZOrientation.h"
+
 #import "ZDetailTableViewController.h"
 
 #import "ZButtonCell.h"
@@ -42,11 +44,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
-  } else {
-    return YES;
-  }
+  return [ZOrientation supportsInterfaceOrientation:interfaceOrientation];
 }
 
 

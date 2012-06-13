@@ -929,7 +929,7 @@ static NSInteger numObjs = 0;
 - (void)cellTapped:(UITableViewCell *)aCell inAccessory:(BOOL)aInAccessory
 {
 	// defocus other cells
-	[self defocusAllBut:aCell]; // defocus all cells
+//	[self defocusAllBut:aCell]; // defocus all cells
   if ([aCell conformsToProtocol:@protocol(ZDetailViewCell)]) {
     id<ZDetailViewCell> dvc = (id<ZDetailViewCell>)aCell;
     // let cell check for a non-default action before trying to open standard editor
@@ -993,6 +993,12 @@ static NSInteger numObjs = 0;
           // try starting editing here
           if ([c beginEditing]) {
             // visible, and successfully started editing
+            if ([c keepSelected]) {
+              // - get indexpath
+              NSIndexPath *ip = [self.detailTableView indexPathForCell:c];
+              // - select it
+              [self.detailTableView selectRowAtIndexPath:ip animated:NO scrollPosition:UITableViewScrollPositionNone];
+            }
             return; // done
           }
         }
@@ -1481,7 +1487,7 @@ static NSInteger numObjs = 0;
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
-	// return YES for supported orientations (this controller might be used modally on top level)
+	// return YES for all globally supported orientations (essential even if not being rotated myself)
   return [ZOrientation supportsInterfaceOrientation:toInterfaceOrientation];
 }
 
@@ -1559,6 +1565,10 @@ static NSInteger numObjs = 0;
   ];
   // super
 	[super viewDidAppear:aAnimated];
+  // bring up custom input view in case we have one already now
+  if (customInputView) {
+    [self showCustomInputViewAnimated:NO];
+  }
   //%%% finally, issue auto-tap if one is set up
   //[self checkAutoTap];
 }
@@ -1598,6 +1608,8 @@ static NSInteger numObjs = 0;
   }
   if (!disappearsUnderPushed) {
     hasAppeared = NO;
+    // close custom input view in case we have any
+    [self dismissCustomInputViewAnimated:NO];
     // inform parent
     if (self.parentDetailViewController) {
       [self.parentDetailViewController childDetailEditingDoneWithCancel:cancelled];
@@ -1668,7 +1680,9 @@ static NSInteger numObjs = 0;
 
 - (void)makeRoomForInputViewOfSize:(CGSize)aInputViewSize
 {
-  // - window frame
+  // screen bounds
+//  CGRect sb = [[UIScreen mainScreen] bounds];
+  #warning "must use screen bounds, not window"
   CGRect wf = detailTableView.window.frame; // in windows coords
   topOfInputView = wf.size.height-aInputViewSize.height; // in windows coords
   // always add a table footer with the size of the keyboard plus min space - this makes the table scrollable up to show last cell above the keyboard
@@ -1684,7 +1698,7 @@ static NSInteger numObjs = 0;
 - (void)releaseRoomForInputView
 {
   topOfInputView = -1; // invalid again
-  if (detailTableView.tableFooterView) {
+  if (detailTableView && detailTableView.tableFooterView) {
     // move down if we are scrolled such that extra footer is under the keyboard
     CGSize cs = [detailTableView contentSize];
     CGPoint co = detailTableView.contentOffset; // current content offset
@@ -1706,7 +1720,7 @@ static NSInteger numObjs = 0;
 {
   // dismiss other input view that might be present
   [self dismissCustomInputViewAnimated:YES];
-  // get info about keyboard and window (received in screen (window base) coordinates)
+  // get info about keyboard and window (received in screen coordinates)
   // - keyboard frame
   CGRect kf = [[[aNotification userInfo] valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue]; // keyboard frame in windows coords
   kf = [detailTableView convertRect:kf fromView:nil]; // keyboard frame in tableview coordinates
@@ -1731,26 +1745,23 @@ static NSInteger numObjs = 0;
 
 @synthesize customInputView;
 
-- (void)presentCustomInputView:(UIView *)aCustomInputView animated:(BOOL)aAnimated
+
+- (void)showCustomInputViewAnimated:(BOOL)aAnimated
 {
-  if (aCustomInputView!=customInputView) {
-    // dismiss keyboard
-    [self defocusAllBut:nil];
-    // save (and release old, if any)
-    [customInputView removeFromSuperview];
-    [customInputView release];
-    customInputView = [aCustomInputView retain];
-    // present at bottom of current window
+  if (customInputView) {
     CGRect wf = detailTableView.window.frame; // in windows coords
     CGRect vf = customInputView.frame;
     // have table adjust for showing input view
     [self makeRoomForInputViewOfSize:vf.size];
+    // starts off-window at bottom
+    vf.origin.y = wf.origin.y+wf.size.height;
+    // bring into my view's coordinates
+    vf = [self.detailTableView convertRect:vf fromView:detailTableView.window];
     // slide up from below like keyboard
     if (aAnimated) {
-      // starts off-window at bottom
-      vf.origin.y = wf.origin.y+wf.size.height;
+      // add in off-window position
       customInputView.frame = vf;
-      [detailTableView.window addSubview:customInputView];
+      [detailTableView addSubview:customInputView];
       // animate in
       [UIView animateWithDuration:0.25 animations:^{
         CGRect avf = vf;
@@ -1759,10 +1770,28 @@ static NSInteger numObjs = 0;
       }];
     }
     else {
-      // do it right now, no animation
-      vf.origin.y = wf.origin.y+wf.size.height-vf.size.height;
+      // add in final position
+      vf.origin.y -= vf.size.height; // calc final position
       customInputView.frame = vf;
-      [detailTableView.window addSubview:customInputView];
+      [detailTableView addSubview:customInputView];
+    }
+  }
+}
+
+
+- (void)presentCustomInputView:(UIView *)aCustomInputView animated:(BOOL)aAnimated
+{
+  if (aCustomInputView!=customInputView) {
+    // dismiss keyboard
+//    [self defocusAllBut:nil];
+    // save (and release old, if any)
+    [customInputView removeFromSuperview];
+    [customInputView release];
+    customInputView = [aCustomInputView retain];
+    // present at bottom of current window
+    if (hasAppeared) {
+      // already appeared - do it now
+      [self showCustomInputViewAnimated:aAnimated];
     }
   }
 }
@@ -1796,7 +1825,9 @@ static NSInteger numObjs = 0;
     [customInputView release];
     customInputView = nil;
     // finally, always remove the extra footer
-    detailTableView.tableFooterView = nil;
+    if (detailTableView) {
+      detailTableView.tableFooterView = nil;
+    }
   }
 }
 
