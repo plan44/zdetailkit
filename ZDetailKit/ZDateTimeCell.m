@@ -122,7 +122,7 @@
   // update cell basic layout
   [super updateForDisplay];
   // adjust disclosure
-  if (self.editInDetailView && !self.readOnly) {
+  if (self.editInDetailView && self.allowsEditing) {
     // edit in separate detail view - show disclosure indicator
     self.accessoryType =  UITableViewCellAccessoryDisclosureIndicator;
   }
@@ -175,7 +175,7 @@
 // called to try to begin editing (e.g. getting kbd focus) in this cell. Returns YES if possible
 - (BOOL)beginEditing
 {
-  if (!self.editInDetailView && !self.readOnly && [self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
+  if (!self.editInDetailView && self.allowsEditing && [self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
     ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
     pickerInstalling = YES;
     // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
@@ -377,7 +377,8 @@
 
 #pragma mark - detail editor
 
-
+static id _sd_dateOnlyConnector = nil; // %%%
+static id _adsw_valueConnector = nil;
 
 - (UIViewController *)editorForTapInAccessory:(BOOL)aInAccessory
 {
@@ -395,29 +396,42 @@
       sd.labelText = self.startDateLabelText;
       sd.descriptionLabel.numberOfLines = 1;
       sd.valueLabel.numberOfLines = 1;
+      sd.valueLabel.textAlignment = UITextAlignmentRight;
       sd.editInDetailView = NO;
       [sd.startDateConnector connectTo:self.startDateConnector keyPath:@"internalValue"];
       sd.startDateConnector.autoSaveValue = NO;
-      sd.dateOnlyConnector.autoSaveValue = NO;
-      sd.keepSelectedAfterTap = YES;
-      // End date
-      ZDateTimeCell *ed = [c detailCell:[ZDateTimeCell class]];
-      ed.labelText = self.endDateLabelText;
-      ed.descriptionLabel.numberOfLines = 1;
-      ed.valueLabel.numberOfLines = 1;
-      ed.editInDetailView = NO;
-      [ed.startDateConnector connectTo:self.endDateConnector keyPath:@"internalValue"];
-      ed.startDateConnector.autoSaveValue = NO;
-      ed.dateOnlyConnector.autoSaveValue = NO;
-      ed.keepSelectedAfterTap = YES;
-      // Allday switch
-      ZSwitchCell *adsw = [c detailCell:[ZSwitchCell class]];
-      adsw.labelText = self.dateOnlyLabelText;
-      [adsw.valueConnector connectTo:self.dateOnlyConnector keyPath:@"internalValue"];
-      adsw.valueConnector.autoSaveValue = YES;
-      // - connect the allday of the start and end dates to this switch's internal value
-      [sd.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"internalValue"];
-      [ed.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"internalValue"];
+      ZDateTimeCell *ed = nil;
+      if (self.endDateConnector.connected) {
+        // keep selection on start/end only if we have two dates
+        sd.keepSelectedAfterTap = YES;
+        // Optional end date
+        ed = [c detailCell:[ZDateTimeCell class]];
+        ed.labelText = self.endDateLabelText;
+        ed.descriptionLabel.numberOfLines = 1;
+        ed.valueLabel.numberOfLines = 1;
+        ed.valueLabel.textAlignment = UITextAlignmentRight;
+        ed.editInDetailView = NO;
+        [ed.startDateConnector connectTo:self.endDateConnector keyPath:@"internalValue"];
+        ed.startDateConnector.autoSaveValue = NO;
+        ed.keepSelectedAfterTap = YES;
+        [ed.startDateConnector setValidationHandler:^(ZDetailValueConnector *aConnector, id aValue, NSError **aErrorP) {
+          // %%% add end-after-start verification here
+          return YES; // ok
+        }];
+      }
+      if (self.dateOnlyConnector.connected) {
+        // Optional allday switch
+        ZSwitchCell *adsw = [c detailCell:[ZSwitchCell class]];
+        _adsw_valueConnector = adsw.valueConnector; // %%%
+        adsw.labelText = self.dateOnlyLabelText;
+        [adsw.valueConnector connectTo:self.dateOnlyConnector keyPath:@"internalValue"];
+        adsw.valueConnector.autoSaveValue = NO;
+        adsw.valueConnector.autoValidate = YES; // immediately validate to update valueForExternal
+        // - connect the allday of the start and end (optional) dates to this switch's internal value
+        _sd_dateOnlyConnector = sd.dateOnlyConnector; // %%%
+        [sd.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"valueForExternal"];
+        if (ed) [ed.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"valueForExternal"];
+      }
       // section done
       [c endSection];
       return YES; // built

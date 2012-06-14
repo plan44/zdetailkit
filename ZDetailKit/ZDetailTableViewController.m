@@ -995,7 +995,7 @@ static NSInteger numObjs = 0;
             // visible, and successfully started editing
             if ([c keepSelected]) {
               // - get indexpath
-              NSIndexPath *ip = [self.detailTableView indexPathForCell:c];
+              NSIndexPath *ip = [self.detailTableView indexPathForCell:dvch.cell];
               // - select it
               [self.detailTableView selectRowAtIndexPath:ip animated:NO scrollPosition:UITableViewScrollPositionNone];
             }

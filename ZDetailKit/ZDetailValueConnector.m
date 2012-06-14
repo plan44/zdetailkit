@@ -114,7 +114,32 @@
 //#warning "%%% Use keyPathsForValuesAffectingValueForKey for groups of properties, like linked dates, allday flags etc."
 
 
-#define KVO_OPTIONS_FOR_CELL NSKeyValueObservingOptionNew+NSKeyValueObservingOptionInitial
+- (void)connectTargetValue
+{
+  if (active && target && keyPath) {
+    // connected now - add KVO
+    // - activating KVO will most probably lead to loading the value, which in turn influences valueForExternal
+    [self willChangeValueForKey:@"valueForExternal"];
+    // - now setup KVO
+    [target addObserver:self
+      forKeyPath:keyPath
+      options:NSKeyValueObservingOptionNew+NSKeyValueObservingOptionInitial
+      context:NULL
+    ];
+    // - KVO has now caused loading the value
+    [self didChangeValueForKey:@"valueForExternal"];
+  }  
+}
+
+
+- (void)disconnectTargetValue
+{
+  if (active && target && keyPath) {
+    // connected before - remove KVO
+    [target removeObserver:self forKeyPath:keyPath];
+  }  
+}
+
 
 
 // active is initially off, such that detail views can be built and then activated
@@ -123,10 +148,9 @@
 {
   if (aActive!=active) {
     if (active) {
-      if (target && keyPath) {
-        // connected before - remove KVO
-        [target removeObserver:self forKeyPath:keyPath];
-      }
+      // first disconnect externally
+      [self disconnectTargetValue];
+      // then internally
       if (valuePath) {
         // also remove interna connection
         [owner removeObserver:self forKeyPath:valuePath];      
@@ -134,14 +158,7 @@
     }
     active = aActive;
     if (active) {
-      if (target && keyPath) {
-        // connected now - add KVO
-        [target addObserver:self
-          forKeyPath:keyPath
-          options:KVO_OPTIONS_FOR_CELL
-          context:NULL
-        ];
-      }
+      // connect internally first 
       if (valuePath) {
         // also establish internal connection
         [owner addObserver:self
@@ -149,7 +166,9 @@
           options:NSKeyValueObservingOptionNew
           context:NULL
         ];
-      }
+      }      
+      // connect to target value via KVO
+      [self connectTargetValue];
     }    
   }
 }
@@ -168,23 +187,15 @@
   if (aTarget!=target) {
     if (target) {
       // release from KVO if we have a keyPath and an target object
-      if (active && keyPath) {
-        [target removeObserver:self forKeyPath:keyPath];
-      }
+      [self disconnectTargetValue];
       // forget old
       [target release];
       target = nil;
     }
     if (aTarget) {
       target = [aTarget retain];
-      // register for KVO if we have a keypath as well
-      if (active && keyPath) {
-        [target addObserver:self
-          forKeyPath:keyPath
-          options:KVO_OPTIONS_FOR_CELL
-          context:NULL
-        ];
-      }
+      // connect to new target value via KVO
+      [self connectTargetValue];
     }
   }
 }
@@ -195,9 +206,7 @@
   if (!samePropertyString(&aKeyPath,keyPath)) {
     if (keyPath) {
       // release from KVO if we have a keyPath and a target object
-      if (target) {
-        [target removeObserver:self forKeyPath:keyPath];
-      }
+      [self disconnectTargetValue];
       // forget old
       [keyPath release];
       keyPath = nil;
@@ -206,13 +215,7 @@
       // save
       keyPath = [aKeyPath retain];
       // register for KVO if we have a target object as well
-      if (active && target) {
-        [target addObserver:self
-          forKeyPath:keyPath
-          options:KVO_OPTIONS_FOR_CELL
-          context:NULL
-        ];
-      }
+      [self connectTargetValue];
     }
   }
 }
@@ -224,7 +227,7 @@
   if (target!=aTarget) {
     // changing target needs re-establishing KVO, so prevent it until new keyPath is set
     self.keyPath = nil;
-    self.target = aTarget;
+    self.target = aTarget; // will not yet establish KVO because keyPath is nil
   }
   // now set the keypath, this will re-establish the KVO
   self.keyPath = aKeyPath;
@@ -261,6 +264,7 @@
     // this is the value I am responsible for -> update the cell value
     if (!saving && active && !unsavedChanges && (autoUpdateValue || !loadedValue)) {
       // load new value for cell from remote object
+      if (!loadedValue) needsValidation = YES; // loading needs initial validation to make sure valueForExternal is up-to-date
       loadedValue = YES; // now loaded, only update further if autoUpdate is set
       loading = YES;
       id newVal = [aChange objectForKey:NSKeyValueChangeNewKey];
@@ -404,8 +408,10 @@
     validated = [self validateAndConvert:&val error:&err];
     needsValidation = NO;
     if (val!=valueForExternal) {
+      [self willChangeValueForKey:@"valueForExternal"];
       [valueForExternal release];
       valueForExternal = [val retain];
+      [self didChangeValueForKey:@"valueForExternal"];
     }
     if (err!=validationError) {
       [validationError release];
@@ -477,7 +483,10 @@
 // object at owner/valuePath
 - (void)setInternalValue:(id)aInternalValue
 {
+  // Note: value for external implicitly changes as well, so alert it
+  [self willChangeValueForKey:@"valueForExternal"];
   [owner setValue:aInternalValue forKeyPath:self.valuePath];
+  [self didChangeValueForKey:@"valueForExternal"];
 }
 
 
@@ -562,8 +571,8 @@
       // non-nil input, have it formatted
       aValue = [formatter stringForObjectValue:aValue];
     }
-    // set internal editor object to result
-    [owner setValue:aValue forKeyPath:self.valuePath];
+    // set internal editor object to result (important to use property as it might be KVOed)
+    self.internalValue = aValue;
     loading = NO;
   }
 }

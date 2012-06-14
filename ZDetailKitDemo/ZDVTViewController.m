@@ -140,7 +140,7 @@
       [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
       sw.valueConnector.autoSaveValue = YES;
     }
-    /* dateTime cell */ {
+    /* dateTime cell with start+end and external editor */ {
       ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class]];
       d.startDateLabelText = @"Begins";
       d.endDateLabelText = @"Ends";
@@ -153,6 +153,15 @@
       [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
       d.startDateConnector.autoSaveValue = YES;
       d.endDateConnector.autoSaveValue = YES;
+      d.dateOnlyConnector.autoSaveValue = YES;
+    }
+    /* inplace dateTime cell */ {
+      ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class]];
+      d.startDateLabelText = @"Begins";
+      d.editInDetailView = NO;
+      [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
+      [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
+      d.startDateConnector.autoSaveValue = YES;
       d.dateOnlyConnector.autoSaveValue = YES;
     }
     /* segment choice cell */ {
