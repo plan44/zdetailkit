@@ -1756,12 +1756,12 @@ static NSInteger numObjs = 0;
     // starts off-window at bottom
     vf.origin.y = wf.origin.y+wf.size.height;
     // bring into my view's coordinates
-    vf = [self.detailTableView convertRect:vf fromView:detailTableView.window];
+    vf = [self.detailTableView.superview convertRect:vf fromView:detailTableView.window];
     // slide up from below like keyboard
     if (aAnimated) {
       // add in off-window position
       customInputView.frame = vf;
-      [detailTableView addSubview:customInputView];
+      [detailTableView.superview addSubview:customInputView];
       // animate in
       [UIView animateWithDuration:0.25 animations:^{
         CGRect avf = vf;
@@ -1773,7 +1773,7 @@ static NSInteger numObjs = 0;
       // add in final position
       vf.origin.y -= vf.size.height; // calc final position
       customInputView.frame = vf;
-      [detailTableView addSubview:customInputView];
+      [detailTableView.superview addSubview:customInputView];
     }
   }
 }
