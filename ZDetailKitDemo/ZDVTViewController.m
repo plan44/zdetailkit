@@ -288,7 +288,7 @@
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
       t.labelText = @"Inplace edit 2";
       t.contentIndent = 50;
-      t.valueCellShare = 0.5;
+//      t.valueCellShare = 0.5;
       t.editInDetailView = NO;
       [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testText"];
     }
@@ -299,21 +299,23 @@
 }
 
 
-- (IBAction)prefDetails:(id)sender
-{
-  ZDetailTableViewController *dtvc = [ZDetailTableViewController controllerWithTitle:@"Hallo"];
-  dtvc.defaultCellStyle = ZDetailViewCellStylePrefs;
-  dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone;
-  //[dtvc setCellSetupHandler:^(ZDetailTableViewController *aController, UITableViewCell *aNewCell) {}];
-  [self setupDetails:dtvc]; 
-}
-
-
 - (IBAction)entryEditDetails:(id)sender
 {
   ZDetailTableViewController *dtvc = [ZDetailTableViewController controllerWithTitle:@"Hallo"];
   dtvc.defaultCellStyle = ZDetailViewCellStyleEntryDetail;
+//  dtvc.defaultCellStyle = UITableViewCellStyleValue2+ZDetailViewCellStyleFlagAutoStyle;
   dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone;
+  [self setupDetails:dtvc]; 
+}
+
+
+- (IBAction)prefDetails:(id)sender
+{
+  ZDetailTableViewController *dtvc = [ZDetailTableViewController controllerWithTitle:@"Hallo"];
+//  dtvc.defaultCellStyle = ZDetailViewCellStylePrefs;
+  dtvc.defaultCellStyle = UITableViewCellStyleValue1+ZDetailViewCellStyleFlagAutoStyle;
+  dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone;
+  //[dtvc setCellSetupHandler:^(ZDetailTableViewController *aController, UITableViewCell *aNewCell) {}];
   [self setupDetails:dtvc]; 
 }
 

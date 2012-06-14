@@ -928,8 +928,6 @@ static NSInteger numObjs = 0;
 // called by cells or by table view delegate methods to perform actions
 - (void)cellTapped:(UITableViewCell *)aCell inAccessory:(BOOL)aInAccessory
 {
-	// defocus other cells
-//	[self defocusAllBut:aCell]; // defocus all cells
   if ([aCell conformsToProtocol:@protocol(ZDetailViewCell)]) {
     id<ZDetailViewCell> dvc = (id<ZDetailViewCell>)aCell;
     // let cell check for a non-default action before trying to open standard editor
@@ -945,7 +943,11 @@ static NSInteger numObjs = 0;
       }
       else {
         // ask cell to begin in-cell editing
-        [dvc beginEditing];
+        handled = [dvc beginEditing];
+      }
+      if (!handled) {
+        // only if not started editing, remove focus
+        [self defocusAllBut:aCell]; // defocus all other cells
       }
     }
   }
@@ -1755,13 +1757,16 @@ static NSInteger numObjs = 0;
     [self makeRoomForInputViewOfSize:vf.size];
     // starts off-window at bottom
     vf.origin.y = wf.origin.y+wf.size.height;
-    // bring into my view's coordinates
-    vf = [self.detailTableView.superview convertRect:vf fromView:detailTableView.window];
+    // view to add input view to
+//    UIView *viewToAddInputView = self.detailTableView.superview;
+    UIView *viewToAddInputView = self.parentViewController.view;
+    // bring into coordinates of view where it is being added
+    vf = [viewToAddInputView convertRect:vf fromView:detailTableView.window];
     // slide up from below like keyboard
     if (aAnimated) {
       // add in off-window position
       customInputView.frame = vf;
-      [detailTableView.superview addSubview:customInputView];
+      [viewToAddInputView addSubview:customInputView];
       // animate in
       [UIView animateWithDuration:0.25 animations:^{
         CGRect avf = vf;
@@ -1773,8 +1778,19 @@ static NSInteger numObjs = 0;
       // add in final position
       vf.origin.y -= vf.size.height; // calc final position
       customInputView.frame = vf;
-      [detailTableView.superview addSubview:customInputView];
+      [viewToAddInputView addSubview:customInputView];
     }
+  }
+}
+
+
+- (void)removeCustomInputView
+{
+  if (customInputView) {
+    // we had a custom input view (but not the keyboard)
+    [customInputView removeFromSuperview];
+    [customInputView release];
+    customInputView = nil;
   }
 }
 
@@ -1782,11 +1798,15 @@ static NSInteger numObjs = 0;
 - (void)presentCustomInputView:(UIView *)aCustomInputView animated:(BOOL)aAnimated
 {
   if (aCustomInputView!=customInputView) {
-    // dismiss keyboard
-//    [self defocusAllBut:nil];
     // save (and release old, if any)
-    [customInputView removeFromSuperview];
-    [customInputView release];
+    if (customInputView) {
+      [self removeCustomInputView];
+    }
+    else {
+      // we had no custom input view, but possibly the keyboard
+      // - dismiss it
+      [self.detailTableView endEditing:NO]; // not forced
+    }
     customInputView = [aCustomInputView retain];
     // present at bottom of current window
     if (hasAppeared) {

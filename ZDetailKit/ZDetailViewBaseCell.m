@@ -773,7 +773,7 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
 {
   [super layoutSubviews];
   // custom layout mechanism
-  if (self.detailViewCellStyle & ZDetailViewCellStyleFlagCustomLayout) {
+  if (YES /* self.detailViewCellStyle & ZDetailViewCellStyleFlagCustomLayout */) {
     #if LAYOUT_DEBUG
     // color views for debugging
     self.contentView.backgroundColor = [UIColor colorWithRed:0.847 green:1.000 blue:0.738 alpha:0.7];

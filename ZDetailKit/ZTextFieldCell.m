@@ -117,8 +117,8 @@
     // automatically decide if we should use inplace editing
     self.editInDetailView = self.multiline || (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad);
   }
-  if (!(self.detailViewCellStyle & ZDetailViewCellStyleFlagCustomLayout))
-    self.editInDetailView = YES; // cannot have inplace editing field without custom layout
+//  if (!(self.detailViewCellStyle & ZDetailViewCellStyleFlagCustomLayout))
+//    self.editInDetailView = YES; // cannot have inplace editing field without custom layout
   if (self.editInDetailView || !self.allowsEditing) {
     // display only or editing with detail view: value is shown in text label
     if (self.allowsEditing) {
