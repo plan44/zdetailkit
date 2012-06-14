@@ -122,18 +122,34 @@
 - (void)setActive:(BOOL)aActive
 {
   if (aActive!=active) {
-    if (active && target && keyPath) {
-      // connected before - remove KVO
-      [target removeObserver:self forKeyPath:keyPath];
+    if (active) {
+      if (target && keyPath) {
+        // connected before - remove KVO
+        [target removeObserver:self forKeyPath:keyPath];
+      }
+      if (valuePath) {
+        // also remove interna connection
+        [owner removeObserver:self forKeyPath:valuePath];      
+      }
     }
     active = aActive;
-    if (active && target && keyPath) {
-      // connected now - add KVO
-      [target addObserver:self
-        forKeyPath:keyPath
-        options:KVO_OPTIONS_FOR_CELL
-        context:NULL
-      ];
+    if (active) {
+      if (target && keyPath) {
+        // connected now - add KVO
+        [target addObserver:self
+          forKeyPath:keyPath
+          options:KVO_OPTIONS_FOR_CELL
+          context:NULL
+        ];
+      }
+      if (valuePath) {
+        // also establish internal connection
+        [owner addObserver:self
+          forKeyPath:valuePath
+          options:NSKeyValueObservingOptionNew
+          context:NULL
+        ];
+      }
     }    
   }
 }
@@ -277,18 +293,20 @@
 - (void)setValuePath:(NSString *)aValuePath
 {
   if (!samePropertyString(&aValuePath, valuePath)) {
-    if (valuePath) {
+    if (valuePath && active) {
       [owner removeObserver:self forKeyPath:valuePath];      
     }
     [valuePath release];
     valuePath = nil;
     if (aValuePath) {
       valuePath = [aValuePath retain];
-      [owner addObserver:self
-        forKeyPath:valuePath
-        options:NSKeyValueObservingOptionNew
-        context:NULL
-      ];
+      if (active) {
+        [owner addObserver:self
+          forKeyPath:valuePath
+          options:NSKeyValueObservingOptionNew
+          context:NULL
+        ];
+      }
     }
     [self loadValue]; // if active, this will load the value into the new valuePath
   }
