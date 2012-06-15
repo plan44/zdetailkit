@@ -102,8 +102,8 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 
 // input views (keyboard-alike, for example date chooser)
 @property (readonly, nonatomic) UIView *customInputView;
-- (void)presentCustomInputView:(UIView *)aCustomInputView animated:(BOOL)aAnimated;
-- (void)dismissCustomInputViewAnimated:(BOOL)aAnimated;
+- (void)requireCustomInputView:(UIView *)aCustomInputView;
+- (void)releaseCustomInputView:(UIView *)aNilOrCustomInputView;
 
 // controller-level (rather than cell-level) value connectors
 // - register connectors (usually in the subclass' internalInit)

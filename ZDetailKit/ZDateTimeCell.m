@@ -189,7 +189,7 @@
     [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
     [self.datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
     // present it (if not already presented)
-    [dvc presentCustomInputView:self.datePicker animated:YES];
+    [dvc requireCustomInputView:self.datePicker];
     [self startedEditing];
     pickerInstalling = NO;
     // make sure picker has current data
@@ -208,7 +208,7 @@
   if (self.focusedEditing && !pickerInstalling) {
     if ([self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
       ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
-      [dvc dismissCustomInputViewAnimated:YES];
+      [dvc releaseCustomInputView:datePicker];
     }
     [datePicker release];
     datePicker = nil;

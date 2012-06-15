@@ -169,6 +169,8 @@
   // protection flag agains dismissing more than once
   BOOL dismissed; // set when view has been completely and successfully dismissed
   BOOL dismissing; // dismissing in process, but save exception could block it
+  // number of cells that have requested but not yet released the current input view
+  NSInteger customInputViewUsers;
   // set if editor is visible (has appeared)
   BOOL hasAppeared;
   // set if editor was dismissed with cancel
@@ -239,6 +241,7 @@
   modalViewWrapper = nil;
   // no custom input view
   customInputView = nil;
+  customInputViewUsers = 0;
   // kbd control
   topOfInputView = -1;
   inputViewSize = CGSizeZero;
@@ -942,14 +945,15 @@ static NSInteger numObjs = 0;
         [self pushViewControllerForDetail:editController animated:YES];
       }
       else {
-        // ask cell to begin in-cell editing
+        // ask cell to begin in-cell editing (and claim focus!)
         handled = [dvc beginEditing];
       }
-      if (!handled) {
-        #warning "%%% works kind of, BUT ITS NOT A REAL SOLUTION TO NOT HAVE OTHER CELLS PROPERLY DEFOCUSED!"
-        // only if not started editing, remove focus
-        [self defocusAllBut:aCell]; // defocus all other cells
-      }
+//      if (!handled) {
+//        #warning "%%% works kind of, BUT ITS NOT A REAL SOLUTION TO NOT HAVE OTHER CELLS PROPERLY DEFOCUSED!"
+//        // only if not started editing, remove focus
+//        [self defocusAllBut:aCell]; // defocus all other cells
+//      }
+      [self defocusAllBut:aCell]; // defocus all other cells
     }
   }
 }
@@ -1612,7 +1616,7 @@ static NSInteger numObjs = 0;
   if (!disappearsUnderPushed) {
     hasAppeared = NO;
     // close custom input view in case we have any
-    [self dismissCustomInputViewAnimated:NO];
+    [self removeCustomInputViewAnimated:NO];
     // inform parent
     if (self.parentDetailViewController) {
       [self.parentDetailViewController childDetailEditingDoneWithCancel:cancelled];
@@ -1722,7 +1726,7 @@ static NSInteger numObjs = 0;
 - (void)keyboardWillShow:(NSNotification *)aNotification
 {
   // dismiss other input view that might be present
-  [self dismissCustomInputViewAnimated:YES];
+  [self removeCustomInputViewAnimated:YES];
   // get info about keyboard and window (received in screen coordinates)
   // - keyboard frame
   CGRect kf = [[[aNotification userInfo] valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue]; // keyboard frame in windows coords
@@ -1785,47 +1789,12 @@ static NSInteger numObjs = 0;
 }
 
 
-- (void)removeCustomInputView
+- (void)removeCustomInputViewAnimated:(BOOL)aAnimated
 {
   if (customInputView) {
-    // we had a custom input view (but not the keyboard)
-    [customInputView removeFromSuperview];
-    [customInputView release];
-    customInputView = nil;
-  }
-}
-
-
-- (void)presentCustomInputView:(UIView *)aCustomInputView animated:(BOOL)aAnimated
-{
-  if (aCustomInputView!=customInputView) {
-    // save (and release old, if any)
-    if (customInputView) {
-      [self removeCustomInputView];
-    }
-    else {
-      // we had no custom input view, but possibly the keyboard
-      // - dismiss it
-      [self.detailTableView endEditing:NO]; // not forced
-    }
-    customInputView = [aCustomInputView retain];
-    // present at bottom of current window
-    if (hasAppeared) {
-      // already appeared - do it now
-      [self showCustomInputViewAnimated:aAnimated];
-    }
-  }
-}
-
-
-- (void)dismissCustomInputViewAnimated:(BOOL)aAnimated
-{
-  // slide down to disappear
-  if (customInputView) {
-    // have table re-adjust to no input view shown
-    [self releaseRoomForInputView];
-    // remove it
     if (aAnimated) {
+      // have table re-adjust to no input view shown
+      [self releaseRoomForInputView];
       // slide out
       [UIView animateWithDuration:0.25 animations:^{
         CGRect avf = customInputView.frame;
@@ -1845,6 +1814,8 @@ static NSInteger numObjs = 0;
     // forget
     [customInputView release];
     customInputView = nil;
+    customInputView = nil;
+    customInputViewUsers = 0;
     // finally, always remove the extra footer
     if (detailTableView) {
       detailTableView.tableFooterView = nil;
@@ -1852,6 +1823,47 @@ static NSInteger numObjs = 0;
   }
 }
 
+
+- (void)requireCustomInputView:(UIView *)aCustomInputView
+{
+  if (aCustomInputView==customInputView) {
+    // same input view as before, increase usage count only
+    customInputViewUsers++;
+  }
+  else {
+    // different input view
+    if (customInputView) {
+      [self removeCustomInputViewAnimated:YES];
+    }
+    else {
+      // we had no custom input view, but possibly the keyboard
+      // - dismiss it
+      [self.detailTableView endEditing:NO]; // not forced
+    }
+    customInputView = [aCustomInputView retain];
+    customInputViewUsers = 1;
+    // present at bottom of current window
+    if (hasAppeared) {
+      // already appeared - do it now
+      [self showCustomInputViewAnimated:YES];
+    }    
+  }
+}
+
+
+- (void)releaseCustomInputView:(UIView *)aNilOrCustomInputView
+{
+  // if view passed, check if it's really ours - protection against late defocusing
+  if (!customInputView || (aNilOrCustomInputView && aNilOrCustomInputView!=customInputView))
+    return; // no current input view, or view has nothing todo with caller's
+  // one user less
+  if (customInputViewUsers>0)
+    customInputViewUsers--;
+  if (customInputViewUsers==0) {
+    // last user gone - remove it
+    [self removeCustomInputViewAnimated:YES];
+  }
+}
 
 
 
