@@ -946,6 +946,7 @@ static NSInteger numObjs = 0;
         handled = [dvc beginEditing];
       }
       if (!handled) {
+        #warning "%%% works kind of, BUT ITS NOT A REAL SOLUTION TO NOT HAVE OTHER CELLS PROPERLY DEFOCUSED!"
         // only if not started editing, remove focus
         [self defocusAllBut:aCell]; // defocus all other cells
       }

@@ -18,11 +18,13 @@
   NSDateFormatter *formatter;
   BOOL pickerIsUpdating;
   BOOL pickerInstalling;
+  NSTimeInterval intervalFromMasterDate;
 }
 @property (retain, nonatomic) NSDate *startDate;
 @property (retain, nonatomic) NSDate *endDate;
 @property (assign, nonatomic) BOOL dateOnly;
 @property (retain, nonatomic) NSDate *suggestedDate;
+@property (retain, nonatomic) NSDate *masterDate;
 @property (retain, nonatomic) NSDate *pickerDate;
 @property (readonly, nonatomic) UIDatePicker *datePicker;
 
@@ -34,16 +36,18 @@
 @implementation ZDateTimeCell
 
 @synthesize startDateConnector, endDateConnector, dateOnlyConnector;
-@synthesize suggestedDateConnector, suggestionOffset;
+@synthesize suggestedDateConnector, suggestionOffset, masterDateConnector;
 @synthesize editInDetailView;
 
 @synthesize dateOnlyInUTC;
+@synthesize moveEndWithStart;
 
 
 - (id)initWithStyle:(ZDetailViewCellStyle)aStyle reuseIdentifier:(NSString *)aReuseIdentifier
 {
   if ((self = [super initWithStyle:aStyle reuseIdentifier:aReuseIdentifier])) {
     dateOnlyInUTC = YES; // date-only values are represented as UTC 0:00
+    moveEndWithStart = YES; // move end date when start date is modified
     suggestionOffset = 0; // no offset
     editInDetailView = NO; // default to in-place editing
     pickerIsUpdating = NO;
@@ -51,18 +55,21 @@
     // formatter
     formatter = [[NSDateFormatter alloc] init];
     // valueConnectors
-    startDateConnector =  [self registerConnector:
+    startDateConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"startDate" owner:self]
     ];
-    endDateConnector =  [self registerConnector:
+    endDateConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"endDate" owner:self]
     ];
-    dateOnlyConnector =  [self registerConnector:
+    dateOnlyConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"dateOnly" owner:self]
     ];
     dateOnlyConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to date+time mode
-    suggestedDateConnector =  [self registerConnector:
+    suggestedDateConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"suggestedDate" owner:self]
+    ];
+    masterDateConnector = [self registerConnector:
+      [ZDetailValueConnector connectorWithValuePath:@"masterDate" owner:self]
     ];
     if (aStyle & ZDetailViewCellStyleFlagAutoStyle) {
       // set recommended standard layout for dates
@@ -286,7 +293,7 @@
 
 #pragma mark - internal data management
 
-@synthesize startDate, endDate, dateOnly, suggestedDate;
+@synthesize startDate, endDate, dateOnly, suggestedDate, masterDate;
 
 
 - (void)setStartDate:(NSDate *)aStartDate
@@ -324,6 +331,23 @@
     [suggestedDate release];
     suggestedDate = [aSuggestedDate retain];
   }  
+}
+
+
+
+- (void)setMasterDate:(NSDate *)aMasterDate
+{
+  if (!sameDate(aMasterDate, masterDate)) {
+    if (startDate && masterDate && aMasterDate) {
+      // we have a start date, and we already had a master date before, and have a new one now -> update start
+      intervalFromMasterDate = [startDate timeIntervalSinceDate:masterDate];
+      // update start date, same interval relative to new master date
+      self.startDate = [aMasterDate dateByAddingTimeInterval:intervalFromMasterDate];
+    }
+    [masterDate release];
+    masterDate = [aMasterDate retain];
+    [self updateData];
+  }
 }
 
 
@@ -377,8 +401,10 @@
 
 #pragma mark - detail editor
 
+static id _sd = nil;
 static id _sd_dateOnlyConnector = nil; // %%%
 static id _adsw_valueConnector = nil;
+static id _sd_startDateConnector = nil;
 
 - (UIViewController *)editorForTapInAccessory:(BOOL)aInAccessory
 {
@@ -393,6 +419,7 @@ static id _adsw_valueConnector = nil;
       [c startSection];
       // Start date
       ZDateTimeCell *sd = [c detailCell:[ZDateTimeCell class]];
+      _sd = sd; // %%%
       sd.labelText = self.startDateLabelText;
       sd.descriptionLabel.numberOfLines = 1;
       sd.valueLabel.numberOfLines = 1;
@@ -414,6 +441,14 @@ static id _adsw_valueConnector = nil;
         [ed.startDateConnector connectTo:self.endDateConnector keyPath:@"internalValue"];
         ed.startDateConnector.autoSaveValue = NO;
         ed.keepSelectedAfterTap = YES;
+        // moving end with start
+        _sd_startDateConnector = sd.startDateConnector; // %%%
+        if (moveEndWithStart) {
+          // link to start date as master
+          sd.startDateConnector.autoValidate = YES; // immediately validate to update valueForExternal
+          [ed.masterDateConnector connectTo:sd.startDateConnector keyPath:@"valueForExternal"];
+        }
+        // preventing end befor start
         [ed.startDateConnector setValidationHandler:^(ZDetailValueConnector *aConnector, id aValue, NSError **aErrorP) {
           // %%% add end-after-start verification here
           return YES; // ok

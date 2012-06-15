@@ -22,7 +22,9 @@
 
 @property (assign,nonatomic) BOOL editInDetailView; // just show the value, edit it in detail view
 @property (readonly,nonatomic) ZDetailValueConnector *suggestedDateConnector;
+@property (readonly,nonatomic) ZDetailValueConnector *masterDateConnector; // if this changes, my (start)date must keep same time interval to it
 @property (assign,nonatomic) NSTimeInterval *suggestionOffset;
 @property (assign,nonatomic) BOOL dateOnlyInUTC;
+@property (assign,nonatomic) BOOL moveEndWithStart; // used to make start the master date of end in detail editor
 
 @end
