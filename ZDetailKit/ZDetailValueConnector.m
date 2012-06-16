@@ -53,6 +53,7 @@
     active = NO; // not yet active
     target = nil;
     keyPath = nil;
+    notNil = NO; // nil/null (= no value) allowed
     readonly = NO; // can save
     nilNulValue = nil; // no internal replacement value for nil/nul
     saveEmptyAsNil = NO;

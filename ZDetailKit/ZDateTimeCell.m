@@ -36,11 +36,11 @@
 @implementation ZDateTimeCell
 
 @synthesize startDateConnector, endDateConnector, dateOnlyConnector;
-@synthesize suggestedDateConnector, suggestionOffset, masterDateConnector;
+@synthesize suggestedDateConnector, masterDateConnector;
 @synthesize editInDetailView;
 
-@synthesize dateOnlyInUTC;
-@synthesize moveEndWithStart;
+@synthesize dateOnlyInUTC, moveEndWithStart;
+@synthesize autoEnterDefaultDate, suggestedDuration, minuteInterval;
 
 
 - (id)initWithStyle:(ZDetailViewCellStyle)aStyle reuseIdentifier:(NSString *)aReuseIdentifier
@@ -48,13 +48,24 @@
   if ((self = [super initWithStyle:aStyle reuseIdentifier:aReuseIdentifier])) {
     dateOnlyInUTC = YES; // date-only values are represented as UTC 0:00
     moveEndWithStart = YES; // move end date when start date is modified
-    suggestionOffset = 0; // no offset
+    autoEnterDefaultDate = NO;
     editInDetailView = NO; // default to in-place editing
     pickerIsUpdating = NO;
     pickerInstalling = NO;
+    suggestedDuration = 60*60; // 1 hour
+    minuteInterval = 1; // 1 minute by default
     // formatter
     formatter = [[NSDateFormatter alloc] init];
     // valueConnectors
+    // - first those that values might depend
+    dateOnlyConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to date+time mode
+    suggestedDateConnector = [self registerConnector:
+      [ZDetailValueConnector connectorWithValuePath:@"suggestedDate" owner:self]
+    ];
+    masterDateConnector = [self registerConnector:
+      [ZDetailValueConnector connectorWithValuePath:@"masterDate" owner:self]
+    ];
+    // - now the values
     startDateConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"startDate" owner:self]
     ];
@@ -63,13 +74,6 @@
     ];
     dateOnlyConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"dateOnly" owner:self]
-    ];
-    dateOnlyConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to date+time mode
-    suggestedDateConnector = [self registerConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"suggestedDate" owner:self]
-    ];
-    masterDateConnector = [self registerConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"masterDate" owner:self]
     ];
     if (aStyle & ZDetailViewCellStyleFlagAutoStyle) {
       // set recommended standard layout for dates
@@ -188,6 +192,7 @@
     // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
     [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
     [self.datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
+    self.datePicker.minuteInterval = self.minuteInterval;
     // present it (if not already presented)
     [dvc requireCustomInputView:self.datePicker];
     [self startedEditing];
@@ -293,11 +298,44 @@
 
 #pragma mark - internal data management
 
-@synthesize startDate, endDate, dateOnly, suggestedDate, masterDate;
+@synthesize startDate, endDate, dateOnly, suggestedDate, masterDate, defaultDate;
+
+
+// default date when no date is set (for picker, or new editor)
+- (NSDate *)defaultDate
+{  
+  if (self.startDate)
+    return self.startDate; // what we already have
+  else if (self.suggestedDate)
+    return self.suggestedDate; // ...or explicit suggestion
+  else if (self.masterDate)
+    return self.masterDate; // ...or master date
+  else
+    return [NSDate date]; // ...or current time
+}
+
+
+- (NSDate *)defaultEndDate
+{
+  return [self.defaultDate dateByAddingTimeInterval:suggestedDuration];
+}
+
+
+
+- (void)setActive:(BOOL)aActive
+{
+  [super setActive:aActive];
+  // after everything activated, make sure data is updated (as it depends on all connectors)
+  [self updateData];
+}
 
 
 - (void)setStartDate:(NSDate *)aStartDate
 {
+  if (aStartDate==nil && self.autoEnterDefaultDate) {
+    aStartDate = self.defaultDate;
+    self.startDateConnector.unsavedChanges = YES;
+  }
   if (!sameDate(aStartDate, startDate)) {
     [startDate release];
     startDate = [aStartDate retain];
@@ -308,6 +346,10 @@
 
 - (void)setEndDate:(NSDate *)aEndDate
 {
+  if (aEndDate==nil && self.autoEnterDefaultDate) {
+    aEndDate = self.defaultEndDate;
+    self.endDateConnector.unsavedChanges = YES;
+  }
   if (!sameDate(aEndDate, endDate)) {
     [endDate release];
     endDate = [aEndDate retain];
@@ -352,6 +394,8 @@
 
 
 
+
+
 - (void)updateData
 {
   // prepare formatter
@@ -389,12 +433,7 @@
     else
       self.datePicker.datePickerMode = UIDatePickerModeDateAndTime;
     // set value
-    if (self.startDate)
-      self.pickerDate = self.startDate; // what we already have
-    else if (self.suggestedDate)
-      self.pickerDate = self.suggestedDate; // ...or suggestion
-    else
-      self.pickerDate = [NSDate date]; // ...or current time
+    self.pickerDate = self.defaultDate;
   }
 }
 
@@ -421,25 +460,31 @@ static id _sd_startDateConnector = nil;
       ZDateTimeCell *sd = [c detailCell:[ZDateTimeCell class]];
       _sd = sd; // %%%
       sd.labelText = self.startDateLabelText;
+      sd.minuteInterval = self.minuteInterval;
       sd.descriptionLabel.numberOfLines = 1;
       sd.valueLabel.numberOfLines = 1;
       sd.valueLabel.textAlignment = UITextAlignmentRight;
       sd.editInDetailView = NO;
       [sd.startDateConnector connectTo:self.startDateConnector keyPath:@"internalValue"];
+      [sd.suggestedDateConnector connectTo:self keyPath:@"defaultDate"];
       sd.startDateConnector.autoSaveValue = NO;
+      sd.autoEnterDefaultDate = YES;
       ZDateTimeCell *ed = nil;
       if (self.endDateConnector.connected) {
-        // keep selection on start/end only if we have two dates
-        sd.keepSelectedAfterTap = YES;
         // Optional end date
         ed = [c detailCell:[ZDateTimeCell class]];
         ed.labelText = self.endDateLabelText;
+        ed.minuteInterval = self.minuteInterval;
         ed.descriptionLabel.numberOfLines = 1;
         ed.valueLabel.numberOfLines = 1;
         ed.valueLabel.textAlignment = UITextAlignmentRight;
         ed.editInDetailView = NO;
         [ed.startDateConnector connectTo:self.endDateConnector keyPath:@"internalValue"];
+        [ed.suggestedDateConnector connectTo:self keyPath:@"defaultEndDate"];
         ed.startDateConnector.autoSaveValue = NO;
+        ed.autoEnterDefaultDate = YES;
+        // keep selection on start/end only if we have two dates
+        sd.keepSelectedAfterTap = YES;
         ed.keepSelectedAfterTap = YES;
         // moving end with start
         _sd_startDateConnector = sd.startDateConnector; // %%%

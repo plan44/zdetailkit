@@ -122,6 +122,7 @@
       fmt.timeStyle = NSDateFormatterMediumStyle;
       t.valueConnector.formatter = fmt;
       t.valueConnector.autoSaveValue = YES;
+      t.valueConnector.saveEmptyAsNil = YES;
     }
     /* inplace end date text editing cell */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
@@ -133,6 +134,7 @@
       fmt.timeStyle = NSDateFormatterMediumStyle;
       t.valueConnector.formatter = fmt;
       t.valueConnector.autoSaveValue = YES;
+      t.valueConnector.saveEmptyAsNil = YES;
     }
     /* switch cell switch control */ {
       ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
@@ -145,6 +147,7 @@
       d.startDateLabelText = @"Begins";
       d.endDateLabelText = @"Ends";
       d.dateOnlyLabelText = @"Allday";
+      d.minuteInterval = 5;
       d.descriptionLabel.numberOfLines = 2;
       d.valueLabel.numberOfLines = 2;
       d.editInDetailView = YES;

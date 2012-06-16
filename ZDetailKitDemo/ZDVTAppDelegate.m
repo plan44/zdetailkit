@@ -38,7 +38,7 @@
   [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
     @"test text", @"testText",
     [NSNumber numberWithDouble:42.42], @"testNumber",
-    [NSDate date], @"startDate",
+//    [NSDate date], @"startDate",
     nil
   ]];
 
