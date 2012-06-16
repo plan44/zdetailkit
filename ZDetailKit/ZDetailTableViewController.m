@@ -1796,14 +1796,16 @@ static NSInteger numObjs = 0;
       // have table re-adjust to no input view shown
       [self releaseRoomForInputView];
       // slide out
+      UIView *civ = [customInputView retain];
       [UIView animateWithDuration:0.25 animations:^{
-        CGRect avf = customInputView.frame;
+        CGRect avf = civ.frame;
         avf.origin.y += avf.size.height;
-        customInputView.frame = avf;
+        civ.frame = avf;
       }
       completion:^(BOOL finished) {
         if (finished) {
-          [customInputView removeFromSuperview];
+          [civ removeFromSuperview];
+          [civ release];
         }
       }];
     }
@@ -1813,7 +1815,6 @@ static NSInteger numObjs = 0;
     }
     // forget
     [customInputView release];
-    customInputView = nil;
     customInputView = nil;
     customInputViewUsers = 0;
     // finally, always remove the extra footer
