@@ -501,9 +501,6 @@ static NSInteger numObjs = 0;
     dvc.cellOwner = self; // weak link to owner
     [dvc setDisplayMode:self.displayMode animated:NO]; // same mode as entire table has
   }
-  if ([aCell respondsToSelector:@selector(setStandardCellHeight:)]) {
-    [(id)aCell setStandardCellHeight:self.detailTableView.rowHeight];
-  }
 }
 
 

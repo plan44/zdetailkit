@@ -66,6 +66,8 @@ typedef enum {
 // this protocol is for owners of ZDetailViewCell conformant table cells
 @protocol ZDetailCellOwner <NSObject>
 @optional
+// returns the tableview which displays the cell
+- (UITableView *)detailTableView;
 // Called by cells when they themselves detect being tapped
 - (void)cellTapped:(UITableViewCell *)aCell inAccessory:(BOOL)aInAccessory;
 // needed by some editor cells to block scrolling during certain periods as otherwise

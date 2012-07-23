@@ -69,7 +69,6 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 - (void)loadValue; // load (revert) the value from model in container/keyPath. DO NOT DERIVE!
 - (BOOL)validatesWithErrors:(NSMutableArray **)aErrorsP; // convenience method to collect possible validation errors from connectors
 
-
 // initialisation
 + (id)connectorWithValuePath:(NSString *)aValuePath owner:(id)aOwner;
 - (id)initWithValuePath:(NSString *)aValuePath owner:(id)aOwner;

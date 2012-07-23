@@ -29,11 +29,23 @@
 		ED12E78F15824B8200DE3ED3 /* ZTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E78115824B8200DE3ED3 /* ZTextFieldCell.m */; };
 		ED12E79015824B8200DE3ED3 /* ZTextViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E78315824B8200DE3ED3 /* ZTextViewCell.m */; };
 		ED12E79415824D5400DE3ED3 /* ZTextExpanderSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */; };
-		ED12E79A15824D9600DE3ED3 /* ZString_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79815824D9600DE3ED3 /* ZString_utils.m */; };
-		ED12E79E15824DE400DE3ED3 /* ZOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79D15824DE400DE3ED3 /* ZOrientation.m */; };
 		ED12E7A015829C0700DE3ED3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED12E79F15829C0700DE3ED3 /* Foundation.framework */; };
+		ED1F705615BD50C10046CFBC /* ZColorChooser.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F705515BD50C10046CFBC /* ZColorChooser.m */; };
+		ED1F705E15BD51D30046CFBC /* ZCCH_clrBtn.png in Resources */ = {isa = PBXBuildFile; fileRef = ED1F705915BD51D30046CFBC /* ZCCH_clrBtn.png */; };
+		ED1F705F15BD51D30046CFBC /* ZCCH_clrBtn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = ED1F705A15BD51D30046CFBC /* ZCCH_clrBtn@2x.png */; };
+		ED1F706015BD51D30046CFBC /* ZCCH_hue.png in Resources */ = {isa = PBXBuildFile; fileRef = ED1F705B15BD51D30046CFBC /* ZCCH_hue.png */; };
+		ED1F706115BD51D30046CFBC /* ZCCH_noColor.png in Resources */ = {isa = PBXBuildFile; fileRef = ED1F705C15BD51D30046CFBC /* ZCCH_noColor.png */; };
+		ED1F706215BD51D30046CFBC /* ZCCH_noColor@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = ED1F705D15BD51D30046CFBC /* ZCCH_noColor@2x.png */; };
+		ED1F706515BD52500046CFBC /* ZColorChooserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F706415BD52500046CFBC /* ZColorChooserCell.m */; };
+		ED1F707F15BD951B0046CFBC /* UIColor+ZColorRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F707515BD951B0046CFBC /* UIColor+ZColorRepresentation.m */; };
+		ED1F708015BD951B0046CFBC /* ZDate_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F707715BD951B0046CFBC /* ZDate_utils.m */; };
+		ED1F708115BD951B0046CFBC /* ZOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F707A15BD951B0046CFBC /* ZOrientation.m */; };
+		ED1F708215BD951B0046CFBC /* ZString_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F707C15BD951B0046CFBC /* ZString_utils.m */; };
+		ED1F708315BD951B0046CFBC /* ZStringToUIColorTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F707E15BD951B0046CFBC /* ZStringToUIColorTransformer.m */; };
+		ED1F708615BD9EA20046CFBC /* ZIntToUIColorTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708515BD9EA20046CFBC /* ZIntToUIColorTransformer.m */; };
+		ED1F708915BDA37F0046CFBC /* ZGeometry_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708815BDA37F0046CFBC /* ZGeometry_utils.m */; };
+		ED1F708C15BDA4100046CFBC /* ZColor_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708B15BDA4100046CFBC /* ZColor_utils.m */; };
 		ED49A99B1585F623007FEBF0 /* ZDateTimeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */; };
-		ED49A99E15860134007FEBF0 /* ZDate_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED49A99D15860134007FEBF0 /* ZDate_utils.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,19 +88,38 @@
 		ED12E78115824B8200DE3ED3 /* ZTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTextFieldCell.m; sourceTree = "<group>"; };
 		ED12E78215824B8200DE3ED3 /* ZTextViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTextViewCell.h; sourceTree = "<group>"; };
 		ED12E78315824B8200DE3ED3 /* ZTextViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTextViewCell.m; sourceTree = "<group>"; };
-		ED12E79115824D2900DE3ED3 /* ZDBGMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDBGMacros.h; sourceTree = "<group>"; };
 		ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTextExpanderSupport.h; sourceTree = "<group>"; };
 		ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTextExpanderSupport.m; sourceTree = "<group>"; };
-		ED12E79715824D9600DE3ED3 /* ZString_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZString_utils.h; sourceTree = "<group>"; };
-		ED12E79815824D9600DE3ED3 /* ZString_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZString_utils.m; sourceTree = "<group>"; };
 		ED12E79B15824DC700DE3ED3 /* ZTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTextFieldCell.h; sourceTree = "<group>"; };
-		ED12E79C15824DE400DE3ED3 /* ZOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZOrientation.h; sourceTree = "<group>"; };
-		ED12E79D15824DE400DE3ED3 /* ZOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZOrientation.m; sourceTree = "<group>"; };
 		ED12E79F15829C0700DE3ED3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		ED1F705415BD50C10046CFBC /* ZColorChooser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZColorChooser.h; sourceTree = "<group>"; };
+		ED1F705515BD50C10046CFBC /* ZColorChooser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZColorChooser.m; sourceTree = "<group>"; };
+		ED1F705915BD51D30046CFBC /* ZCCH_clrBtn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZCCH_clrBtn.png; sourceTree = "<group>"; };
+		ED1F705A15BD51D30046CFBC /* ZCCH_clrBtn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ZCCH_clrBtn@2x.png"; sourceTree = "<group>"; };
+		ED1F705B15BD51D30046CFBC /* ZCCH_hue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZCCH_hue.png; sourceTree = "<group>"; };
+		ED1F705C15BD51D30046CFBC /* ZCCH_noColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZCCH_noColor.png; sourceTree = "<group>"; };
+		ED1F705D15BD51D30046CFBC /* ZCCH_noColor@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ZCCH_noColor@2x.png"; sourceTree = "<group>"; };
+		ED1F706315BD52500046CFBC /* ZColorChooserCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZColorChooserCell.h; sourceTree = "<group>"; };
+		ED1F706415BD52500046CFBC /* ZColorChooserCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZColorChooserCell.m; sourceTree = "<group>"; };
+		ED1F707415BD951B0046CFBC /* UIColor+ZColorRepresentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+ZColorRepresentation.h"; sourceTree = "<group>"; };
+		ED1F707515BD951B0046CFBC /* UIColor+ZColorRepresentation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ZColorRepresentation.m"; sourceTree = "<group>"; };
+		ED1F707615BD951B0046CFBC /* ZDate_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDate_utils.h; sourceTree = "<group>"; };
+		ED1F707715BD951B0046CFBC /* ZDate_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDate_utils.m; sourceTree = "<group>"; };
+		ED1F707815BD951B0046CFBC /* ZDBGMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDBGMacros.h; sourceTree = "<group>"; };
+		ED1F707915BD951B0046CFBC /* ZOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZOrientation.h; sourceTree = "<group>"; };
+		ED1F707A15BD951B0046CFBC /* ZOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZOrientation.m; sourceTree = "<group>"; };
+		ED1F707B15BD951B0046CFBC /* ZString_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZString_utils.h; sourceTree = "<group>"; };
+		ED1F707C15BD951B0046CFBC /* ZString_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZString_utils.m; sourceTree = "<group>"; };
+		ED1F707D15BD951B0046CFBC /* ZStringToUIColorTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZStringToUIColorTransformer.h; sourceTree = "<group>"; };
+		ED1F707E15BD951B0046CFBC /* ZStringToUIColorTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZStringToUIColorTransformer.m; sourceTree = "<group>"; };
+		ED1F708415BD9EA20046CFBC /* ZIntToUIColorTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZIntToUIColorTransformer.h; sourceTree = "<group>"; };
+		ED1F708515BD9EA20046CFBC /* ZIntToUIColorTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZIntToUIColorTransformer.m; sourceTree = "<group>"; };
+		ED1F708715BDA37F0046CFBC /* ZGeometry_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZGeometry_utils.h; sourceTree = "<group>"; };
+		ED1F708815BDA37F0046CFBC /* ZGeometry_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZGeometry_utils.m; sourceTree = "<group>"; };
+		ED1F708A15BDA4100046CFBC /* ZColor_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZColor_utils.h; sourceTree = "<group>"; };
+		ED1F708B15BDA4100046CFBC /* ZColor_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZColor_utils.m; sourceTree = "<group>"; };
 		ED49A9991585F623007FEBF0 /* ZDateTimeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDateTimeCell.h; sourceTree = "<group>"; };
 		ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDateTimeCell.m; sourceTree = "<group>"; };
-		ED49A99C15860134007FEBF0 /* ZDate_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDate_utils.h; sourceTree = "<group>"; };
-		ED49A99D15860134007FEBF0 /* ZDate_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDate_utils.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +140,7 @@
 		ED12E72B1582491000DE3ED3 = {
 			isa = PBXGroup;
 			children = (
+				ED1F707315BD951B0046CFBC /* ZUtils */,
 				ED12E76915824B8200DE3ED3 /* ZDetailKit */,
 				ED12E7421582494C00DE3ED3 /* ZDetailKitDemo */,
 				ED12E73B1582494C00DE3ED3 /* Frameworks */,
@@ -162,13 +194,6 @@
 		ED12E76915824B8200DE3ED3 /* ZDetailKit */ = {
 			isa = PBXGroup;
 			children = (
-				ED12E79115824D2900DE3ED3 /* ZDBGMacros.h */,
-				ED12E79715824D9600DE3ED3 /* ZString_utils.h */,
-				ED12E79815824D9600DE3ED3 /* ZString_utils.m */,
-				ED49A99C15860134007FEBF0 /* ZDate_utils.h */,
-				ED49A99D15860134007FEBF0 /* ZDate_utils.m */,
-				ED12E79C15824DE400DE3ED3 /* ZOrientation.h */,
-				ED12E79D15824DE400DE3ED3 /* ZOrientation.m */,
 				ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */,
 				ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */,
 				ED12E77415824B8200DE3ED3 /* ZDetailEditing.h */,
@@ -200,8 +225,49 @@
 				ED12E76D15824B8200DE3ED3 /* ZChoiceListCell.m */,
 				ED12E76E15824B8200DE3ED3 /* ZChoiceListController.h */,
 				ED12E76F15824B8200DE3ED3 /* ZChoiceListController.m */,
+				ED1F706315BD52500046CFBC /* ZColorChooserCell.h */,
+				ED1F706415BD52500046CFBC /* ZColorChooserCell.m */,
+				ED1F705415BD50C10046CFBC /* ZColorChooser.h */,
+				ED1F705515BD50C10046CFBC /* ZColorChooser.m */,
+				ED1F705815BD51D30046CFBC /* ZColorChooser */,
 			);
 			path = ZDetailKit;
+			sourceTree = "<group>";
+		};
+		ED1F705815BD51D30046CFBC /* ZColorChooser */ = {
+			isa = PBXGroup;
+			children = (
+				ED1F705915BD51D30046CFBC /* ZCCH_clrBtn.png */,
+				ED1F705A15BD51D30046CFBC /* ZCCH_clrBtn@2x.png */,
+				ED1F705B15BD51D30046CFBC /* ZCCH_hue.png */,
+				ED1F705C15BD51D30046CFBC /* ZCCH_noColor.png */,
+				ED1F705D15BD51D30046CFBC /* ZCCH_noColor@2x.png */,
+			);
+			path = ZColorChooser;
+			sourceTree = "<group>";
+		};
+		ED1F707315BD951B0046CFBC /* ZUtils */ = {
+			isa = PBXGroup;
+			children = (
+				ED1F707415BD951B0046CFBC /* UIColor+ZColorRepresentation.h */,
+				ED1F707515BD951B0046CFBC /* UIColor+ZColorRepresentation.m */,
+				ED1F708415BD9EA20046CFBC /* ZIntToUIColorTransformer.h */,
+				ED1F708515BD9EA20046CFBC /* ZIntToUIColorTransformer.m */,
+				ED1F707D15BD951B0046CFBC /* ZStringToUIColorTransformer.h */,
+				ED1F707E15BD951B0046CFBC /* ZStringToUIColorTransformer.m */,
+				ED1F707615BD951B0046CFBC /* ZDate_utils.h */,
+				ED1F707715BD951B0046CFBC /* ZDate_utils.m */,
+				ED1F707815BD951B0046CFBC /* ZDBGMacros.h */,
+				ED1F707915BD951B0046CFBC /* ZOrientation.h */,
+				ED1F707A15BD951B0046CFBC /* ZOrientation.m */,
+				ED1F707B15BD951B0046CFBC /* ZString_utils.h */,
+				ED1F707C15BD951B0046CFBC /* ZString_utils.m */,
+				ED1F708715BDA37F0046CFBC /* ZGeometry_utils.h */,
+				ED1F708815BDA37F0046CFBC /* ZGeometry_utils.m */,
+				ED1F708A15BDA4100046CFBC /* ZColor_utils.h */,
+				ED1F708B15BDA4100046CFBC /* ZColor_utils.m */,
+			);
+			path = ZUtils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,6 +323,11 @@
 			files = (
 				ED12E75D158249BB00DE3ED3 /* InfoPlist.strings in Resources */,
 				ED12E75E158249BB00DE3ED3 /* ZDVTViewController.xib in Resources */,
+				ED1F705E15BD51D30046CFBC /* ZCCH_clrBtn.png in Resources */,
+				ED1F705F15BD51D30046CFBC /* ZCCH_clrBtn@2x.png in Resources */,
+				ED1F706015BD51D30046CFBC /* ZCCH_hue.png in Resources */,
+				ED1F706115BD51D30046CFBC /* ZCCH_noColor.png in Resources */,
+				ED1F706215BD51D30046CFBC /* ZCCH_noColor@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,10 +355,17 @@
 				ED12E78F15824B8200DE3ED3 /* ZTextFieldCell.m in Sources */,
 				ED12E79015824B8200DE3ED3 /* ZTextViewCell.m in Sources */,
 				ED12E79415824D5400DE3ED3 /* ZTextExpanderSupport.m in Sources */,
-				ED12E79A15824D9600DE3ED3 /* ZString_utils.m in Sources */,
-				ED12E79E15824DE400DE3ED3 /* ZOrientation.m in Sources */,
 				ED49A99B1585F623007FEBF0 /* ZDateTimeCell.m in Sources */,
-				ED49A99E15860134007FEBF0 /* ZDate_utils.m in Sources */,
+				ED1F705615BD50C10046CFBC /* ZColorChooser.m in Sources */,
+				ED1F706515BD52500046CFBC /* ZColorChooserCell.m in Sources */,
+				ED1F707F15BD951B0046CFBC /* UIColor+ZColorRepresentation.m in Sources */,
+				ED1F708015BD951B0046CFBC /* ZDate_utils.m in Sources */,
+				ED1F708115BD951B0046CFBC /* ZOrientation.m in Sources */,
+				ED1F708215BD951B0046CFBC /* ZString_utils.m in Sources */,
+				ED1F708315BD951B0046CFBC /* ZStringToUIColorTransformer.m in Sources */,
+				ED1F708615BD9EA20046CFBC /* ZIntToUIColorTransformer.m in Sources */,
+				ED1F708915BDA37F0046CFBC /* ZGeometry_utils.m in Sources */,
+				ED1F708C15BDA4100046CFBC /* ZColor_utils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

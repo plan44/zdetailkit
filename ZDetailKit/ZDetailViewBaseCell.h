@@ -65,7 +65,7 @@ typedef enum {
 @property (assign, nonatomic) ZDetailDisplayMode neededModes;
 
 // geometry info
-@property (assign, nonatomic) CGFloat standardCellHeight; // standard cell height (subclasses might implement dynamic resizing, so actual cellHeight might be different)
+@property (assign, nonatomic) CGFloat standardCellHeight; // standard cell height (defaults to table's rowHeight)
 @property (readonly, nonatomic) CGFloat cellHeight; // cell height, equal to standardCellHeight in base class, can vary for subclasses which dynamically resize cells
 @property (assign, nonatomic) CGFloat valueCellShare; // share of the entire cell that is used to represent value in (0..1)
 @property (assign, nonatomic) CGFloat contentIndent; // content indent in pixels

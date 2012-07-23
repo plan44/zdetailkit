@@ -46,7 +46,7 @@
   valueLabel = nil;
   descriptionLabel = nil;
   // geometry params
-  standardCellHeight = 44; // use iOS default
+  standardCellHeight = -1; // undefined, owning view controllers tableview rowheight will be used
   // - share of value cell relative to entire cell depends on style
   if (basicCellStyle==UITableViewCellStyleDefault)
     valueCellShare = 1;
@@ -734,6 +734,19 @@ static NSInteger numObjs = 0;
 @synthesize standardCellHeight;
 
 
+- (CGFloat)standardCellHeight
+{
+  if (standardCellHeight<=0) {
+    // not set, try initializing with rowheight of owning tableview
+    if (self.cellOwner && [self.cellOwner respondsToSelector:@selector(detailTableView)])
+      standardCellHeight = self.cellOwner.detailTableView.rowHeight;
+    else
+      standardCellHeight = 44; // iOS default
+  }
+  return standardCellHeight;
+}
+
+
 - (CGFloat)cellHeight
 {
   // in base class, just return standard height
@@ -747,8 +760,10 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
 {
   // Horizontally
   // - width
-  if (adjust & ZDetailCellItemAdjustFillWidth)
+  if (adjust & ZDetailCellItemAdjustFillWidth) {
     f.size.width = r.size.width; // set width
+    f.origin.x = r.origin.x; // and origin
+  }
   // - X position
   if (adjust & ZDetailCellItemAdjustLeft)
     f.origin.x = r.origin.x; // left adjusted
@@ -756,8 +771,10 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
     f.origin.x = r.origin.x+r.size.width-f.size.width; // right adjusted
   // Vertically
   // - height
-  if (adjust & ZDetailCellItemAdjustFillHeight)
-    f.size.height = r.size.height;
+  if (adjust & ZDetailCellItemAdjustFillHeight) {
+    f.size.height = r.size.height; // set height
+    f.origin.y = r.origin.y; // and origin
+  }
   // - Y position
   if (adjust & ZDetailCellItemAdjustTop)
     f.origin.y = r.origin.y; // top
@@ -887,7 +904,7 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
         room = valueStartXinContent - (df.origin.x+df.size.width+self.labelValueMargin);
         if (valueShown && room>0 && (self.valueViewAdjustment & ZDetailCellItemAdjustExtend)) {
           vf.origin.x -= room; // move left by what description does not use 
-          vf.size.width += room; // extend by what value does not use 
+          vf.size.width += room; // extend by what description does not use 
         }
       }
       // assign hidden and frames

@@ -19,6 +19,8 @@
 #import "ZSegmentChoicesCell.h"
 #import "ZChoiceListCell.h"
 #import "ZDateTimeCell.h"
+#import "ZColorChooserCell.h"
+#import "ZIntToUIColorTransformer.h"
 
 @interface ZDVTViewController ()
 
@@ -101,7 +103,7 @@
       fmt.numberStyle = NSNumberFormatterDecimalStyle;
       t.valueConnector.formatter = fmt;
     }
-    /* inplace number editing cell */ {
+    /* inplace number editing cell, hex */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
       t.labelText = @"Inplace Number edit";
       t.descriptionLabel.numberOfLines = 2;
@@ -111,6 +113,12 @@
       fmt.numberStyle = NSNumberFormatterDecimalStyle;
       t.valueConnector.formatter = fmt;
       t.valueConnector.autoSaveValue = YES;
+    }
+    /* color represented as int */ {
+      ZColorChooserCell *co = [c detailCell:[ZColorChooserCell class]];
+      [co.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
+      co.valueConnector.valueTransformer = [NSValueTransformer valueTransformerForName:@"ZIntToUIColorTransformer"];
+      co.valueConnector.autoSaveValue = YES;
     }
     /* inplace start date text editing cell */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
