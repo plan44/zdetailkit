@@ -317,7 +317,8 @@ static NSInteger numObjs = 0;
   BOOL validates = YES;
   // collect validation from all connectors
   for (ZDetailValueConnector *connector in valueConnectors) {
-    validates = validates && [connector validatesWithErrors:aErrorsP];
+    if (connector.connected)
+      validates = validates && [connector validatesWithErrors:aErrorsP];
   }  
   return validates;
 }

@@ -181,7 +181,6 @@
   if (switchControl==nil) {
     switchControl = [[UISwitch alloc] initWithFrame:CGRectZero];
     [switchControl addTarget:self action:@selector(switchChanged) forControlEvents:UIControlEventValueChanged];
-
     [self.contentView addSubview:switchControl];
   }
   return switchControl;

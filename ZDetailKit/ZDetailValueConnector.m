@@ -53,7 +53,7 @@
     active = NO; // not yet active
     target = nil;
     keyPath = nil;
-    notNil = NO; // nil/null (= no value) allowed
+    nilAllowed = YES; // nil/null (= no value) allowed
     readonly = NO; // can save
     nilNulValue = nil; // no internal replacement value for nil/nul
     saveEmptyAsNil = NO;
@@ -108,7 +108,7 @@
 @synthesize validationHandler;
 @synthesize formatter, valueTransformer;
 @synthesize nilNulValue;
-@synthesize saveEmptyAsNil, saveNilAsNull, notNil;
+@synthesize saveEmptyAsNil, saveNilAsNull, nilAllowed;
 
 
 
@@ -358,7 +358,7 @@
       val = [valueTransformer reverseTransformedValue:val];
     }
     // check for non-nil
-    if (notNil && val==nil) {
+    if (!nilAllowed && val==nil) {
       // non-empty not allowed
       if (aErrorP) {
         *aErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:

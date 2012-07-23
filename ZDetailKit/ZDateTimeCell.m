@@ -12,6 +12,7 @@
 
 #import "ZDetailTableViewController.h"
 #import "ZSwitchCell.h"
+#import "ZButtonCell.h"
 
 @interface ZDateTimeCell ( /* class extension */ )
 {
@@ -58,7 +59,6 @@
     formatter = [[NSDateFormatter alloc] init];
     // valueConnectors
     // - first those that values might depend
-    dateOnlyConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to date+time mode
     suggestedDateConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"suggestedDate" owner:self]
     ];
@@ -69,12 +69,15 @@
     startDateConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"startDate" owner:self]
     ];
+    startDateConnector.nilAllowed = NO; // by default, don't allow no date
     endDateConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"endDate" owner:self]
     ];
+    endDateConnector.nilAllowed = NO; // by default, don't allow no date
     dateOnlyConnector = [self registerConnector:
       [ZDetailValueConnector connectorWithValuePath:@"dateOnly" owner:self]
     ];
+    dateOnlyConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to date+time mode
     if (aStyle & ZDetailViewCellStyleFlagAutoStyle) {
       // set recommended standard layout for dates
       self.valueViewAdjustment = self.valueViewAdjustment | ZDetailCellItemAdjustFillHeight | ZDetailCellItemAdjustExtend;
@@ -466,9 +469,10 @@ static id _sd_startDateConnector = nil;
       sd.valueLabel.textAlignment = UITextAlignmentRight;
       sd.editInDetailView = NO;
       [sd.startDateConnector connectTo:self.startDateConnector keyPath:@"internalValue"];
+      sd.startDateConnector.nilAllowed = YES;
       [sd.suggestedDateConnector connectTo:self keyPath:@"defaultDate"];
       sd.startDateConnector.autoSaveValue = NO;
-      sd.autoEnterDefaultDate = YES;
+      sd.autoEnterDefaultDate = !self.startDateConnector.nilAllowed;
       ZDateTimeCell *ed = nil;
       if (self.endDateConnector.connected) {
         // Optional end date
@@ -480,9 +484,10 @@ static id _sd_startDateConnector = nil;
         ed.valueLabel.textAlignment = UITextAlignmentRight;
         ed.editInDetailView = NO;
         [ed.startDateConnector connectTo:self.endDateConnector keyPath:@"internalValue"];
+        ed.startDateConnector.nilAllowed = YES;
         [ed.suggestedDateConnector connectTo:self keyPath:@"defaultEndDate"];
         ed.startDateConnector.autoSaveValue = NO;
-        ed.autoEnterDefaultDate = YES;
+        ed.autoEnterDefaultDate = !self.endDateConnector.nilAllowed;
         // keep selection on start/end only if we have two dates
         sd.keepSelectedAfterTap = YES;
         ed.keepSelectedAfterTap = YES;
@@ -493,10 +498,31 @@ static id _sd_startDateConnector = nil;
           sd.startDateConnector.autoValidate = YES; // immediately validate to update valueForExternal
           [ed.masterDateConnector connectTo:sd.startDateConnector keyPath:@"valueForExternal"];
         }
-        // preventing end befor start
+        // preventing end before start
+        ed.startDateConnector.autoValidate = YES; // immediately validate to update valueForExternal
         [ed.startDateConnector setValidationHandler:^(ZDetailValueConnector *aConnector, id aValue, NSError **aErrorP) {
-          // %%% add end-after-start verification here
+          if (sd.startDateConnector.internalValue && aValue && [sd.startDateConnector.internalValue compare:aValue]==NSOrderedDescending) {
+            // error - end before start
+            *aErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:
+              [NSDictionary dictionaryWithObjectsAndKeys:
+                @"End date must be later than or same as start date", NSLocalizedDescriptionKey,
+                nil
+              ]
+            ];
+            return NO;
+          }
           return YES; // ok
+        }];
+      }
+      if (self.startDateConnector.nilAllowed || self.endDateConnector.nilAllowed) {
+        // start or end (or both) can be nil, add extra button to set nil
+        ZButtonCell *b = [c detailCell:[ZButtonCell class]];
+        b.labelText = @"Clear date";
+        b.buttonStyle = ZButtonCellStyleCenterText;
+        [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
+          if (self.startDateConnector.nilAllowed) sd.startDateConnector.internalValue = nil;
+          if (self.endDateConnector.nilAllowed) ed.startDateConnector.internalValue = nil;
+          return YES; // fully handled
         }];
       }
       if (self.dateOnlyConnector.connected) {

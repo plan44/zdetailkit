@@ -122,7 +122,7 @@
   ZDetailTableViewController *dtvc = nil;
   if (self.editInDetailView && self.allowsEditing) {
     dtvc = [ZDetailTableViewController controllerWithTitle:self.detailTitleText];
-    dtvc.defaultCellStyle = UITableViewCellStyleDefault+ZDetailViewCellStyleFlagCustomLayout;
+    dtvc.defaultCellStyle = UITableViewCellStyleDefault+ZDetailViewCellStyleFlagCustomLayout+ZDetailViewCellStyleFlagAutoStyle;
     dtvc.navigationMode = ZDetailNavigationModeLeftButtonCancel+ZDetailNavigationModeRightButtonSave;
     [dtvc setBuildDetailContentHandler:^(ZDetailTableViewController *c) {
       c.autoStartEditing = YES; // auto-start editing in the field

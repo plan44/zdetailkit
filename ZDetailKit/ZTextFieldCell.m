@@ -258,6 +258,8 @@
     textField.autocapitalizationType = self.autocapitalizationType;
     textField.autocorrectionType = self.autocorrectionType;
     textField.spellCheckingType = self.spellCheckingType;
+    // clear button only on left-aligned fields by default (looks ugly otherwise)
+    textField.clearButtonMode = self.valueLabel.textAlignment==UITextAlignmentLeft ? UITextFieldViewModeWhileEditing : UITextFieldViewModeNever;
 		// KVO does not catch all changes to textField.text (KVO triggers when field resigns first responder,
     // but that does not always happen reliably in time depending on how view is dismissed
     // So: we need notice when editing so we can set the value connector dirty

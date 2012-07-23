@@ -10,3 +10,7 @@
 BOOL sameStringWithOptions(NSString *s1, NSString *s2, BOOL aNilSameAsEmptyString);
 BOOL sameString(NSString *s1, NSString *s2);
 BOOL samePropertyString(NSString **aNewStringValueP, NSString *s2);
+
+BOOL sameData(NSData *d1, NSData *d2);
+
+

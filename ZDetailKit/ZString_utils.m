@@ -42,4 +42,11 @@ BOOL samePropertyString(NSString **aNewStringValueP, NSString *aCurrentValue)
 }
 
 
+BOOL sameData(NSData *d1, NSData *d2)
+{
+  // both nil or actually same object count as equal
+  return (d1==d2) || (d1 && d2 && [d1 isEqualToData:d2]);
+}
+
+
 /* eof */

@@ -39,7 +39,7 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 @property (retain, nonatomic) id nilNulValue; // if set, external value nil or NSNull are converted to this value internally
 @property (assign, nonatomic) BOOL saveEmptyAsNil; // if set, internal empty string is stored as nil (or NSNull if saveNilAsNull is set)
 @property (assign, nonatomic) BOOL saveNilAsNull; // if set, nil is always stored as NSNull
-@property (assign, nonatomic) BOOL notNil; // if set, value stored must be not Nil/Null
+@property (assign, nonatomic) BOOL nilAllowed; // if set, value stored may be Nil/Null
 @property (assign, nonatomic) BOOL autoUpdateValue; // if set, KVO will set internalValue when remote attribute changes
 @property (assign, nonatomic) BOOL autoRevertOnValidationError; // if set, failing validation will revert internalValue
 @property (assign, nonatomic) BOOL autoValidate; // if set, every change to value will actively trigger re-validation (and handler/validationStatusChangedInConnector)

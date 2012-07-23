@@ -154,6 +154,8 @@
       [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
       [d.endDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"endDate"];
       [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
+      d.startDateConnector.nilAllowed = YES;
+      d.endDateConnector.nilAllowed = YES;
       d.startDateConnector.autoSaveValue = YES;
       d.endDateConnector.autoSaveValue = YES;
       d.dateOnlyConnector.autoSaveValue = YES;

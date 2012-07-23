@@ -830,7 +830,7 @@ static NSInteger numObjs = 0;
         NSMutableString *errMsg = [NSMutableString string];
         for (NSError *err in errors) {
           if (errMsg.length>0) [errMsg appendString:@"\n"];
-          [errMsg appendString:err.description];
+          [errMsg appendString:err.localizedDescription];
         }
         // show alert
         UIAlertView *alert = [[UIAlertView alloc]

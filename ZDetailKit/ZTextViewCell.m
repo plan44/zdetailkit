@@ -38,6 +38,10 @@
     maxCellHeight = 10000;
     dynamicCellHeight = -1;
     recalcDynamicCellHeight = YES;
+    if (aStyle & ZDetailViewCellStyleFlagAutoStyle) {
+      // make sure content margin is high enough vertically
+      self.contentMargins = CGSizeMake(self.contentMargins.width, MAX(self.contentMargins.height, 10));
+    }
     #ifdef TEXTEXPANDER_SUPPORT
     textExpander = nil;
     #endif
