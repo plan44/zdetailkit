@@ -51,12 +51,12 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 // - cells
 @property (assign, nonatomic) ZDetailViewCellStyle defaultCellStyle; // style to be used to create default cells
 @property (copy, nonatomic) ZDetailTableViewCellSetupHandler cellSetupHandler; // called on every cell added by detailCell:... method
-- (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle inGroup:(NSUInteger)aGroup nowEnabled:(BOOL)aNowEnabled;
-- (id)detailCell:(Class)aClass inGroup:(NSUInteger)aGroup;
+- (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
+- (id)detailCell:(Class)aClass neededGroups:(NSUInteger)aNeededGroups;
 - (id)detailCell:(Class)aClass enabled:(BOOL)aEnabled;
 - (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle;
 - (id)detailCell:(Class)aClass;
-- (void)addDetailCell:(UITableViewCell *)aCell inGroup:(NSUInteger)aGroup nowEnabled:(BOOL)aNowEnabled;
+- (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
 - (void)addDetailCell:(UITableViewCell *)aCell enabled:(BOOL)aEnabled;
 - (void)addDetailCell:(UITableViewCell *)aCell;
 
@@ -93,8 +93,10 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 - (void)updateCellVisibilitiesAnimated:(BOOL)aAnimated;
 
 // groups
-- (void)setGroup:(NSUInteger)aGroupNo visible:(BOOL)aVisible;
-- (void)displayGroup:(NSUInteger)aGroupNo visible:(BOOL)aVisible animated:(BOOL)aAnimated;
+@property (assign, nonatomic) NSUInteger enabledGroups;
+- (void)changeGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible;
+- (void)changeDisplayedGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible animated:(BOOL)aAnimated;
+- (void)applyGroupChangesAnimated:(BOOL)aAnimated;
 // internal events
 - (void)detailViewWillOpen:(BOOL)aAnimated;
 - (void)detailViewWillClose:(BOOL)aAnimated;

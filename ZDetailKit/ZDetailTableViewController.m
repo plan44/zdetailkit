@@ -31,20 +31,17 @@
 @end // ZDetailViewSection
 
 
-// not in any group, i.e. directly controlled by cellEnabled (which will not be updated by group changes)
-#define GRP_NOGROUP (-1)
-
 @interface ZDetailViewCellHolder : NSObject
 {
   UITableViewCell *cell;
 }
 @property(readonly) UITableViewCell *cell;
 @property(assign) NSUInteger overallRowIndex;
-@property(assign) NSInteger groupNumber;
-@property(assign) BOOL cellEnabled; // cell enabled (usually via groups, but cells with GRP_NOGROUP are standalone)
+@property(assign) NSUInteger neededGroups;
+@property(assign) BOOL cellEnabled; // cell enabled (usually via groups, but cells with no group are standalone)
 
 - (BOOL)nowVisibleInMode:(ZDetailDisplayMode)aMode; // true if cell should be visible in the passed mode
-- (id)initWithCell:(UITableViewCell *)aCell inGroup:(NSInteger)aInGroup;
+- (id)initWithCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups;
 
 @end // ZDetailViewCellHolder
 
@@ -101,13 +98,13 @@
 
 @implementation ZDetailViewCellHolder
 
-@synthesize cell,groupNumber,cellEnabled,overallRowIndex;
+@synthesize cell,neededGroups,cellEnabled,overallRowIndex;
 
-- (id)initWithCell:(UITableViewCell *)aCell inGroup:(NSInteger)aInGroup
+- (id)initWithCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups
 {
 	if ((self = [super init])) {
   	cell = [aCell retain];
-    groupNumber = aInGroup;
+    neededGroups = aNeededGroups;
     // these need to be updated later
     overallRowIndex = 0;
     cellEnabled = NO;
@@ -152,7 +149,6 @@
   NSMutableArray *allSectionsAndCells;
 	// set of enabled groups (by number as NSNumbers)
   BOOL cellEnabledDirty; // enabled states of cells is dirty (groups need to be checked)
-  NSMutableSet *enabledGroups;
   // current view of the table
   BOOL currentSectionsAndCellsDirty;
   NSMutableArray *currentSectionsAndCells;
@@ -182,7 +178,7 @@
 }
 @property (retain, nonatomic) UITableViewCell *cellThatOpenedChildDetail;
 // private methods
-- (void)addDetailCell:(UITableViewCell *)aCell inGroup:(NSUInteger)aGroup nowEnabled:(BOOL)aNowEnabled;
+- (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
 - (void)updateCellsDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated;
 - (void)updateNavigationButtonsAnimated:(BOOL)aAnimated;
 - (void)updateTableRepresentationWithAdjust:(BOOL)aWithTableAdjust animated:(BOOL)aAnimated;
@@ -214,7 +210,7 @@
   allSectionsAndCells = nil;
   // only group 0 is enabled
   cellEnabledDirty = YES;
- 	enabledGroups = [[NSMutableSet alloc] init]; 
+ 	enabledGroups = 0; 
   // table not yet represented
   currentSectionsAndCells = nil;
   currentSectionsAndCellsDirty = YES;
@@ -485,11 +481,11 @@ static NSInteger numObjs = 0;
 
 
 // Add a new detail cell (private methods, basis for the the nicer APIs below)
-- (void)addDetailCell:(UITableViewCell *)aCell inGroup:(NSUInteger)aGroup nowEnabled:(BOOL)aNowEnabled
+- (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled
 {
   NSAssert(sectionToAdd!=nil,@"Start a section before adding cells!");
 	// create cellholder
-  ZDetailViewCellHolder *ch = [[ZDetailViewCellHolder alloc] initWithCell:aCell inGroup:aGroup];
+  ZDetailViewCellHolder *ch = [[ZDetailViewCellHolder alloc] initWithCell:aCell neededGroups:aNeededGroups];
   ch.cellEnabled = aNowEnabled;
   [sectionToAdd.cells addObject:ch];
   [ch release];
@@ -506,7 +502,7 @@ static NSInteger numObjs = 0;
 
 - (void)addDetailCell:(UITableViewCell *)aCell enabled:(BOOL)aEnabled
 {
-	[self addDetailCell:aCell inGroup:GRP_NOGROUP nowEnabled:aEnabled];  
+	[self addDetailCell:aCell neededGroups:0 nowEnabled:aEnabled];  
 }
 
 
@@ -520,11 +516,11 @@ static NSInteger numObjs = 0;
 @synthesize cellSetupHandler;
 
 
-- (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle inGroup:(NSUInteger)aGroup nowEnabled:(BOOL)aNowEnabled
+- (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled
 {
   NSAssert([aClass isSubclassOfClass:[UITableViewCell class]], @"cells must be UITableViewCell descendants");
   UITableViewCell *newCell = [[aClass alloc] initWithStyle:aStyle reuseIdentifier:nil];
-  [self addDetailCell:newCell inGroup:aGroup nowEnabled:aNowEnabled];
+  [self addDetailCell:newCell neededGroups:aNeededGroups nowEnabled:aNowEnabled];
   // apply the default configurator
   if (cellSetupHandler) {
     cellSetupHandler(self,newCell);
@@ -534,21 +530,21 @@ static NSInteger numObjs = 0;
 }
 
 
-- (id)detailCell:(Class)aClass inGroup:(NSUInteger)aGroup
+- (id)detailCell:(Class)aClass neededGroups:(NSUInteger)aNeededGroups
 {
-  return [self detailCell:aClass withStyle:self.defaultCellStyle inGroup:aGroup nowEnabled:NO];
+  return [self detailCell:aClass withStyle:self.defaultCellStyle neededGroups:aNeededGroups nowEnabled:NO];
 }
 
 
 - (id)detailCell:(Class)aClass enabled:(BOOL)aEnabled
 {
-  return [self detailCell:aClass withStyle:self.defaultCellStyle inGroup:GRP_NOGROUP nowEnabled:aEnabled];
+  return [self detailCell:aClass withStyle:self.defaultCellStyle neededGroups:0 nowEnabled:aEnabled];
 }
 
 
 - (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle
 {
-  return [self detailCell:aClass withStyle:aStyle inGroup:GRP_NOGROUP nowEnabled:NO];
+  return [self detailCell:aClass withStyle:aStyle neededGroups:0 nowEnabled:NO];
 }
 
 
@@ -1058,32 +1054,57 @@ static NSInteger numObjs = 0;
 
 #pragma mark - Table view updates management
 
+@synthesize enabledGroups;
 
-// enable or disable groups of cells to show
-- (void)setGroup:(NSUInteger)aGroupNo visible:(BOOL)aVisible
+
+- (void)setEnabledGroups:(NSUInteger)aEnabledGroups
 {
-	NSNumber *n = [NSNumber numberWithInt:aGroupNo];
-	if (aVisible) {
-  	if (![enabledGroups containsObject:n]) {
-			[enabledGroups addObject:n];
-      cellEnabledDirty = YES;
-      currentSectionsAndCellsDirty = YES;
-    }
-  }
-  else {
-  	if ([enabledGroups containsObject:n]) {
-			[enabledGroups removeObject:n];
-      cellEnabledDirty = YES;
-      currentSectionsAndCellsDirty = YES;
-    }
+  if (aEnabledGroups!=enabledGroups) {
+    enabledGroups = aEnabledGroups;
+    cellEnabledDirty = YES;
+    currentSectionsAndCellsDirty = YES;
   }
 }
 
 
+// enable or disable groups of cells to show
+- (void)changeGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible
+{
+  NSUInteger newMask = self.enabledGroups;
+	if (aVisible) {
+    newMask |= aGroupMask;
+  }
+  else {
+    newMask &= ~aGroupMask;
+  }
+  self.enabledGroups = newMask;
+}
+  
+  
 - (void)resetGroups
 {
-	[enabledGroups removeAllObjects];
+  self.enabledGroups = 0;
+  // rebuild anyway
 	cellEnabledDirty = YES;
+}
+
+
+
+// convenience method to show/hide members of a group, e.g. in a valueChangeHandler of a switch cell etc.)
+- (void)changeDisplayedGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible animated:(BOOL)aAnimated
+{
+  [self changeGroups:aGroupMask toVisible:aVisible];
+  [self applyGroupChangesAnimated:aAnimated];
+}
+
+
+
+- (void)applyGroupChangesAnimated:(BOOL)aAnimated
+{
+  // prevent updating table when we are still building contents (i.e. maybe not all dependent cells are already loaded)
+  if (!sectionToAdd) {
+	  [self updateTableRepresentationWithAdjust:YES animated:aAnimated];
+  }
 }
 
 
@@ -1098,16 +1119,15 @@ static NSInteger numObjs = 0;
 
 
 
-
-
-
 // Internal: update cellEnabled state of cells according to groups
 - (void)updateCellEnabledStates
 {
   for (ZDetailViewSection *section in allSectionsAndCells) {
     for (ZDetailViewCellHolder *cellholder in section.cells) {
-    	if (cellholder.groupNumber!=GRP_NOGROUP) {
-        BOOL en = [enabledGroups containsObject:[NSNumber numberWithInt:cellholder.groupNumber]];
+      // for cells not assigned to any group, enabled state is independent and must not be modified here 
+      if (cellholder.neededGroups) {
+        // cell needs least one group to be enabled
+        BOOL en = (cellholder.neededGroups & self.enabledGroups) == cellholder.neededGroups;
         if (en!=cellholder.cellEnabled) {
           // this is a change
           cellholder.cellEnabled = en;
@@ -1118,6 +1138,15 @@ static NSInteger numObjs = 0;
   }
 	cellEnabledDirty = NO;
 }
+
+
+#define TRACK_ADJUSTS 0
+
+#if TRACK_ADJUSTS
+#define TDBGNSLOG(...) DBGNSLOG(__VA_ARGS__)
+#else
+#define TDBGNSLOG(...)
+#endif
 
 
 
@@ -1165,7 +1194,7 @@ static NSInteger numObjs = 0;
           // from the table as well
           if (aWithTableAdjust) {
             // deletes are relative to the original table state, so apply index correction
-            //DBGNSLOG(@"deleting section #%d",sidx_target);
+            TDBGNSLOG(@"deleting section #%d",sidx_target);
             [detailTableView deleteSections:[NSIndexSet indexSetWithIndex:sidx_target] withRowAnimation:rowAnimation];
           }
           sectionCorr++; // further deletes in the table need to use one index higher than what is left in currentSectionsAndCells
@@ -1176,7 +1205,7 @@ static NSInteger numObjs = 0;
           NSUInteger cidx_target = 0; // cell target index
           NSUInteger rowCorr = 0; // row index correction for table adjustment operations
           for (ZDetailViewCellHolder *cellholder in section.cells) {
-          	//DBGNSLOG(@"Cell #%d in section #%d has nowVisible=%d, group=%d",cidx_src,section.overallSectionIndex,cellholder.nowVisible,cellholder.groupNumber);
+          	TDBGNSLOG(@"Cell #%d in section #%d has nowVisible=%d, group=%d",cidx_src,section.overallSectionIndex,cellholder.nowVisible,cellholder.groupNumber);
             // make sure index is ok
             cellholder.overallRowIndex = cidx_src;
             // get possibly corresponding old cell
@@ -1194,7 +1223,7 @@ static NSInteger numObjs = 0;
                 // from the table as well
                 if (aWithTableAdjust) {
                   // deletes are relative to the original table state, so apply index correction
-	                //DBGNSLOG(@"deleting row #%d in section #%d",cidx_target,sidx_target);
+	                TDBGNSLOG(@"deleting row #%d in section #%d",cidx_target,sidx_target);
                   [detailTableView deleteRowsAtIndexPaths:
                   	//[NSArray arrayWithObject:[NSIndexPath indexPathForRow:cidx_target+rowCorr inSection:sidx_target+sectionCorr]]
                   	[NSArray arrayWithObject:[NSIndexPath indexPathForRow:cidx_target inSection:sidx_target]]
@@ -1215,7 +1244,7 @@ static NSInteger numObjs = 0;
                 // insert into the table as well
                 if (aWithTableAdjust) {
                   // inserts are relative to state of table with already deleted rows, so it's just the new target index
-                  //DBGNSLOG(@"inserting row #%d into section #%d",cidx_target,sidx_target);
+                  TDBGNSLOG(@"inserting row #%d into section #%d",cidx_target,sidx_target);
                   [detailTableView insertRowsAtIndexPaths:
                     [NSArray arrayWithObject:[NSIndexPath indexPathForRow:cidx_target inSection:sidx_target]]
                     withRowAnimation:rowAnimation
@@ -1251,7 +1280,7 @@ static NSInteger numObjs = 0;
           // insert section in the table as well
           if (aWithTableAdjust) {
             // inserts are relative to state of table with already deleted sections, so it's just the new target index
-            //DBGNSLOG(@"inserting section #%d with %d cells",sidx_target,[newSection.cells count]);
+            TDBGNSLOG(@"inserting section #%d with %d cells",sidx_target,[newSection.cells count]);
             [detailTableView insertSections:[NSIndexSet indexSetWithIndex:sidx_target] withRowAnimation:rowAnimation];
           }
           // target next section
@@ -1262,18 +1291,6 @@ static NSInteger numObjs = 0;
     } // for all possible sections
     // updated now
     currentSectionsAndCellsDirty = NO;
-  }
-}
-
-
-
-// convenience method to show/hide members of a group
-- (void)displayGroup:(NSUInteger)aGroupNo visible:(BOOL)aVisible animated:(BOOL)aAnimated
-{
-	[self setGroup:aGroupNo visible:aVisible];
-  // prevent updating table now if we are still building contents (i.e. maybe not all dependent cells are already loaded)
-  if (!sectionToAdd) {
-	  [self updateTableRepresentationWithAdjust:YES animated:aAnimated];
   }
 }
 
