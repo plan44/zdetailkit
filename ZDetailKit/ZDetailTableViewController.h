@@ -78,6 +78,7 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 - (void)revert; // revert all cells to saved data
 
 // Presentation and navigation
+- (UIPopoverController *)popoverControllerForPresentation;
 - (UIViewController *)viewControllerForModalPresentation;
 - (void)pushViewControllerForDetail:(UIViewController *)aViewController animated:(BOOL)aAnimated;
 - (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave;

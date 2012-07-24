@@ -363,8 +363,8 @@
     else {
       // iPad has variants
       if (self.presentationModeSegControl.selectedSegmentIndex==SEGINDEX_POPOVER) {
-        // special case, create popover
-        UIPopoverController *pop = [[UIPopoverController alloc] initWithContentViewController:[dtvc viewControllerForModalPresentation]];
+        // show in popover
+        UIPopoverController *pop = [dtvc popoverControllerForPresentation];
         [pop presentPopoverFromRect:presentationModeSegControl.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
       }
       else {
@@ -394,6 +394,7 @@
   dtvc.defaultCellStyle = UITableViewCellStyleValue1+ZDetailViewCellStyleFlagAutoStyle;
   // set the navigation mode
   dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone|ZDetailNavigationModeLeftButtonAuto;
+  dtvc.modalInPopover = NO; // dismiss by tapping outside, no done button by default
   // common setup of the contents
   [self setupDetails:dtvc];
   // show it

@@ -182,6 +182,7 @@
   ZDetailViewSection *sectionToAdd;
   // for modally displaying the detail view (instead of pushing on existing navigation stack)
   UINavigationController *modalViewWrapper;
+  UIPopoverController *popoverWrapper;
 }
 @property (retain, nonatomic) UITableViewCell *cellThatOpenedChildDetail;
 // private methods
@@ -240,6 +241,7 @@
   defaultCellStyle = ZDetailViewCellStyleDefault;
   // not modally displayed
   modalViewWrapper = nil;
+  popoverWrapper = nil;
   // no custom input view
   customInputView = nil;
   customInputViewUsers = 0;
@@ -353,6 +355,7 @@
   [allSectionsAndCells release];
   [sectionToAdd release];
   [modalViewWrapper release];
+  [popoverWrapper release];
   // done
   [super dealloc];
 }
@@ -765,6 +768,15 @@ static NSInteger numObjs = 0;
 
 
 
+- (UIPopoverController *)popoverControllerForPresentation
+{
+  // special case, create popover
+  [popoverWrapper release];
+  popoverWrapper = [[UIPopoverController alloc] initWithContentViewController:[self viewControllerForModalPresentation]];
+  return popoverWrapper;
+}
+
+
 
 - (UIViewController *)viewControllerForModalPresentation
 {
@@ -772,11 +784,6 @@ static NSInteger numObjs = 0;
   [modalViewWrapper release];
   modalViewWrapper = [[ZModalViewWrapper alloc] initWithRootViewController:self];
   modalViewWrapper.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  // done button needed
-  if (self.navigationMode & ZDetailNavigationModeLeftButtonAuto) {
-    // nothing specified, make sure we can leave the modal
-    self.navigationMode = self.navigationMode | ZDetailNavigationModeLeftButtonDone; 
-  }
   // inherit styles
   modalViewWrapper.modalTransitionStyle = self.modalTransitionStyle;
   modalViewWrapper.modalPresentationStyle = self.modalPresentationStyle;
@@ -854,7 +861,11 @@ static NSInteger numObjs = 0;
     dismissing = NO; // dismissing done
     dismissed = YES;    
     @try {
-      if (modalViewWrapper) {
+      if (popoverWrapper) {
+        // dismiss popover
+        [popoverWrapper dismissPopoverAnimated:YES];
+      }
+      else if (modalViewWrapper) {
         // was modally presented, dismiss it
         [self.parentViewController dismissModalViewControllerAnimated:YES];
       }
@@ -1465,11 +1476,21 @@ static NSInteger numObjs = 0;
 {
   // Left button
   UIBarButtonItem *leftButton = nil;
-  if (navigationMode & ZDetailNavigationModeLeftButtonCancel) {
+  ZDetailNavigationMode navMode = navigationMode;
+  // check if we need automatic adjustments
+  if (navMode & ZDetailNavigationModeLeftButtonAuto) {
+    // make sure we can leave the modal (or popover) presentation
+    if (modalViewWrapper && (modalViewWrapper.modalInPopover || !popoverWrapper)) {
+      // non-popovers and modal popovers need a Done button
+      navMode = navMode | ZDetailNavigationModeLeftButtonDone;
+    }
+  }
+  // now apply
+  if (navMode & ZDetailNavigationModeLeftButtonCancel) {
     // left side must be a cancel button
     leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonAction)];
   }
-  else if (navigationMode & ZDetailNavigationModeLeftButtonDone) {
+  else if (navMode & ZDetailNavigationModeLeftButtonDone) {
     // done button for root view controllers, saves content
     leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveButtonAction)];
   }
@@ -1480,10 +1501,10 @@ static NSInteger numObjs = 0;
   [self.navigationItem setLeftBarButtonItem:[leftButton autorelease] animated:aAnimated];
   // Right button
   UIBarButtonItem *rightButton = nil;
-  if (navigationMode & ZDetailNavigationModeRightButtonSave) {
+  if (navMode & ZDetailNavigationModeRightButtonSave) {
     rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveButtonAction)];
   }
-  else if (navigationMode & ZDetailNavigationModeRightButtonEditViewing) {
+  else if (navMode & ZDetailNavigationModeRightButtonEditViewing) {
     if (self.displayMode & ZDetailDisplayModeEditing) {
       // is editing, show "done"
       rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(editDoneButtonAction)];
@@ -1493,11 +1514,11 @@ static NSInteger numObjs = 0;
       rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editStartButtonAction)];
     }
   }
-  else if (navigationMode & ZDetailNavigationModeRightButtonTableEditDone) {
+  else if (navMode & ZDetailNavigationModeRightButtonTableEditDone) {
     // use the standard editing button from UIViewController which is auto connected to the editing property
     rightButton = [self.editButtonItem retain]; // will be autoreleased below
   }
-  else if (navigationMode & ZDetailNavigationModeRightButtonDetailsBasics) {
+  else if (navMode & ZDetailNavigationModeRightButtonDetailsBasics) {
     if (self.displayMode & ZDetailDisplayModeDetails) {
       // is showing details, show "done"
       rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(detailsDoneButtonAction)];
@@ -1801,7 +1822,7 @@ static NSInteger numObjs = 0;
   // in modal views on iPad, we need to wait until here, because only now all view resizing
   // magic caused by keyboard appearance is done
   if (modalViewWrapper && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-    [self removeCustomInputViewAnimated:YES];
+    [self removeCustomInputViewAnimated:NO];
     [self makeRoomForInputViewOfSize:inputViewSize];
   }
 }
