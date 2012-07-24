@@ -1779,8 +1779,10 @@ static NSInteger numObjs = 0;
 
 - (void)keyboardWillShow:(NSNotification *)aNotification
 {
-  // dismiss other input view that might be present
-  [self removeCustomInputViewAnimated:YES];
+  // dismiss other input view that might be present (not yet in iPad modal views)
+  if (modalViewWrapper==nil || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    [self removeCustomInputViewAnimated:YES];
+  }
   // get info about keyboard and window (received in screen coordinates)
   // - keyboard frame
   CGRect kf = [[[aNotification userInfo] valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue]; // keyboard frame in windows coords
@@ -1796,8 +1798,10 @@ static NSInteger numObjs = 0;
 
 - (void)keyboardDidShow:(NSNotification *)aNotification
 {
-  // in modal views on iPad, we need to wait until here, because only now all keyboard magic is done
+  // in modal views on iPad, we need to wait until here, because only now all view resizing
+  // magic caused by keyboard appearance is done
   if (modalViewWrapper && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    [self removeCustomInputViewAnimated:YES];
     [self makeRoomForInputViewOfSize:inputViewSize];
   }
 }
@@ -1818,19 +1822,39 @@ static NSInteger numObjs = 0;
 
 @synthesize customInputView;
 
+#define LOCAL_TO_MODALVIEW 1
 
 - (void)showCustomInputViewAnimated:(BOOL)aAnimated
 {
   if (customInputView) {
-    CGRect rvb = detailTableView.window.rootViewController.view.bounds; // in root view controller coords
+    customInputView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin; // keep at bottom of view we place it in
+    #if LOCAL_TO_MODALVIEW
+    UIView *viewToAddInputView = self.view.superview;
+    CGRect appearanceRect = self.view.frame;
+    CGRect vf = customInputView.frame; // viewToAddInputView coords
+    // size input view to root view width
+    vf.size.width = appearanceRect.size.width;
+    vf.origin.x = appearanceRect.origin.x;
+    // starts off-screen at bottom
+    vf.origin.y = appearanceRect.origin.y+appearanceRect.size.height;
+
+    // have table adjust for showing input view
+    // - relative to rootviewcontroller
+    CGRect gf = detailTableView.window.rootViewController.view.bounds; // rootViewController frame 
+    CGPoint lowerLeftCorner = [viewToAddInputView convertPoint:vf.origin toView:detailTableView.window.rootViewController.view];
+    CGSize sizeFromBottom = vf.size;
+    sizeFromBottom.height += gf.origin.y+gf.size.height-lowerLeftCorner.y;
+    [self makeRoomForInputViewOfSize:sizeFromBottom];
+    #else
+    CGRect appearanceRect = detailTableView.window.rootViewController.view.bounds; // in root view controller coords
     CGRect vf = customInputView.frame;
     // size input view to root view width
-    vf.size.width = rvb.size.width;
-    vf.origin.x = rvb.origin.x;
+    vf.size.width = appearanceRect.size.width;
+    vf.origin.x = appearanceRect.origin.x;
+    // starts off-screen at bottom
+    vf.origin.y = appearanceRect.origin.y+appearanceRect.size.height;
     // have table adjust for showing input view
     [self makeRoomForInputViewOfSize:vf.size];
-    // starts off-screen at bottom
-    vf.origin.y = rvb.origin.y+rvb.size.height;
     // figure out view to add input view to
     #warning "%%% works on iPhone, not yet in all modal/popover cases on iPad.
   
@@ -1868,8 +1892,10 @@ static NSInteger numObjs = 0;
 //      }
     }
     // bring input view frame into coordinates of view where it is being added
-    DBGNSLOG(@"viewToAddInputView: %@",viewToAddInputView.description);
     vf = [detailTableView.window.rootViewController.view convertRect:vf toView:viewToAddInputView];
+    #endif
+    // now present
+    DBGNSLOG(@"viewToAddInputView: %@",viewToAddInputView.description);
     DBGSHOWRECT(@"customInputView.frame (viewToAddInputView coords)",vf);
     // slide up from below like keyboard
     if (aAnimated) {
