@@ -15,11 +15,13 @@
 // navigation button mode
 typedef enum {
   ZDetailNavigationModeNone = 0, // no automatic navigation management
-  ZDetailNavigationModeLeftButtonCancel = 0x01, // show a left button which cancels detail editor (normal)
-  ZDetailNavigationModeRightButtonSave = 0x02, // show a right button which saves detail editor (bright blue)
-  ZDetailNavigationModeRightButtonEditViewing = 0x04, // show a right button which toggles cells (not table) between edit and view modes 
-  ZDetailNavigationModeRightButtonTableEditDone = 0x08, // show a right button which toggles table editing mode on/off 
-  ZDetailNavigationModeRightButtonDetailsBasics = 0x10, // show a right button which toggles cells (not table) between basic and details mode 
+  ZDetailNavigationModeLeftButtonAuto = 0x01, // show back button normally, and "done" in case view is modally presented
+  ZDetailNavigationModeLeftButtonCancel = 0x02, // show a left button which cancels detail editor (normal)
+  ZDetailNavigationModeLeftButtonDone = 0x04, // show a left buttin which closes (and saves) detail editor
+  ZDetailNavigationModeRightButtonSave = 0x100, // show a right button which saves detail editor (bright blue)
+  ZDetailNavigationModeRightButtonEditViewing = 0x200, // show a right button which toggles cells (not table) between edit and view modes 
+  ZDetailNavigationModeRightButtonTableEditDone = 0x400, // show a right button which toggles table editing mode on/off 
+  ZDetailNavigationModeRightButtonDetailsBasics = 0x800, // show a right button which toggles cells (not table) between basic and details mode 
 } ZDetailNavigationMode;
 
 
@@ -27,6 +29,7 @@ typedef enum {
 @class ZDetailViewSection;
 
 typedef BOOL (^ZDetailTableViewBuildContentHandler)(ZDetailTableViewController *aController);
+typedef void (^ZDetailTableViewDidCloseHandler)(ZDetailTableViewController *aController, BOOL cancelled);
 typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aController, UITableViewCell *aNewCell);
 
 
@@ -84,6 +87,8 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 // - convenience property - returns root of ZDetailViewController protocol conforming controller chain
 @property (readonly, nonatomic) id<ZDetailViewController> rootDetailViewController;
 
+@property (copy,nonatomic) ZDetailTableViewDidCloseHandler detailDidCloseHandler; // will be called after closing a detail editor
+
 // operating
 - (void)internalInit;
 - (id)init;
@@ -97,6 +102,7 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 - (void)changeGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible;
 - (void)changeDisplayedGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible animated:(BOOL)aAnimated;
 - (void)applyGroupChangesAnimated:(BOOL)aAnimated;
+
 // internal events
 - (void)detailViewWillOpen:(BOOL)aAnimated;
 - (void)detailViewWillClose:(BOOL)aAnimated;

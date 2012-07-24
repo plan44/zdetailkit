@@ -61,6 +61,7 @@
     color = [aNewColor retain];
     [hueColor release];
     hueColor = nil;
+    [self setNeedsDisplay];
   }
 }
 

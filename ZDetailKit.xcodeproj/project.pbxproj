@@ -46,6 +46,7 @@
 		ED1F708915BDA37F0046CFBC /* ZGeometry_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708815BDA37F0046CFBC /* ZGeometry_utils.m */; };
 		ED1F708C15BDA4100046CFBC /* ZColor_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708B15BDA4100046CFBC /* ZColor_utils.m */; };
 		ED49A99B1585F623007FEBF0 /* ZDateTimeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */; };
+		ED5D933815BEDC35008A98FF /* ZSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED5D933715BEDC35008A98FF /* ZSliderCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -120,6 +121,8 @@
 		ED1F708B15BDA4100046CFBC /* ZColor_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZColor_utils.m; sourceTree = "<group>"; };
 		ED49A9991585F623007FEBF0 /* ZDateTimeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDateTimeCell.h; sourceTree = "<group>"; };
 		ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDateTimeCell.m; sourceTree = "<group>"; };
+		ED5D933615BEDC35008A98FF /* ZSliderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSliderCell.h; sourceTree = "<group>"; };
+		ED5D933715BEDC35008A98FF /* ZSliderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSliderCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +210,8 @@
 				ED12E76B15824B8200DE3ED3 /* ZButtonCell.m */,
 				ED12E77D15824B8200DE3ED3 /* ZSwitchCell.h */,
 				ED12E77E15824B8200DE3ED3 /* ZSwitchCell.m */,
+				ED5D933615BEDC35008A98FF /* ZSliderCell.h */,
+				ED5D933715BEDC35008A98FF /* ZSliderCell.m */,
 				ED12E77F15824B8200DE3ED3 /* ZTextEditBaseCell.h */,
 				ED12E78015824B8200DE3ED3 /* ZTextEditBaseCell.m */,
 				ED12E79B15824DC700DE3ED3 /* ZTextFieldCell.h */,
@@ -366,6 +371,7 @@
 				ED1F708615BD9EA20046CFBC /* ZIntToUIColorTransformer.m in Sources */,
 				ED1F708915BDA37F0046CFBC /* ZGeometry_utils.m in Sources */,
 				ED1F708C15BDA4100046CFBC /* ZColor_utils.m in Sources */,
+				ED5D933815BEDC35008A98FF /* ZSliderCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

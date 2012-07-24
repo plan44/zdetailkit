@@ -215,8 +215,8 @@
   currentSectionsAndCells = nil;
   currentSectionsAndCellsDirty = YES;
   // default mode: editing basics, scroll enabled
-  displayMode = ZDetailDisplayModeBasics+ZDetailDisplayModeEditing;
-  navigationMode = ZDetailDisplayModeNone; // no extra buttons by default
+  displayMode = ZDetailDisplayModeBasics+ZDetailDisplayModeEditing; // no details, enabled for editing
+  navigationMode = ZDetailNavigationModeLeftButtonAuto; // no extra buttons, but left button automatically set to "done" for modally presented details
   scrollEnabled = YES;
   autoStartEditing = NO;
   // internal flags
@@ -245,6 +245,7 @@
   // handlers
   cellSetupHandler = nil;
   buildDetailContentHandler = nil;
+  detailDidCloseHandler = nil;
   // cell that needs automatic tap on viewDidAppear
   autoTapCell = nil;
   // popover display default size
@@ -338,6 +339,7 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
   // release handlers, important, as these may retain other objects!
   [buildDetailContentHandler release];
+  [detailDidCloseHandler release];
   [cellSetupHandler release];
   // release other objects
   [valueConnectors release];
@@ -765,10 +767,11 @@ static NSInteger numObjs = 0;
   [modalViewWrapper release];
   modalViewWrapper = [[ZModalViewWrapper alloc] initWithRootViewController:self];
   modalViewWrapper.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  // add "done" button
-  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-  	initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissDetailView)
-  ];
+  // done button needed
+  if (self.navigationMode & ZDetailNavigationModeLeftButtonAuto) {
+    // nothing specified, make sure we can leave the modal
+    self.navigationMode = self.navigationMode | ZDetailNavigationModeLeftButtonDone; 
+  }
   // inherit styles
   modalViewWrapper.modalTransitionStyle = self.modalTransitionStyle;
   modalViewWrapper.modalPresentationStyle = self.modalPresentationStyle;
@@ -1464,6 +1467,10 @@ static NSInteger numObjs = 0;
     // left side must be a cancel button
     leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonAction)];
   }
+  else if (navigationMode & ZDetailNavigationModeLeftButtonDone) {
+    // done button for root view controllers, saves content
+    leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveButtonAction)];
+  }
   else {
     // if it's a back button, intercept its action
     #warning "%%% tbd - intercept back button press"
@@ -1504,6 +1511,8 @@ static NSInteger numObjs = 0;
 
 
 #pragma mark - appearance management
+
+@synthesize detailDidCloseHandler;
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -1637,6 +1646,10 @@ static NSInteger numObjs = 0;
     }
     // let descendants know
     [self detailViewDidClose:aAnimated];
+    // call user handler for end-of-editing
+    if (self.detailDidCloseHandler) {
+      detailDidCloseHandler(self,cancelled);
+    }
     // unload the table data such that cells are deallocated and release their possible hold on me
     // (mostly through handler blocks)
     [self unloadData];

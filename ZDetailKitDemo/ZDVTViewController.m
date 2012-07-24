@@ -16,6 +16,7 @@
 #import "ZTextFieldCell.h"
 #import "ZTextViewCell.h"
 #import "ZSwitchCell.h"
+#import "ZSliderCell.h"
 #import "ZSegmentChoicesCell.h"
 #import "ZChoiceListCell.h"
 #import "ZDateTimeCell.h"
@@ -28,6 +29,7 @@
 
 
 @implementation ZDVTViewController
+@synthesize plan44linkLabel;
 
 
 - (void)viewDidLoad
@@ -39,6 +41,7 @@
 
 - (void)viewDidUnload
 {
+    [self setPlan44linkLabel:nil];
   [super viewDidUnload];
   // Release any retained subviews of the main view.
 }
@@ -47,6 +50,13 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
   return [ZOrientation supportsInterfaceOrientation:interfaceOrientation];
+}
+
+
+- (void)dealloc
+{
+  [plan44linkLabel release];
+  [super dealloc];
 }
 
 
@@ -119,6 +129,12 @@
       [co.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
       co.valueConnector.valueTransformer = [NSValueTransformer valueTransformerForName:@"ZIntToUIColorTransformer"];
       co.valueConnector.autoSaveValue = YES;
+    }
+    /* slider for number */ {
+      ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
+      [sl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
+      sl.valueConnector.autoSaveValue = YES;
+      sl.sliderControl.maximumValue = 0xFFFFFF; // 24bit color range
     }
     /* inplace start date text editing cell */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
@@ -308,46 +324,76 @@
     [c endSection];
     return YES; // built
   }];
-  [self.navigationController pushViewController:dtvc animated:YES];
+}
+
+
+
+- (void)presentDetails:(ZDetailTableViewController *)dtvc
+{
+  dtvc.modalPresentationStyle = UIModalPresentationFormSheet;
+  if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    [self presentViewController:[dtvc viewControllerForModalPresentation] animated:YES completion:nil];
+  }
+  else {
+    [self.navigationController pushViewController:dtvc animated:YES];
+  }
+}
+
+
+#pragma mark - main view button handlers
+
+- (IBAction)prefDetails:(id)sender
+{
+  // create the detail view controller
+  ZDetailTableViewController *dtvc = [ZDetailTableViewController controllerWithTitle:@"Prefs Style"];
+  // set the cell style (essentially UITableViewCellStyleValue1, but with ZDetailKit autostyling)
+  dtvc.defaultCellStyle = UITableViewCellStyleValue1+ZDetailViewCellStyleFlagAutoStyle;
+  // set the navigation mode
+  dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone|ZDetailNavigationModeLeftButtonAuto;
+  // common setup of the contents
+  [self setupDetails:dtvc];
+  // show it
+  [self presentDetails:dtvc];
 }
 
 
 - (IBAction)entryEditDetails:(id)sender
 {
-  ZDetailTableViewController *dtvc = [ZDetailTableViewController controllerWithTitle:@"Hallo"];
+  // create the detail view controller
+  ZDetailTableViewController *dtvc = [ZDetailTableViewController controllerWithTitle:@"Contacts Style"];
+  // set the cell style (essentially UITableViewCellStyleValue2, but with ZDetailKit autolayout and styling)
   dtvc.defaultCellStyle = ZDetailViewCellStyleEntryDetail;
-//  dtvc.defaultCellStyle = UITableViewCellStyleValue2+ZDetailViewCellStyleFlagAutoStyle;
-  dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone;
+  // set the navigation mode
+  dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone|ZDetailNavigationModeLeftButtonAuto;
+  // common setup of the contents
   [self setupDetails:dtvc]; 
-}
-
-
-- (IBAction)prefDetails:(id)sender
-{
-  ZDetailTableViewController *dtvc = [ZDetailTableViewController controllerWithTitle:@"Hallo"];
-//  dtvc.defaultCellStyle = ZDetailViewCellStylePrefs;
-  dtvc.defaultCellStyle = UITableViewCellStyleValue1+ZDetailViewCellStyleFlagAutoStyle;
-  dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone;
-  //[dtvc setCellSetupHandler:^(ZDetailTableViewController *aController, UITableViewCell *aNewCell) {}];
-  [self setupDetails:dtvc]; 
+  // show it
+  [self presentDetails:dtvc];
 }
 
 
 - (IBAction)taskZDetails:(id)sender
 {
-  ZDetailTableViewController *dtvc = [ZDetailTableViewController controllerWithTitle:@"Hallo"];
+  // create the detail view controller
+  ZDetailTableViewController *dtvc = [ZDetailTableViewController controllerWithTitle:@"TaskZ style"];
+  // set the cell style (essentially UITableViewCellStyleValue2, but with ZDetailKit autolayout and styling)
   dtvc.defaultCellStyle = ZDetailViewCellStyleEntryDetail;
-  dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone;
+  // set the navigation mode
+  dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone|ZDetailNavigationModeLeftButtonAuto;
+  // this handler is called to apply non-standard styling for every cell
   [dtvc setCellSetupHandler:^(ZDetailTableViewController *aController, UITableViewCell *aNewCell) {
     // specific styling applied to every cell
     if ([aNewCell isKindOfClass:[ZDetailViewBaseCell class]]) {
       ZDetailViewBaseCell *cell = (ZDetailViewBaseCell *)aNewCell;
-      cell.descriptionLabel.textAlignment = UITextAlignmentLeft;
-      cell.valueLabel.textAlignment = UITextAlignmentLeft;
-      cell.descriptionViewAdjustment = cell.descriptionViewAdjustment | ZDetailCellItemAdjustExtend;
+      cell.descriptionLabel.textAlignment = UITextAlignmentLeft; // we want description labels left aligned
+      cell.valueLabel.textAlignment = UITextAlignmentLeft; // as well as values
+      cell.descriptionViewAdjustment = cell.descriptionViewAdjustment | ZDetailCellItemAdjustExtend; // if value is short (i.e. a switch), allow for longer description text
     }
   }];
+  // common setup of the contents
   [self setupDetails:dtvc]; 
+  // show it
+  [self presentDetails:dtvc];
 }
 
 

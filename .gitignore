@@ -1,1 +1,15 @@
+
+# XCode specific files
 build/
+*.mode1v3
+*.pbxuser
+*.perspectivev3
+# Note: schemes are by default user data, so they are excluded by the below ignore line.
+#       However, schemes can be made "shared" which makes them non-user specific part of the project/workspace
+#xcuserdata/
+#*.xcuserstate
+#*.xcsettings
+# ...except the UI state, as this differs between Air and MBP
+UserInterfaceState.xcuserstate
+# ...and the breakpoints, which change all the time and are ad-hoc with no need for eternal persistence
+*.xcbkptlist

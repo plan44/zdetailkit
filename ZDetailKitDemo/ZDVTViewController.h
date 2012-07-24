@@ -14,4 +14,6 @@
 - (IBAction)prefDetails:(id)sender;
 - (IBAction)taskZDetails:(id)sender;
 
+@property (retain, nonatomic) IBOutlet UILabel *plan44linkLabel;
+
 @end
