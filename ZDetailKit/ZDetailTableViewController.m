@@ -1822,13 +1822,11 @@ static NSInteger numObjs = 0;
 
 @synthesize customInputView;
 
-#define LOCAL_TO_MODALVIEW 1
 
 - (void)showCustomInputViewAnimated:(BOOL)aAnimated
 {
   if (customInputView) {
     customInputView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin; // keep at bottom of view we place it in
-    #if LOCAL_TO_MODALVIEW
     UIView *viewToAddInputView = self.view.superview;
     CGRect appearanceRect = self.view.frame;
     CGRect vf = customInputView.frame; // viewToAddInputView coords
@@ -1845,55 +1843,6 @@ static NSInteger numObjs = 0;
     CGSize sizeFromBottom = vf.size;
     sizeFromBottom.height += gf.origin.y+gf.size.height-lowerLeftCorner.y;
     [self makeRoomForInputViewOfSize:sizeFromBottom];
-    #else
-    CGRect appearanceRect = detailTableView.window.rootViewController.view.bounds; // in root view controller coords
-    CGRect vf = customInputView.frame;
-    // size input view to root view width
-    vf.size.width = appearanceRect.size.width;
-    vf.origin.x = appearanceRect.origin.x;
-    // starts off-screen at bottom
-    vf.origin.y = appearanceRect.origin.y+appearanceRect.size.height;
-    // have table adjust for showing input view
-    [self makeRoomForInputViewOfSize:vf.size];
-    // figure out view to add input view to
-    #warning "%%% works on iPhone, not yet in all modal/popover cases on iPad.
-  
-    // %%% show view hierarchy and some special views
-    UIView *dddv = self.view;
-    while (dddv) {
-      DBGNSLOG(@"View: %@",dddv.description);
-      if (dddv==dddv.superview)
-        break;
-      dddv = dddv.superview;
-    }
-    DBGNSLOG(@"navigationController.presentingViewController.view: %@",self.navigationController.presentingViewController.view.description);
-    DBGNSLOG(@"parentViewController.view: %@",self.parentViewController.view.description);
-    DBGNSLOG(@"navigationController.parentViewController.view: %@",self.navigationController.parentViewController.view.description);
-    DBGNSLOG(@"modalViewWrapper.view: %@",modalViewWrapper.view.description);
-    DBGNSLOG(@"modalViewWrapper.presentingViewController.view: %@",modalViewWrapper.presentingViewController.view.description);
-
-    UIView *viewToAddInputView = nil;
-    if (modalViewWrapper==nil) {
-      // not modally presented, just use my parent
-      viewToAddInputView = self.parentViewController.view;
-    }
-    else {
-      viewToAddInputView = modalViewWrapper.presentingViewController.view;
-    
-//      // presented modally, use superview of wrapper 
-//      viewToAddInputView = modalViewWrapper.view.superview;
-//      // hack for iPad - make sure we get a non-clipped view
-//      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        if (modalViewWrapper.modalPresentationStyle==UIModalPresentationFormSheet) {
-//          if (viewToAddInputView.clipsToBounds) {
-//            viewToAddInputView = viewToAddInputView.superview;
-//          }
-//        }
-//      }
-    }
-    // bring input view frame into coordinates of view where it is being added
-    vf = [detailTableView.window.rootViewController.view convertRect:vf toView:viewToAddInputView];
-    #endif
     // now present
     DBGNSLOG(@"viewToAddInputView: %@",viewToAddInputView.description);
     DBGSHOWRECT(@"customInputView.frame (viewToAddInputView coords)",vf);
