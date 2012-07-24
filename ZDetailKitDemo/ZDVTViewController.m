@@ -30,18 +30,30 @@
 
 @implementation ZDVTViewController
 @synthesize plan44linkLabel;
+@synthesize presentationModeSegControl;
 
+
+#define SEGINDEX_NAV 0
+#define SEGINDEX_PAGE 1
+#define SEGINDEX_SHEET 2
+#define SEGINDEX_FULL 3
+#define SEGINDEX_POPOVER 4
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+  if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+    self.presentationModeSegControl.selectedSegmentIndex = SEGINDEX_NAV; // default for iPhone is pushing details onto navigation controller
+  else
+    self.presentationModeSegControl.selectedSegmentIndex = SEGINDEX_SHEET; // default for iPad is sheet  
 }
 
 
 - (void)viewDidUnload
 {
-    [self setPlan44linkLabel:nil];
+  [self setPlan44linkLabel:nil];
+  [self setPresentationModeSegControl:nil];
   [super viewDidUnload];
   // Release any retained subviews of the main view.
 }
@@ -49,13 +61,18 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-  return [ZOrientation supportsInterfaceOrientation:interfaceOrientation];
+  // On iPhone, root controller is portrait-only
+  if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+    return interfaceOrientation==UIInterfaceOrientationPortrait;
+  else
+    return [ZOrientation supportsInterfaceOrientation:interfaceOrientation];
 }
 
 
 - (void)dealloc
 {
   [plan44linkLabel release];
+  [presentationModeSegControl release];
   [super dealloc];
 }
 
@@ -328,14 +345,41 @@
 
 
 
+
+#pragma mark - demonstrate presentation in different ways
+
+
 - (void)presentDetails:(ZDetailTableViewController *)dtvc
 {
-  dtvc.modalPresentationStyle = UIModalPresentationFormSheet;
-  if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-    [self presentViewController:[dtvc viewControllerForModalPresentation] animated:YES completion:nil];
+  if (self.presentationModeSegControl.selectedSegmentIndex==SEGINDEX_NAV) {
+    // push onto main navigation controller (iPhone style)
+    [self.navigationController pushViewController:dtvc animated:YES];
   }
   else {
-    [self.navigationController pushViewController:dtvc animated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+      // only one modal style for iPhone, just present
+      [self presentViewController:[dtvc viewControllerForModalPresentation] animated:YES completion:nil];
+    }
+    else {
+      // iPad has variants
+      if (self.presentationModeSegControl.selectedSegmentIndex==SEGINDEX_POPOVER) {
+        // special case, create popover
+        UIPopoverController *pop = [[UIPopoverController alloc] initWithContentViewController:[dtvc viewControllerForModalPresentation]];
+        [pop presentPopoverFromRect:presentationModeSegControl.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+      }
+      else {
+        // present modally
+        // - set presentation mode
+        if (self.presentationModeSegControl.selectedSegmentIndex==SEGINDEX_SHEET)
+          dtvc.modalPresentationStyle = UIModalPresentationFormSheet;
+        else if (self.presentationModeSegControl.selectedSegmentIndex==SEGINDEX_PAGE)
+          dtvc.modalPresentationStyle = UIModalPresentationPageSheet;
+        else
+          dtvc.modalPresentationStyle = UIModalPresentationFullScreen;
+        // - present
+        [self presentViewController:[dtvc viewControllerForModalPresentation] animated:YES completion:nil];
+      }
+    }
   }
 }
 
@@ -398,4 +442,6 @@
 
 
 
+- (IBAction)navModeChanged:(id)sender {
+}
 @end
