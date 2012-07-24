@@ -472,11 +472,10 @@ static NSInteger numObjs = 0;
   if ([v isKindOfClass:[UITableView class]]) {
   	UITableView *tv = (UITableView *)v;
     CGRect r = [tv rectForRowAtIndexPath:[tv indexPathForCell:self]];
-    CGRect wr = [tv convertRect:r toView:nil];
-    // report progress message
+    // send rectangle (in tableview coordinates)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:@"EditingInRect"
-      object:[NSValue valueWithCGRect:wr]
+      object:[NSValue valueWithCGRect:r]
     ];
   }  
 }

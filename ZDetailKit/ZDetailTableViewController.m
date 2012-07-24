@@ -1679,27 +1679,30 @@ static NSInteger numObjs = 0;
 
 - (void)bringEditRectInView
 {
-  // edit rect is in coordinates of the navigation controller, which might have been moved already by
-  // iOS keyboard appearance logic (e.g. form sheets or popovers are moved up)
-  // - convert edit rect to now-current (possibly already moved) root view controller coordinates 
-  CGRect er = [self.navigationController.view convertRect:editRect toView:self.view.window.rootViewController.view];
-  // see if keyboard will obscure the rectangle being edited
-  CGFloat minYthatMustBeVisible = (er.origin.y+er.size.height+MIN_SPACE_ABOVE_KBD);
-  // also check if possibly detailview itself has been moved/resized such that we need to scroll even further
-  //CGRect nv = [self.view convertRect:self.view.frame toView:self.view.window.rootViewController.view];
-  CGRect nv = [self.navigationController.view convertRect:self.navigationController.view.frame toView:self.view.window.rootViewController.view];
-  CGFloat bottomOfDetailView = nv.origin.y+nv.size.height;
-  CGFloat up = 0;
-  if (bottomOfDetailView < minYthatMustBeVisible) {
-    // actual detail view ends above what keyboard restriction is -> use lower bound of detailview itself as reference for moving up
-    up = minYthatMustBeVisible-bottomOfDetailView;
-  }
-  else {
-    // top of input view/keyboard is the limit - scroll up accordingly
-    up = minYthatMustBeVisible-topOfInputView;
-  }
-  // scroll if not high enough above keyboard
   if (!CGRectIsNull(editRect)) {
+    // edit rect is in coordinates of the navigation controller, which might have been moved already by
+    // iOS keyboard appearance logic (e.g. form sheets or popovers are moved up)
+    // - convert edit rect from tableview coordinates to now-current (possibly already moved) root view controller coordinates 
+    CGRect er = [self.detailTableView convertRect:editRect toView:self.view.window.rootViewController.view];
+    // see if keyboard will obscure the rectangle being edited
+    CGFloat minYthatMustBeVisible = er.origin.y+er.size.height+MIN_SPACE_ABOVE_KBD;
+    // also check if possibly detailview itself has been moved/resized such that we need to scroll even further
+    CGRect nv = [self.view.superview convertRect:self.view.frame toView:self.view.window.rootViewController.view];
+    CGFloat bottomOfDetailView = nv.origin.y+nv.size.height;
+    DBGNSLOG(@"Start: minYthatMustBeVisible=%f, bottomOfDetailView=%f, topOfInputView=%f", minYthatMustBeVisible, bottomOfDetailView, topOfInputView);
+    // calculate how much to scroll to make sure we see the editRect above the input view
+    CGFloat up = minYthatMustBeVisible-topOfInputView;
+    if (up>0) {
+      // adjust for what "up" already corrects
+      minYthatMustBeVisible = topOfInputView;
+    }
+    // check if that's enough, possibly we need more because bottom of detail view is even higher
+    if (bottomOfDetailView < minYthatMustBeVisible) {
+      // actual detail view ends above what keyboard restriction is -> move up even further
+      up += minYthatMustBeVisible-bottomOfDetailView;
+    }
+    DBGNSLOG(@"End: minYthatMustBeVisible=%f, up=%f", minYthatMustBeVisible, up);
+    // scroll if not high enough above keyboard
     if (up>0) {
       // animate content offset to move edited cell above keyboard
       CGPoint co = detailTableView.contentOffset;
@@ -1720,6 +1723,8 @@ static NSInteger numObjs = 0;
         [detailTableView setContentOffset:co animated:YES];
       }
     }
+    // consumed now
+    editRect = CGRectNull;
   }
 }
 
@@ -1727,15 +1732,11 @@ static NSInteger numObjs = 0;
 - (void)editingInRect:(NSNotification *)aNotification
 {
 	// save the rectangle where we are editing
-  CGRect r = [[aNotification object] CGRectValue]; // in window coords (unrotated)
-  // - convert to navigation controller coordinates (not yet root controller,
-  //   because navigation controller might get moved e.g. in iPad sheet presentation mode)
-  editRect = [self.navigationController.view convertRect:r fromView:nil];
-  DBGSHOWRECT(@"editingInRect (navigationController coords)",editRect);
+  editRect = [[aNotification object] CGRectValue]; // in table view coordinates
+  DBGSHOWRECT(@"editingInRect (tableView coords)",editRect);
   if (topOfInputView>0) {
+    // input view is already determined
     [self bringEditRectInView];
-    // consumed now
-    editRect = CGRectNull;
   }
 }
 
@@ -1744,7 +1745,6 @@ static NSInteger numObjs = 0;
 {
   // get root view controller's bounds, which should be fullscreen, but rotated to current orientation 
   CGRect rvcb = detailTableView.window.rootViewController.view.bounds;
-  DBGSHOWRECT(@"detailTableView.window.rootViewController.view.bounds", rvcb);
   topOfInputView = rvcb.size.height-aInputViewSize.height; // in root view coords
   // always add a table footer with the size of the input view plus min space - this makes the table scrollable up to show last cell above the input view
 	if (detailTableView.tableFooterView==nil) {
@@ -1787,16 +1787,19 @@ static NSInteger numObjs = 0;
   kf = [detailTableView convertRect:kf fromView:nil]; // keyboard frame in tableview coordinates
   DBGSHOWRECT(@"UIKeyboardFrameEndUserInfoKey (in tableview coords)",kf);
   inputViewSize = kf.size;
-  [self makeRoomForInputViewOfSize:inputViewSize];
-  // don't consume edit rect yet, we might need recalculation
+  // in modal views on iPad, don't make room yet, as we need to wait until all keyboard magic is done
+  if (modalViewWrapper==nil || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    [self makeRoomForInputViewOfSize:inputViewSize];    
+  }
 }
 
 
 - (void)keyboardDidShow:(NSNotification *)aNotification
 {
-  [self makeRoomForInputViewOfSize:inputViewSize];
-	// consumed now
-  editRect = CGRectNull;
+  // in modal views on iPad, we need to wait until here, because only now all keyboard magic is done
+  if (modalViewWrapper && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    [self makeRoomForInputViewOfSize:inputViewSize];
+  }
 }
 
 
@@ -1826,8 +1829,6 @@ static NSInteger numObjs = 0;
     vf.origin.x = rvb.origin.x;
     // have table adjust for showing input view
     [self makeRoomForInputViewOfSize:vf.size];
-    // consumed now
-    editRect = CGRectNull;
     // starts off-screen at bottom
     vf.origin.y = rvb.origin.y+rvb.size.height;
     // figure out view to add input view to
@@ -1844,23 +1845,22 @@ static NSInteger numObjs = 0;
     DBGNSLOG(@"navigationController.presentingViewController.view: %@",self.navigationController.presentingViewController.view.description);
     DBGNSLOG(@"parentViewController.view: %@",self.parentViewController.view.description);
     DBGNSLOG(@"navigationController.parentViewController.view: %@",self.navigationController.parentViewController.view.description);
-    DBGNSLOG(@"self.modalViewController.view: %@",self.modalViewController.view.description);
-    DBGNSLOG(@"self.modalViewController.presentingViewController.view: %@",self.modalViewController.presentingViewController.view.description);
+    DBGNSLOG(@"modalViewWrapper.view: %@",modalViewWrapper.view.description);
+    DBGNSLOG(@"modalViewWrapper.presentingViewController.view: %@",modalViewWrapper.presentingViewController.view.description);
 
-    UIViewController *vc = self.navigationController.presentingViewController;
     UIView *viewToAddInputView = nil;
-    if (self.modalViewController==nil) {
+    if (modalViewWrapper==nil) {
       // not modally presented, just use my parent
       viewToAddInputView = self.parentViewController.view;
     }
     else {
-      viewToAddInputView = self.modalViewController.presentingViewController.view;
+      viewToAddInputView = modalViewWrapper.presentingViewController.view;
     
 //      // presented modally, use superview of wrapper 
-//      viewToAddInputView = self.modalViewController.view.superview;
+//      viewToAddInputView = modalViewWrapper.view.superview;
 //      // hack for iPad - make sure we get a non-clipped view
 //      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        if (self.modalViewController.modalPresentationStyle==UIModalPresentationFormSheet) {
+//        if (modalViewWrapper.modalPresentationStyle==UIModalPresentationFormSheet) {
 //          if (viewToAddInputView.clipsToBounds) {
 //            viewToAddInputView = viewToAddInputView.superview;
 //          }
