@@ -430,7 +430,10 @@ static NSInteger numObjs = 0;
 // called to have non-value display details being updated (like labels, placeholders etc.)
 - (void)updateForDisplay
 {
-  if (autoSetDescriptionLabelText) {
+  if (
+    autoSetDescriptionLabelText && // enabled
+    (self.descriptionViewAdjustment & ZDetailCellItemAdjustHide)==0 // not explicitly hidden
+  ) {
     // make sure description label text is set
     self.descriptionLabel.text = self.labelText;
   }
@@ -834,8 +837,8 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
     // do not try to layout anything before we have the content view
     if (cv!=nil) {
       // assume both shown, if geometry demands, one or the other will be hidden below
-      BOOL valueShown = YES;
-      BOOL descriptionShown = YES;
+      BOOL valueShown = (self.valueViewAdjustment & ZDetailCellItemAdjustHide)==0;
+      BOOL descriptionShown = (self.descriptionViewAdjustment & ZDetailCellItemAdjustHide)==0;
       // configure geometry
       CGFloat cellWidth = self.bounds.size.width;
       // determine start of X coordinate of value part:
@@ -893,18 +896,23 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
         );
       }
       // extend views in case other view does not use its full size (only if both shown at all)
-      if (valueShown && descriptionShown) {
-        // - description
-        CGFloat room = vf.origin.x-valueStartXinContent;
-        if (descriptionShown && room>0 && (self.descriptionViewAdjustment & ZDetailCellItemAdjustExtend)) {
-          df.size.width += room; // extend by what value does not use
-        }
-        // - value
-        room = valueStartXinContent - (df.origin.x+df.size.width+self.labelValueMargin);
-        if (valueShown && room>0 && (self.valueViewAdjustment & ZDetailCellItemAdjustExtend)) {
-          vf.origin.x -= room; // move left by what description does not use 
-          vf.size.width += room; // extend by what description does not use 
-        }
+      CGFloat room = 0;
+      // - possibly extend description
+      if (valueShown)
+        room = vf.origin.x-valueStartXinContent; // use what is not used by value
+      else
+        room = contentStartX+contentWidth-valueStartXinContent; // use entire space
+      if (descriptionShown && room>0 && (self.descriptionViewAdjustment & ZDetailCellItemAdjustExtend)) {
+        df.size.width += room; // extend by what value does not use
+      }
+      // - possibly extend value
+      if (descriptionShown)
+        room = valueStartXinContent - (df.origin.x+df.size.width+self.labelValueMargin); // use what is not used by description
+      else
+        room = valueStartXinContent-contentStartX; // use entire space
+      if (valueShown && room>0 && (self.valueViewAdjustment & ZDetailCellItemAdjustExtend)) {
+        vf.origin.x -= room; // move left by what description does not use 
+        vf.size.width += room; // extend by what description does not use 
       }
       // assign hidden and frames
       BOOL canHide = self.descriptionView!=self.valueView;

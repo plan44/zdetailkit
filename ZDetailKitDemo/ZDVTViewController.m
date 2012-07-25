@@ -81,6 +81,29 @@
 {
   [dtvc setBuildDetailContentHandler:^(ZDetailTableViewController *c) {
     // IMPORTANT: do not use "dtvc" in blocks, as it would create a retain cycle!
+    [c startSectionWithText:@"Table Config" asTitle:YES];
+    /* layout */ {
+      ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
+      sl.valueConnector.autoSaveValue = YES;
+      sl.sliderControl.maximumValue = 1.0; // label/value ratio
+      sl.descriptionViewAdjustment = ZDetailCellItemAdjustHide; // hide
+      sl.sliderControl.value = 1-sl.valueCellShare; // init with current default label/value ratio
+      sl.valueCellShare = 1; // but myself, set full width slider, no label
+      [sl.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+        [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell) {
+          // all except this slider cell
+          if (aCell!=sl) {
+            aCell.valueCellShare = 1-[sl.valueConnector.value doubleValue];
+            [aCell prepareForDisplay];
+          }
+        }];
+        return YES; // fully handled value change
+      }];
+    }
+
+    [c endSection];
+  
+  
     [c startSection];
     // important: don't use etched when there are indented cells!
     c.detailTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
@@ -147,12 +170,12 @@
       co.valueConnector.valueTransformer = [NSValueTransformer valueTransformerForName:@"ZIntToUIColorTransformer"];
       co.valueConnector.autoSaveValue = YES;
     }
-    /* slider for number */ {
-      ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
-      [sl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
-      sl.valueConnector.autoSaveValue = YES;
-      sl.sliderControl.maximumValue = 0xFFFFFF; // 24bit color range
-    }
+//    /* slider for number */ {
+//      ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
+//      [sl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
+//      sl.valueConnector.autoSaveValue = YES;
+//      sl.sliderControl.maximumValue = 0xFFFFFF; // 24bit color range
+//    }
     /* inplace start date text editing cell */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
       t.labelText = @"Start date";

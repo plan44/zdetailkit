@@ -42,7 +42,8 @@ typedef enum {
   ZDetailCellItemAdjustMiddle = 0x40,
   ZDetailCellItemAdjustFillHeight = 0x80,
   ZDetailCellItemAdjustVMask = 0xF0,
-  ZDetailCellItemAdjustExtend = 0x100
+  ZDetailCellItemAdjustExtend = 0x100,
+  ZDetailCellItemAdjustHide = 0x200
 } ZDetailCellItemAdjust;
 
 

@@ -32,8 +32,8 @@
       // set recommended auto style
       self.standardCellHeight = 66; // need room for two color strips
       self.valueViewAdjustment = ZDetailCellItemAdjustFillWidth+ZDetailCellItemAdjustFillHeight+ZDetailCellItemAdjustExtend; // fill available space
-      self.valueLabel.hidden = YES; // don't show value label
-      self.descriptionLabel.hidden = YES; // don't show a description
+      self.descriptionViewAdjustment = ZDetailCellItemAdjustHide;
+      self.valueCellShare = 1.0; // only value
       self.autoSetDescriptionLabelText = NO; // don't set
     }
     // valueConnector
