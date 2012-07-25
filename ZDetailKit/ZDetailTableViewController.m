@@ -461,6 +461,7 @@ static NSInteger numObjs = 0;
 	if (!allSectionsAndCells)
   	allSectionsAndCells = [[NSMutableArray alloc] init];
   [allSectionsAndCells addObject:sectionToAdd];
+  sectionToAdd.overallSectionIndex = allSectionsAndCells.count-1;
   [sectionToAdd release];
 	sectionToAdd = nil;	
   currentSectionsAndCellsDirty = YES;
@@ -533,7 +534,7 @@ static NSInteger numObjs = 0;
   [self addDetailCell:newCell neededGroups:aNeededGroups nowEnabled:aNowEnabled];
   // apply the default configurator
   if (cellSetupHandler) {
-    cellSetupHandler(self,newCell);
+    cellSetupHandler(self,newCell,sectionToAdd.overallSectionIndex);
   }
   // return the cell for further configuration
   return [newCell autorelease];
@@ -568,7 +569,7 @@ static NSInteger numObjs = 0;
 {
   for (ZDetailViewSection *section in allSectionsAndCells) {
     for (ZDetailViewCellHolder *dvch in section.cells) {
-      aIterationBlock(self,dvch.cell);
+      aIterationBlock(self,dvch.cell,section.overallSectionIndex);
     }
   }
 }
@@ -576,9 +577,9 @@ static NSInteger numObjs = 0;
 
 - (void)forEachDetailViewCell:(ZDetailTableViewDetailViewCellIterationHandler)aIterationBlock
 {
-  [self forEachCell:^(ZDetailTableViewController *aController, UITableViewCell *aCell) {
+  [self forEachCell:^(ZDetailTableViewController *aController, UITableViewCell *aCell, NSInteger aSectionNo) {
     if ([aCell conformsToProtocol:@protocol(ZDetailViewCell)]) {
-      aIterationBlock(self,(UITableViewCell<ZDetailViewCell> *)aCell);
+      aIterationBlock(self,(UITableViewCell<ZDetailViewCell> *)aCell, aSectionNo);
     }
   }];
 }
@@ -586,9 +587,9 @@ static NSInteger numObjs = 0;
 
 - (void)forEachDetailViewBaseCell:(ZDetailTableViewDetailBaseCellIterationHandler)aIterationBlock
 {
-  [self forEachCell:^(ZDetailTableViewController *aController, UITableViewCell *aCell) {
+  [self forEachCell:^(ZDetailTableViewController *aController, UITableViewCell *aCell, NSInteger aSectionNo) {
     if ([aCell isKindOfClass:[ZDetailViewBaseCell class]]) {
-      aIterationBlock(self,(ZDetailViewBaseCell *)aCell);
+      aIterationBlock(self,(ZDetailViewBaseCell *)aCell, aSectionNo);
     }
   }];
 }
@@ -680,7 +681,7 @@ static NSInteger numObjs = 0;
       connector.active = aCellsActive;
     }    
     // cells
-    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell) {
+    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
       // set active/inactive state
       [aCell setActive:cellsActive];
     }];
@@ -725,7 +726,7 @@ static NSInteger numObjs = 0;
 	[self defocusAllBut:nil]; // defocus all cells
   if (self.cellsActive) {
     // let all cells save their data first (controller level values might depend)
-    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell) {
+    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
       [aCell saveCell];
     }];
     // let controller level value connectors save now (might depend on cells)
@@ -746,7 +747,7 @@ static NSInteger numObjs = 0;
 	[self defocusAllBut:nil]; // defocus all cells
   if (self.cellsActive) {
     // let all cells reload their data
-    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell) {
+    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
       [aCell loadCell];
     }];
     // let controller level value connectors revert
@@ -1442,7 +1443,7 @@ static NSInteger numObjs = 0;
 // update cell display modes
 - (void)updateCellsDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated
 {
-  [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell) {
+  [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
     [aCell setDisplayMode:aMode animated:aAnimated];
   }];
 }

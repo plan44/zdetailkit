@@ -77,31 +77,146 @@
 }
 
 
+#pragma mark - setting up the big sample dialog
+
+
+// layout control section
+- (void)setupLayoutControlSection:(ZDetailTableViewController *)c
+{   
+  [c startSectionWithText:@"Table Config" asTitle:YES];
+  /* Cell content editing (toggle) */ {
+    ZButtonCell *b = [c detailCell:[ZButtonCell class]];
+    b.buttonStyle = ZButtonCellStyleCenterText;
+    b.tableEditingStyle = UITableViewCellEditingStyleNone; 
+    b.labelText = @"Editing on/off";
+    [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
+      [c setDisplayMode:c.displayMode ^ ZDetailDisplayModeEditing+ZDetailDisplayModeViewing animated:YES];
+      return YES; // handled
+    }];
+  }
+  /* layout: separation between description and text */ {
+    ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
+    sl.valueConnector.autoSaveValue = YES;
+    sl.sliderControl.maximumValue = 1.0; // label/value ratio
+    sl.descriptionViewAdjustment = ZDetailCellItemAdjustHide; // hide
+    sl.sliderControl.value = 1-sl.valueCellShare; // init with current default label/value ratio
+    sl.valueCellShare = 1; // but myself, set full width slider, no label
+    [sl.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+      [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell, NSInteger aSectionNo) {
+        // layout section itself is not changed
+        if (aSectionNo>0) {
+          aCell.valueCellShare = 1-[aConnector.value doubleValue];
+          [aCell prepareForDisplay];
+        }
+      }];
+      return YES; // fully handled value change
+    }];
+  }
+  /* layout: cell indentation */ {
+    ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
+    sl.valueConnector.autoSaveValue = YES;
+    sl.labelText = @"Indent";
+    sl.sliderControl.maximumValue = 150; // label/value ratio
+    sl.sliderControl.value = sl.contentIndent; // init with current default content indent
+    [sl.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+      [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell, NSInteger aSectionNo) {
+        // layout section itself is not changed
+        if (aSectionNo>0) {
+          aCell.contentIndent = [aConnector.value doubleValue];
+          [aCell prepareForDisplay];
+        }
+      }];
+      return YES; // fully handled value change
+    }];
+  }
+  /* Details */ {
+    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
+    sw.labelText = @"Show more...";
+    sw.valueConnector.autoSaveValue = YES;
+    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+      if ([aConnector.value boolValue])
+        [c setDisplayMode:c.displayMode | (ZDetailDisplayModeDetails+ZDetailDisplayModeBasics) animated:YES];
+      else
+        [c setDisplayMode:c.displayMode & ~(ZDetailDisplayModeDetails+ZDetailDisplayModeBasics) animated:YES];
+      return YES; // fully handled value change
+    }];
+  }
+  [c endSection];
+}
+
+
+#define GROUP_CONTROLS 0x0001
+#define GROUP_TEXTEDIT 0x0002
+#define GROUP_CHOOSERS 0x0004
+
+
+
+
+// cells with controls
+- (void)setupControlCellSection:(ZDetailTableViewController *)c
+{
+  [c startSection];
+  /* Group on/off */ {
+    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
+    sw.labelText = @"Controls";
+    sw.valueConnector.autoSaveValue = YES;
+    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+      [c changeDisplayedGroups:GROUP_CONTROLS toVisible:[aConnector.value boolValue] animated:YES];
+      return YES; // fully handled value change
+    }];
+  }
+  // Now the conditionally shown sample cells
+  /* switch cell switch control */ {
+    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class] neededGroups:GROUP_CONTROLS];
+    sw.labelText = @"Switch Bit 0";
+    sw.bitMask = 0x01;
+    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
+    sw.valueConnector.autoSaveValue = YES;
+  }
+  /* switch cell using checkmark toggle */ {
+    ZSwitchCell *t = [c detailCell:[ZSwitchCell class] neededGroups:GROUP_CONTROLS];
+    t.labelText = @"Switch Bit 1 inversed";
+    t.inverse = YES;
+    t.bitMask = 0x02;
+    [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
+    t.valueConnector.autoSaveValue = YES;
+  }
+  /* switch cell using checkmark toggle */ {
+    ZSwitchCell *t = [c detailCell:[ZSwitchCell class] neededGroups:GROUP_CONTROLS];
+    t.labelText = @"Boolean checkmark";
+    t.checkMark = YES;
+    [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
+    t.valueConnector.autoSaveValue = YES;
+  }
+  /* Numeric result in inplace number editing cell */ {
+    ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class] neededGroups:GROUP_CONTROLS];
+    t.labelText = @"Result";
+    t.descriptionLabel.numberOfLines = 2;
+    t.editInDetailView = NO;
+    NSNumberFormatter *fmt = [[[NSNumberFormatter alloc] init] autorelease];
+    fmt.numberStyle = NSNumberFormatterDecimalStyle;
+    t.valueConnector.formatter = fmt;
+    [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
+    t.valueConnector.autoSaveValue = YES;
+  }
+  [c endSection];  
+}
+
+
+
+
 - (void)setupDetails:(ZDetailTableViewController *)dtvc
 {
   [dtvc setBuildDetailContentHandler:^(ZDetailTableViewController *c) {
     // IMPORTANT: do not use "dtvc" in blocks, as it would create a retain cycle!
-    [c startSectionWithText:@"Table Config" asTitle:YES];
-    /* layout */ {
-      ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
-      sl.valueConnector.autoSaveValue = YES;
-      sl.sliderControl.maximumValue = 1.0; // label/value ratio
-      sl.descriptionViewAdjustment = ZDetailCellItemAdjustHide; // hide
-      sl.sliderControl.value = 1-sl.valueCellShare; // init with current default label/value ratio
-      sl.valueCellShare = 1; // but myself, set full width slider, no label
-      [sl.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
-        [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell) {
-          // all except this slider cell
-          if (aCell!=sl) {
-            aCell.valueCellShare = 1-[sl.valueConnector.value doubleValue];
-            [aCell prepareForDisplay];
-          }
-        }];
-        return YES; // fully handled value change
-      }];
-    }
-
+    // configuration split into sections for clarity
+    [self setupLayoutControlSection:c];
+    // intermediate title
+    [c startSectionWithText:@"Samples" asTitle:YES];
     [c endSection];
+    // sample sections
+    [self setupControlCellSection:c];
+
   
   
     [c startSection];
@@ -332,27 +447,6 @@
     }
     [c endSection];
     [c startSectionWithText:@"More stuff" asTitle:YES];
-    /* Button */ {
-      ZButtonCell *b = [c detailCell:[ZButtonCell class]];
-      b.buttonStyle = ZButtonCellStyleCenterText;
-      b.contentIndent = 50;
-      b.labelText = @"Edit Values on/off";
-      [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
-        [c setDisplayMode:c.displayMode ^ ZDetailDisplayModeEditing+ZDetailDisplayModeViewing animated:YES];
-        return YES; // handled
-      }];
-    }
-    /* Button */ {
-      ZButtonCell *b = [c detailCell:[ZButtonCell class]];
-      b.buttonStyle = ZButtonCellStyleCenterText;
-      b.contentIndent = 50;
-      b.tableEditingStyle = UITableViewCellEditingStyleNone; 
-      b.labelText = @"Details on/off";
-      [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
-        [c setDisplayMode:c.displayMode ^ ZDetailDisplayModeDetails+ZDetailDisplayModeBasics animated:YES];
-        return YES; // handled
-      }];
-    }
     /* inplace editing cell */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
       t.labelText = @"Inplace edit 2";
@@ -449,7 +543,7 @@
   // set the navigation mode
   dtvc.navigationMode = ZDetailNavigationModeRightButtonTableEditDone|ZDetailNavigationModeLeftButtonAuto;
   // this handler is called to apply non-standard styling for every cell
-  [dtvc setCellSetupHandler:^(ZDetailTableViewController *aController, UITableViewCell *aNewCell) {
+  [dtvc setCellSetupHandler:^(ZDetailTableViewController *aController, UITableViewCell *aNewCell, NSInteger aSectionNo) {
     // specific styling applied to every cell
     if ([aNewCell isKindOfClass:[ZDetailViewBaseCell class]]) {
       ZDetailViewBaseCell *cell = (ZDetailViewBaseCell *)aNewCell;
