@@ -31,6 +31,8 @@ typedef enum {
 typedef BOOL (^ZDetailTableViewBuildContentHandler)(ZDetailTableViewController *aController);
 typedef void (^ZDetailTableViewDidCloseHandler)(ZDetailTableViewController *aController, BOOL cancelled);
 typedef void (^ZDetailTableViewCellIterationHandler)(ZDetailTableViewController *aController, UITableViewCell *aCell);
+typedef void (^ZDetailTableViewDetailViewCellIterationHandler)(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell);
+typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell);
 
 
 
@@ -64,6 +66,9 @@ typedef void (^ZDetailTableViewCellIterationHandler)(ZDetailTableViewController 
 - (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
 - (void)addDetailCell:(UITableViewCell *)aCell enabled:(BOOL)aEnabled;
 - (void)addDetailCell:(UITableViewCell *)aCell;
+- (void)forEachCell:(ZDetailTableViewCellIterationHandler)aIterationBlock;
+- (void)forEachDetailViewCell:(ZDetailTableViewDetailViewCellIterationHandler)aIterationBlock;
+- (void)forEachDetailViewBaseCell:(ZDetailTableViewDetailBaseCellIterationHandler)aIterationBlock;
 
 
 // appearance and behaviour properties

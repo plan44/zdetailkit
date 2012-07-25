@@ -408,7 +408,7 @@ static NSInteger numObjs = 0;
 
 
 
-#pragma mark - adding editing sections and cells
+#pragma mark - configuring sections and cells
 
 
 
@@ -564,6 +564,39 @@ static NSInteger numObjs = 0;
 }
 
 
+- (void)forEachCell:(ZDetailTableViewCellIterationHandler)aIterationBlock
+{
+  for (ZDetailViewSection *section in allSectionsAndCells) {
+    for (ZDetailViewCellHolder *dvch in section.cells) {
+      aIterationBlock(self,dvch.cell);
+    }
+  }
+}
+
+
+- (void)forEachDetailViewCell:(ZDetailTableViewDetailViewCellIterationHandler)aIterationBlock
+{
+  [self forEachCell:^(ZDetailTableViewController *aController, UITableViewCell *aCell) {
+    if ([aCell conformsToProtocol:@protocol(ZDetailViewCell)]) {
+      aIterationBlock(self,(UITableViewCell<ZDetailViewCell> *)aCell);
+    }
+  }];
+}
+
+
+- (void)forEachDetailViewBaseCell:(ZDetailTableViewDetailBaseCellIterationHandler)aIterationBlock
+{
+  [self forEachCell:^(ZDetailTableViewController *aController, UITableViewCell *aCell) {
+    if ([aCell isKindOfClass:[ZDetailViewBaseCell class]]) {
+      aIterationBlock(self,(ZDetailViewBaseCell *)aCell);
+    }
+  }];
+}
+
+
+
+
+
 #pragma mark - controller level value connectors
 
 
@@ -647,14 +680,10 @@ static NSInteger numObjs = 0;
       connector.active = aCellsActive;
     }    
     // cells
-    for (ZDetailViewSection *section in allSectionsAndCells) {
-      for (ZDetailViewCellHolder *dvch in section.cells) {
-        // set active/inactive state
-        if ([dvch.cell conformsToProtocol:@protocol(ZDetailViewCell)]) {
-          [(id<ZDetailViewCell>)dvch.cell setActive:cellsActive];
-        }
-      }
-    }
+    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell) {
+      // set active/inactive state
+      [aCell setActive:cellsActive];
+    }];
   }
 }
 
@@ -696,13 +725,9 @@ static NSInteger numObjs = 0;
 	[self defocusAllBut:nil]; // defocus all cells
   if (self.cellsActive) {
     // let all cells save their data first (controller level values might depend)
-    for (ZDetailViewSection *section in allSectionsAndCells) {
-      for (ZDetailViewCellHolder *dvch in section.cells) {
-        if ([dvch.cell conformsToProtocol:@protocol(ZDetailViewCell)]) {
-          [(id<ZDetailViewCell>)dvch.cell saveCell];
-        }
-      }
-    }
+    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell) {
+      [aCell saveCell];
+    }];
     // let controller level value connectors save now (might depend on cells)
     for (ZDetailValueConnector *connector in valueConnectors) {
       [connector saveValue];
@@ -721,12 +746,9 @@ static NSInteger numObjs = 0;
 	[self defocusAllBut:nil]; // defocus all cells
   if (self.cellsActive) {
     // let all cells reload their data
-    for (ZDetailViewSection *section in allSectionsAndCells) {
-      for (ZDetailViewCellHolder *dvch in section.cells) {
-        if ([dvch.cell conformsToProtocol:@protocol(ZDetailViewCell)])
-          [(id<ZDetailViewCell>)dvch.cell loadCell]; // reload data into cell
-      }
-    }
+    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell) {
+      [aCell loadCell];
+    }];
     // let controller level value connectors revert
     for (ZDetailValueConnector *connector in valueConnectors) {
       [connector loadValue];
@@ -1420,14 +1442,9 @@ static NSInteger numObjs = 0;
 // update cell display modes
 - (void)updateCellsDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated
 {
-  for (ZDetailViewSection *section in allSectionsAndCells) {
-    for (ZDetailViewCellHolder *dvch in section.cells) {
-    	// set the new mode
-      if ([dvch.cell conformsToProtocol:@protocol(ZDetailViewCell)]) {
-        [(id<ZDetailViewCell>)dvch.cell setDisplayMode:aMode animated:aAnimated];
-      }
-    }
-  }  
+  [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell) {
+    [aCell setDisplayMode:aMode animated:aAnimated];
+  }];
 }
 
 
