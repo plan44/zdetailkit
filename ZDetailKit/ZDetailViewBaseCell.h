@@ -78,11 +78,17 @@ typedef enum {
 
 // handlers for customizing behaviour
 @property (copy, nonatomic) ZDetailCellVisibleInModeHandler cellVisibleInModeHandler;
+- (void)setCellVisibleInModeHandler:(ZDetailCellVisibleInModeHandler)cellVisibleInModeHandler; // declaration needed only for XCode autocompletion of block
 @property (copy, nonatomic) ZDetailCellConnectionHandler valueChangedHandler;
+- (void)setValueChangedHandler:(ZDetailCellConnectionHandler)valueChangedHandler; // declaration needed only for XCode autocompletion of block
 @property (copy, nonatomic) ZDetailCellTapHandler tapHandler;
+- (void)setTapHandler:(ZDetailCellTapHandler)tapHandler; // declaration needed only for XCode autocompletion of block
 @property (copy, nonatomic) ZDetailCellEditorFinishedHandler editorFinishedHandler;
+- (void)setEditorFinishedHandler:(ZDetailCellEditorFinishedHandler)editorFinishedHandler; // declaration needed only for XCode autocompletion of block
 @property (copy, nonatomic) ZDetailCellEditingEndedHandler editingEndedHandler;
+- (void)setEditingEndedHandler:(ZDetailCellEditingEndedHandler)editingEndedHandler; // declaration needed only for XCode autocompletion of block
 @property (copy, nonatomic) ZDetailCellConnectionHandler validationStatusHandler;
+- (void)setValidationStatusHandler:(ZDetailCellConnectionHandler)validationStatusHandler; // declaration needed only for XCode autocompletion of block
 
 // customizing look and behaviour
 @property (retain, nonatomic) NSString *labelText; // text for description label - defaults to keyPath of first valueConnector

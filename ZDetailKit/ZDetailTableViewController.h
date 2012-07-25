@@ -30,7 +30,7 @@ typedef enum {
 
 typedef BOOL (^ZDetailTableViewBuildContentHandler)(ZDetailTableViewController *aController);
 typedef void (^ZDetailTableViewDidCloseHandler)(ZDetailTableViewController *aController, BOOL cancelled);
-typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aController, UITableViewCell *aNewCell);
+typedef void (^ZDetailTableViewCellIterationHandler)(ZDetailTableViewController *aController, UITableViewCell *aCell);
 
 
 
@@ -42,6 +42,7 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 
 // content building
 @property (copy,nonatomic) ZDetailTableViewBuildContentHandler buildDetailContentHandler;
+- (void)setBuildDetailContentHandler:(ZDetailTableViewBuildContentHandler)buildDetailContentHandler; // declaration needed only for XCode autocompletion of block
 - (BOOL)buildDetailContent; // can be overridden in subclasses, returns YES if actually built content
 
 // adding editing sections and cells
@@ -53,7 +54,8 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 - (void)endSectionAndSortBy:(NSString *)aKey ascending:(BOOL)aAscending;
 // - cells
 @property (assign, nonatomic) ZDetailViewCellStyle defaultCellStyle; // style to be used to create default cells
-@property (copy, nonatomic) ZDetailTableViewCellSetupHandler cellSetupHandler; // called on every cell added by detailCell:... method
+@property (copy, nonatomic) ZDetailTableViewCellIterationHandler cellSetupHandler; // called on every cell added by detailCell:... method
+- (void)setCellSetupHandler:(ZDetailTableViewCellIterationHandler)cellSetupHandler; // declaration needed only for XCode autocompletion of block
 - (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
 - (id)detailCell:(Class)aClass neededGroups:(NSUInteger)aNeededGroups;
 - (id)detailCell:(Class)aClass enabled:(BOOL)aEnabled;
@@ -89,6 +91,7 @@ typedef void (^ZDetailTableViewCellSetupHandler)(ZDetailTableViewController *aCo
 @property (readonly, nonatomic) id<ZDetailViewController> rootDetailViewController;
 
 @property (copy,nonatomic) ZDetailTableViewDidCloseHandler detailDidCloseHandler; // will be called after closing a detail editor
+- (void)setDetailDidCloseHandler:(ZDetailTableViewDidCloseHandler)detailDidCloseHandler; // declaration needed only for XCode autocompletion of block
 
 // operating
 - (void)internalInit;

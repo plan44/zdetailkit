@@ -20,7 +20,7 @@ typedef ZDetailViewBaseCell *(^ZChoicesManagerBuildCellHandler)(ZChoiceListContr
 
 @property (assign, nonatomic) BOOL selectionCloses;
 @property (copy, nonatomic) ZChoicesManagerBuildCellHandler buildCellHandler;
-
+- (void)setBuildCellHandler:(ZChoicesManagerBuildCellHandler)buildCellHandler; // declaration needed only for XCode autocompletion of block
 
 @property (readonly, nonatomic) ZChoicesManager *choicesManager;
 @property (readonly, nonatomic) ZDetailValueConnector *valueConnector;

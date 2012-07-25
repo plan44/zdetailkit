@@ -63,8 +63,11 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 @property (readonly, nonatomic) BOOL validated; // check if value is validated
 @property (readonly, nonatomic) NSError *validationError; // nil if validation ok, error otherwise
 @property (copy, nonatomic) ZDetailValueConnectorHandler valueChangedHandler;
+- (void)setValueChangedHandler:(ZDetailValueConnectorHandler)valueChangedHandler;
 @property (copy, nonatomic) ZDetailValueConnectorValidationHandler validationHandler;
+- (void)setValidationHandler:(ZDetailValueConnectorValidationHandler)validationHandler; // declaration needed only for XCode autocompletion of block
 @property (copy, nonatomic) ZDetailValueConnectorHandler validationChangedHandler;
+- (void)setValidationChangedHandler:(ZDetailValueConnectorHandler)validationChangedHandler; // declaration needed only for XCode autocompletion of block
 - (void)saveValue; // save the value to the container/keyPath. DO NOT DERIVE!
 - (void)loadValue; // load (revert) the value from model in container/keyPath. DO NOT DERIVE!
 - (BOOL)validatesWithErrors:(NSMutableArray **)aErrorsP; // convenience method to collect possible validation errors from connectors

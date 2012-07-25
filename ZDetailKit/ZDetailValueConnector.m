@@ -112,9 +112,6 @@
 
 
 
-//#warning "%%% Use keyPathsForValuesAffectingValueForKey for groups of properties, like linked dates, allday flags etc."
-
-
 - (void)connectTargetValue
 {
   if (active && target && keyPath) {
