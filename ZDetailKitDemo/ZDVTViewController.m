@@ -148,6 +148,7 @@
 #define GROUP_CONTROLS 0x0001
 #define GROUP_TEXTEDIT 0x0002
 #define GROUP_CHOOSERS 0x0004
+#define GROUP_DATETIME 0x0008
 
 
 
@@ -189,16 +190,6 @@
     [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
     t.valueConnector.autoSaveValue = YES;
   }
-  /* segment choice cell */ {
-    ZSegmentChoicesCell *sg = [c detailCell:[ZSegmentChoicesCell class] neededGroups:GROUP_CONTROLS];
-    sg.labelText = @"Segmented Choices";
-    [sg.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
-    [sg.choicesManager addChoice:@"0" order:1 key:[NSNumber numberWithInt:0]];
-    [sg.choicesManager addChoice:@"1" order:2 key:[NSNumber numberWithInt:1]];
-    [sg.choicesManager addChoice:@"2" order:3 key:[NSNumber numberWithInt:2]];
-    [sg.choicesManager addChoice:@"3" order:4 key:[NSNumber numberWithInt:3]];
-    sg.valueConnector.autoSaveValue = YES;
-  }
   /* Numeric result in inplace number editing cell */ {
     ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class] neededGroups:GROUP_CONTROLS];
     t.labelText = @"Result";
@@ -214,22 +205,209 @@
 }
 
 
+- (void)setupTextCellSection:(ZDetailTableViewController *)c
+{
+  [c startSection];
+  /* Group on/off */ {
+    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
+    sw.labelText = @"Text Editing";
+    sw.valueConnector.autoSaveValue = YES;
+    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"showTextEditing"];
+    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+      [c changeDisplayedGroups:GROUP_TEXTEDIT toVisible:[aConnector.value boolValue] animated:YES];
+      return NO; // don't abort handling process
+    }];
+  }
+  /* inplace editing cell */ {
+    ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class] neededGroups:GROUP_TEXTEDIT];
+    t.labelText = @"Text field";
+    t.editInDetailView = NO;
+    t.returnKeyType = UIReturnKeyNext;
+    [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testText"];
+    t.valueConnector.autoSaveValue = YES;
+  }
+  /* password editing cell */ {
+    ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class] neededGroups:GROUP_TEXTEDIT];
+    t.labelText = @"Secure Entry";
+    t.editInDetailView = NO;
+    t.returnKeyType = UIReturnKeyNext;
+    t.secureTextEntry = YES;
+    [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testText"];
+    t.valueConnector.autoSaveValue = YES;
+  }
+  /* separate editor */ {
+    ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class] neededGroups:GROUP_TEXTEDIT];
+    t.labelText = @"Separate Editor";
+    t.descriptionLabel.numberOfLines = 0;
+    t.editInDetailView = YES;
+    t.largeEditor = YES;
+    [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testText"];
+    t.valueConnector.autoSaveValue = YES;
+  }
+  /* inplace textView editing cell */ {
+    ZTextViewCell *t = [c detailCell:[ZTextViewCell class] neededGroups:GROUP_TEXTEDIT];
+    t.labelText = @"Autosizing text view";
+    t.descriptionLabel.numberOfLines = 0;
+    t.editInDetailView = NO;
+    t.multiline = YES;
+    t.returnKeyType = UIReturnKeyNext;
+    t.descriptionViewAdjustment = ZDetailCellItemAdjustTop;
+    t.valueViewAdjustment = ZDetailCellItemAdjustTop;
+    t.autoAdjustHeight = YES;
+    t.adjustWhileTyping = YES;
+    t.standardCellHeight = 88;
+    t.maxCellHeight = 300;
+    t.textView.dataDetectorTypes = UIDataDetectorTypeAll;
+    [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"longTestText"];
+    t.valueConnector.autoSaveValue = YES;
+  }
+  /* textView editing cell with separate editor */ {
+    ZTextViewCell *t = [c detailCell:[ZTextViewCell class] neededGroups:GROUP_TEXTEDIT];
+    t.labelText = @"text view with separate editor";
+    t.descriptionLabel.numberOfLines = 0;
+    t.editInDetailView = YES;
+    t.multiline = YES;
+    t.descriptionViewAdjustment = ZDetailCellItemAdjustTop;
+    t.valueViewAdjustment = ZDetailCellItemAdjustTop;
+    t.autoAdjustHeight = YES;
+    t.standardCellHeight = 88;
+    t.maxCellHeight = 120;
+    t.textView.dataDetectorTypes = UIDataDetectorTypeAll;
+    [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"longTestText"];
+    t.valueConnector.autoSaveValue = YES;
+  }
+  [c endSection];
+}
 
+
+- (void)setupChoicesCellSection:(ZDetailTableViewController *)c
+{
+  [c startSection];
+  /* Group on/off */ {
+    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
+    sw.labelText = @"Multiple Choices";
+    sw.valueConnector.autoSaveValue = YES;
+    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"showChoosers"];
+    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+      [c changeDisplayedGroups:GROUP_CHOOSERS toVisible:[aConnector.value boolValue] animated:YES];
+      return NO; // don't abort handling process
+    }];
+  }
+  /* segment choice cell */ {
+    ZSegmentChoicesCell *sg = [c detailCell:[ZSegmentChoicesCell class] neededGroups:GROUP_CHOOSERS];
+    sg.labelText = @"Segmented Choices";
+    [sg.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
+    [sg.choicesManager addChoice:@"0" order:1 key:[NSNumber numberWithInt:0]];
+    [sg.choicesManager addChoice:@"1" order:2 key:[NSNumber numberWithInt:1]];
+    [sg.choicesManager addChoice:@"2" order:3 key:[NSNumber numberWithInt:2]];
+    [sg.choicesManager addChoice:@"3" order:4 key:[NSNumber numberWithInt:3]];
+    sg.valueConnector.autoSaveValue = YES;
+  }
+  [c endSection];
+}
+
+
+- (void)setupDateCellSection:(ZDetailTableViewController *)c
+{
+  [c startSection];
+  /* Group on/off */ {
+    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
+    sw.labelText = @"Dates";
+    sw.valueConnector.autoSaveValue = YES;
+    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"showDates"];
+    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+      [c changeDisplayedGroups:GROUP_DATETIME toVisible:[aConnector.value boolValue] animated:YES];
+      return NO; // don't abort handling process
+    }];
+  }
+  /* All-day (date only) switch cell switch control */ {
+    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class] neededGroups:GROUP_DATETIME];
+    sw.labelText = @"Allday";
+    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
+    sw.valueConnector.autoSaveValue = YES;
+  }
+  /* inplace dateTime cell */ {
+    ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class] neededGroups:GROUP_DATETIME];
+    d.startDateLabelText = @"Start Date";
+    d.editInDetailView = NO;
+    [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
+    [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
+    d.startDateConnector.autoSaveValue = YES;
+    d.dateOnlyConnector.autoSaveValue = YES;
+  }
+  /* dateTime cell with start+end and external editor */ {
+    ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class] neededGroups:GROUP_DATETIME];
+    d.startDateLabelText = @"Start";
+    d.endDateLabelText = @"End";
+    d.dateOnlyLabelText = @"Allday";
+    d.minuteInterval = 5;
+    d.descriptionLabel.numberOfLines = 2;
+    d.valueLabel.numberOfLines = 2;
+    d.editInDetailView = YES;
+    [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
+    [d.endDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"endDate"];
+    [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
+    d.startDateConnector.nilAllowed = YES;
+    d.endDateConnector.nilAllowed = YES;
+    d.startDateConnector.autoSaveValue = YES;
+    d.endDateConnector.autoSaveValue = YES;
+    d.dateOnlyConnector.autoSaveValue = YES;
+  }
+  [c endSection];
+}
+
+
+/*
+
+ //t.valueConnector.autoSaveValue = YES; // we want to see the other cells updating live!
+ // hardcore: every keypress refreshes table visibility state
+ [t setValueChangedHandler:^(ZDetailViewBaseCell *aCell, ZDetailValueConnector *aConnector) {
+ // immediately save
+ [aConnector saveValue];
+ [c updateCellVisibilitiesAnimated:YES];
+ return NO; // don't prevent other handling activities
+ }];
+ 
+ 
+ */
 
 - (void)setupDetails:(ZDetailTableViewController *)dtvc
 {
   [dtvc setBuildDetailContentHandler:^(ZDetailTableViewController *c) {
     // IMPORTANT: do not use "dtvc" in blocks, as it would create a retain cycle!
     // configuration split into sections for clarity
+    // - important: don't use etched when there are indented cells!
+    c.detailTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    // Create a section with controls allowing live manipulation of the layout
     [self setupLayoutControlSection:c];
     // intermediate title
     [c startSectionWithText:@"Samples" asTitle:YES];
     [c endSection];
     // sample sections
+    // - cells with controls
     [self setupControlCellSection:c];
+    // - cells for text editing
+    [self setupTextCellSection:c];
+    // - choosers
+    [self setupChoicesCellSection:c];
+    // - dates
+    [self setupDateCellSection:c];
     
-    // important: don't use etched when there are indented cells!
-    c.detailTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    
+    
+    
+    // - numbers and dates
+    
+    
+    // - color, location
+    
+    // - special features
+    
+    // only show when not empty, 
+    
+    
+    // %%% old stuff
+    [c startSection];
     /* Button */ {
       ZButtonCell *b = [c detailCell:[ZButtonCell class]];
       b.labelText = @"Hallo";
@@ -250,32 +428,7 @@
         return YES; // handled
       }]; // tapHandler
     } // button
-    /* inplace editing cell */ {
-      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
-      t.labelText = @"Inplace edit";
-      t.editInDetailView = NO;
-      t.returnKeyType = UIReturnKeyNext;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testText"];
-      //t.valueConnector.autoSaveValue = YES; // we want to see the other cells updating live!
-      // hardcore: every keypress refreshes table visibility state
-      [t setValueChangedHandler:^(ZDetailViewBaseCell *aCell, ZDetailValueConnector *aConnector) {
-        // immediately save
-        [aConnector saveValue];
-        [c updateCellVisibilitiesAnimated:YES];
-        return NO; // don't prevent other handling activities
-      }];
-    }
-    /* detailview editing cell */ {
-      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
-      t.labelText = @"Number edit";
-      t.descriptionLabel.numberOfLines = 2;
-      t.editInDetailView = YES;
-      t.largeEditor = YES;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber1"];
-      NSNumberFormatter *fmt = [[[NSNumberFormatter alloc] init] autorelease];
-      fmt.numberStyle = NSNumberFormatterDecimalStyle;
-      t.valueConnector.formatter = fmt;
-    }
+
     /* inplace number editing cell, hex */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
       t.labelText = @"Inplace Number edit";
@@ -322,39 +475,6 @@
       t.valueConnector.formatter = fmt;
       t.valueConnector.autoSaveValue = YES;
       t.valueConnector.saveEmptyAsNil = YES;
-    }
-    /* switch cell switch control */ {
-      ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
-      sw.labelText = @"Allday";
-      [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
-      sw.valueConnector.autoSaveValue = YES;
-    }
-    /* dateTime cell with start+end and external editor */ {
-      ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class]];
-      d.startDateLabelText = @"Begins";
-      d.endDateLabelText = @"Ends";
-      d.dateOnlyLabelText = @"Allday";
-      d.minuteInterval = 5;
-      d.descriptionLabel.numberOfLines = 2;
-      d.valueLabel.numberOfLines = 2;
-      d.editInDetailView = YES;
-      [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
-      [d.endDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"endDate"];
-      [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
-      d.startDateConnector.nilAllowed = YES;
-      d.endDateConnector.nilAllowed = YES;
-      d.startDateConnector.autoSaveValue = YES;
-      d.endDateConnector.autoSaveValue = YES;
-      d.dateOnlyConnector.autoSaveValue = YES;
-    }
-    /* inplace dateTime cell */ {
-      ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class]];
-      d.startDateLabelText = @"Begins";
-      d.editInDetailView = NO;
-      [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
-      [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
-      d.startDateConnector.autoSaveValue = YES;
-      d.dateOnlyConnector.autoSaveValue = YES;
     }
     /* segment choice cell */ {
       ZSegmentChoicesCell *sg = [c detailCell:[ZSegmentChoicesCell class]];
@@ -405,44 +525,6 @@
       cl.choicesManager.mode = ZChoicesManagerModeSingleKey;
       cl.choicesManager.multipleChoices = NO;
       cl.valueConnector.autoSaveValue = YES;
-    }
-    /* password editing cell */ {
-      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
-      t.neededModes = ZDetailDisplayModeEditing+ZDetailDisplayModeDetails;
-      t.labelText = @"Password";
-      t.editInDetailView = NO;
-      t.returnKeyType = UIReturnKeyNext;
-      t.secureTextEntry = YES;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testText"];
-    }
-    /* textView editing cell */ {
-      ZTextViewCell *t = [c detailCell:[ZTextViewCell class]];
-      t.neededModes = ZDetailDisplayModeDetails;
-      t.labelText = @"TextView";
-      t.editInDetailView = YES;
-      t.multiline = YES;
-      t.descriptionViewAdjustment = ZDetailCellItemAdjustTop;
-      t.valueViewAdjustment = ZDetailCellItemAdjustTop;
-      t.autoAdjustHeight = YES;
-      t.standardCellHeight = 88;
-      t.maxCellHeight = 120;
-      t.textView.dataDetectorTypes = UIDataDetectorTypeAll;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"longTestText"];
-    }
-    /* inplace textView editing cell */ {
-      ZTextViewCell *t = [c detailCell:[ZTextViewCell class]];
-      t.neededModes = ZDetailDisplayModeDetails;
-      t.labelText = @"Inplace TV";
-      t.editInDetailView = NO;
-      t.multiline = YES;
-      t.descriptionViewAdjustment = ZDetailCellItemAdjustTop;
-      t.valueViewAdjustment = ZDetailCellItemAdjustTop;
-      t.autoAdjustHeight = YES;
-      t.adjustWhileTyping = YES;
-      t.standardCellHeight = 88;
-      t.maxCellHeight = 300;
-      t.textView.dataDetectorTypes = UIDataDetectorTypeAll;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"longTestText2"];
     }
     /* detailview editing cell */ {
       ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
