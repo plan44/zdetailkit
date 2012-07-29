@@ -59,6 +59,7 @@
     saveEmptyAsNil = NO;
     saveNilAsNull = NO;
     autoUpdateValue = YES; // by default, follow updates of cell value unless dirty
+    callChangedHandlerOnLoad = YES; // value changed handler will be called for load and (when autoUpdateValue is set) for external value changes
     autoRevertOnValidationError = NO; // by default, non-validating values will not be reloaded
     loadedValue = NO; // makes sure that value will be loaded once when connected to remote model, even if autoUpdate is off
     autoValidate = NO; // no autovalidation
@@ -101,7 +102,7 @@
 #pragma mark - remote (model) and internal (usually control) value connection via KVO/KVC
 
 @synthesize target, keyPath;
-@synthesize readonly, autoUpdateValue, autoSaveValue, autoValidate, autoRevertOnValidationError;
+@synthesize readonly, autoUpdateValue, autoSaveValue, autoValidate, autoRevertOnValidationError, callChangedHandlerOnLoad;
 @synthesize active;
 @synthesize unsavedChanges;
 @synthesize valueChangedHandler;
@@ -262,7 +263,9 @@
     // this is the value I am responsible for -> update the cell value
     if (!saving && active && !unsavedChanges && (autoUpdateValue || !loadedValue)) {
       // load new value for cell from remote object
-      if (!loadedValue) needsValidation = YES; // loading needs initial validation to make sure valueForExternal is up-to-date
+      if (!loadedValue) {
+        needsValidation = YES; // loading needs initial validation to make sure valueForExternal is up-to-date
+      }
       loadedValue = YES; // now loaded, only update further if autoUpdate is set
       loading = YES;
       id newVal = [aChange objectForKey:NSKeyValueChangeNewKey];
@@ -271,6 +274,9 @@
         newVal = nil; 
       self.value = newVal;
       loading = NO;
+      if (callChangedHandlerOnLoad && valueChangedHandler) {
+        valueChangedHandler(self);
+      }
     }
   }
   else if (aObject==owner && [aKeyPath isEqualToString:[self valuePath]]) {
@@ -582,6 +588,9 @@
   if (active && target && keyPath) {
     self.value = [target valueForKeyPath:keyPath];
     needsValidation = YES; // in case we had a validation error before, this is needed to clear it
+    if (callChangedHandlerOnLoad && valueChangedHandler) {
+      valueChangedHandler(self);
+    }
   }
 }
 

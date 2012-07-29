@@ -160,9 +160,10 @@
     ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
     sw.labelText = @"Controls";
     sw.valueConnector.autoSaveValue = YES;
+    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"showControls"];
     [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
       [c changeDisplayedGroups:GROUP_CONTROLS toVisible:[aConnector.value boolValue] animated:YES];
-      return YES; // fully handled value change
+      return NO; // don't abort handling process
     }];
   }
   // Now the conditionally shown sample cells
@@ -187,6 +188,16 @@
     t.checkMark = YES;
     [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
     t.valueConnector.autoSaveValue = YES;
+  }
+  /* segment choice cell */ {
+    ZSegmentChoicesCell *sg = [c detailCell:[ZSegmentChoicesCell class] neededGroups:GROUP_CONTROLS];
+    sg.labelText = @"Segmented Choices";
+    [sg.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
+    [sg.choicesManager addChoice:@"0" order:1 key:[NSNumber numberWithInt:0]];
+    [sg.choicesManager addChoice:@"1" order:2 key:[NSNumber numberWithInt:1]];
+    [sg.choicesManager addChoice:@"2" order:3 key:[NSNumber numberWithInt:2]];
+    [sg.choicesManager addChoice:@"3" order:4 key:[NSNumber numberWithInt:3]];
+    sg.valueConnector.autoSaveValue = YES;
   }
   /* Numeric result in inplace number editing cell */ {
     ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class] neededGroups:GROUP_CONTROLS];
@@ -216,10 +227,7 @@
     [c endSection];
     // sample sections
     [self setupControlCellSection:c];
-
-  
-  
-    [c startSection];
+    
     // important: don't use etched when there are indented cells!
     c.detailTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     /* Button */ {
