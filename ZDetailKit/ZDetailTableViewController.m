@@ -137,7 +137,7 @@
   // and other properties
   if ([cell conformsToProtocol:@protocol(ZDetailViewCell)]) {
     // not just a ordinary cell, but one of our own, ask for visibility
-    vis = [(id<ZDetailViewCell>)cell nowVisibleInMode:aMode];
+    vis = vis && [(id<ZDetailViewCell>)cell nowVisibleInMode:aMode];
   }
   return vis;
 }
