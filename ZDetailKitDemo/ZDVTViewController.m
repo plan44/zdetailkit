@@ -145,28 +145,43 @@
 }
 
 
+
+- (void)startGroup:(NSInteger)aGroup title:(NSString *)aTitle withSwitch:(BOOL)aWithSwitch inController:(ZDetailTableViewController *)c
+{
+  if (aWithSwitch) {
+    /* Group on/off */ {
+      ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
+      sw.labelText = aTitle;
+      sw.valueConnector.autoSaveValue = YES;
+      [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:[@"show" stringByAppendingString:aTitle]];
+      [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+        [c changeDisplayedGroups:aGroup toVisible:[aConnector.value boolValue] animated:YES];
+        return NO; // don't abort handling process
+      }];
+    }
+  }
+  else {
+    [c changeGroups:aGroup toVisible:YES];
+  }
+}
+
+
+
+
 #define GROUP_CONTROLS 0x0001
 #define GROUP_TEXTEDIT 0x0002
 #define GROUP_CHOOSERS 0x0004
 #define GROUP_DATETIME 0x0008
-
+#define GROUP_SPECIAL 0x0010
 
 
 
 // cells with controls
-- (void)setupControlCellSection:(ZDetailTableViewController *)c
+- (void)setupControlCellSection:(ZDetailTableViewController *)c withGroupSwitch:(BOOL)aWithGroupSwitch
 {
   [c startSection];
-  /* Group on/off */ {
-    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
-    sw.labelText = @"Controls";
-    sw.valueConnector.autoSaveValue = YES;
-    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"showControls"];
-    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
-      [c changeDisplayedGroups:GROUP_CONTROLS toVisible:[aConnector.value boolValue] animated:YES];
-      return NO; // don't abort handling process
-    }];
-  }
+  // add group switch for showing / hiding the group when aWithGroupSwitch is YES
+  [self startGroup:GROUP_CONTROLS title:@"Controls" withSwitch:aWithGroupSwitch inController:c];
   // Now the conditionally shown sample cells
   /* switch cell switch control */ {
     ZSwitchCell *sw = [c detailCell:[ZSwitchCell class] neededGroups:GROUP_CONTROLS];
@@ -190,6 +205,15 @@
     [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
     t.valueConnector.autoSaveValue = YES;
   }
+  /* slider showing value */ {
+    ZSliderCell *sl = [c detailCell:[ZSliderCell class] neededGroups:GROUP_CONTROLS];
+    sl.labelText = @"Slider";
+    sl.valueConnector.autoSaveValue = YES;
+    sl.sliderControl.maximumValue = 5; // label/value ratio
+    sl.sliderControl.minimumValue = 0;
+    [sl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
+    sl.valueConnector.autoSaveValue = YES;
+  }
   /* Numeric result in inplace number editing cell */ {
     ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class] neededGroups:GROUP_CONTROLS];
     t.labelText = @"Result";
@@ -205,19 +229,11 @@
 }
 
 
-- (void)setupTextCellSection:(ZDetailTableViewController *)c
+- (void)setupTextCellSection:(ZDetailTableViewController *)c withGroupSwitch:(BOOL)aWithGroupSwitch
 {
   [c startSection];
-  /* Group on/off */ {
-    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
-    sw.labelText = @"Text Editing";
-    sw.valueConnector.autoSaveValue = YES;
-    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"showTextEditing"];
-    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
-      [c changeDisplayedGroups:GROUP_TEXTEDIT toVisible:[aConnector.value boolValue] animated:YES];
-      return NO; // don't abort handling process
-    }];
-  }
+  // add group switch for showing / hiding the group when aWithGroupSwitch is YES
+  [self startGroup:GROUP_TEXTEDIT title:@"Text" withSwitch:aWithGroupSwitch inController:c];
   /* inplace editing cell */ {
     ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class] neededGroups:GROUP_TEXTEDIT];
     t.labelText = @"Text field";
@@ -280,46 +296,69 @@
 }
 
 
-- (void)setupChoicesCellSection:(ZDetailTableViewController *)c
+- (void)setupChoicesCellSection:(ZDetailTableViewController *)c withGroupSwitch:(BOOL)aWithGroupSwitch
 {
   [c startSection];
-  /* Group on/off */ {
-    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
-    sw.labelText = @"Multiple Choices";
-    sw.valueConnector.autoSaveValue = YES;
-    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"showChoosers"];
-    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
-      [c changeDisplayedGroups:GROUP_CHOOSERS toVisible:[aConnector.value boolValue] animated:YES];
-      return NO; // don't abort handling process
-    }];
-  }
+  [self startGroup:GROUP_CHOOSERS title:@"Choosers" withSwitch:aWithGroupSwitch inController:c];
   /* segment choice cell */ {
     ZSegmentChoicesCell *sg = [c detailCell:[ZSegmentChoicesCell class] neededGroups:GROUP_CHOOSERS];
-    sg.labelText = @"Segmented Choices";
-    [sg.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
+    sg.descriptionViewAdjustment = ZDetailCellItemAdjustHide; // only segmented control, no label
+    [sg.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"choicesNumber"];
     [sg.choicesManager addChoice:@"0" order:1 key:[NSNumber numberWithInt:0]];
     [sg.choicesManager addChoice:@"1" order:2 key:[NSNumber numberWithInt:1]];
-    [sg.choicesManager addChoice:@"2" order:3 key:[NSNumber numberWithInt:2]];
-    [sg.choicesManager addChoice:@"3" order:4 key:[NSNumber numberWithInt:3]];
+    [sg.choicesManager addChoice:@"3" order:3 key:[NSNumber numberWithInt:3]];
     sg.valueConnector.autoSaveValue = YES;
+  }
+  /* single choice list */ {
+    ZChoiceListCell *cl = [c detailCell:[ZChoiceListCell class] neededGroups:GROUP_CHOOSERS];
+    cl.labelText = @"Single Choice";
+    [cl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"choicesNumber"];
+    [cl.choicesManager addChoice:@"Zero" order:1 key:[NSNumber numberWithInt:0]];
+    [cl.choicesManager addChoice:@"One" order:2 key:[NSNumber numberWithInt:1]];
+    [cl.choicesManager addChoice:@"Two" order:3 key:[NSNumber numberWithInt:2]];
+    [cl.choicesManager addChoice:@"Three" order:4 key:[NSNumber numberWithInt:3]];
+    [cl.choicesManager addChoice:@"Four" order:5 key:[NSNumber numberWithInt:4]];
+    [cl.choicesManager addChoice:@"Five" order:6 key:[NSNumber numberWithInt:5]];
+    cl.choicesManager.mode = ZChoicesManagerModeSingleKey;
+    cl.choicesManager.multipleChoices = NO;
+    cl.valueConnector.autoSaveValue = YES;
+  }
+  /* multiple choice list */ {
+    ZChoiceListCell *cl = [c detailCell:[ZChoiceListCell class] neededGroups:GROUP_CHOOSERS];
+    cl.labelText = @"Multiple Choice";
+    [cl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"choicesSet"];
+    [cl.choicesManager addChoice:@"Albatross" order:2 key:[NSNumber numberWithInt:1]];
+    [cl.choicesManager addChoice:@"Baer" order:3 key:[NSNumber numberWithInt:2]];
+    [cl.choicesManager addChoice:@"Cheetah" order:4 key:[NSNumber numberWithInt:3]];
+    [cl.choicesManager addChoice:@"Duck" order:5 key:[NSNumber numberWithInt:4]];
+    [cl.choicesManager addChoice:@"Elephant" order:6 key:[NSNumber numberWithInt:5]];
+    cl.choicesManager.mode = ZChoicesManagerModeKeySet;
+    cl.choicesManager.multipleChoices = YES;
+    cl.valueConnector.autoSaveValue = YES;
+  }
+  /* orderable list with enable/disable */ {
+    ZChoiceListCell *cl = [c detailCell:[ZChoiceListCell class] neededGroups:GROUP_CHOOSERS];
+    cl.labelText = @"Orderable";
+    [cl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"choicesDict"];
+    [cl.choicesManager addChoice:@"Eleven" summary:@"11" order:1 key:[NSNumber numberWithInt:11]];
+    [cl.choicesManager addChoice:@"Twentytwo" summary:@"22" order:2 key:[NSNumber numberWithInt:22]];
+    [cl.choicesManager addChoice:@"Thirthythree" summary:@"33" order:3 key:[NSNumber numberWithInt:33]];
+    [cl.choicesManager addChoice:@"Fortytwo" summary:@"42" order:4 key:[NSNumber numberWithInt:42]];
+    [cl.choicesManager addChoice:@"Fiftyfive"  summary:@"55" order:5 key:[NSNumber numberWithInt:55]];
+    cl.choicesManager.mode = ZChoicesManagerModeDictArray;
+    cl.choicesManager.multipleChoices = YES;
+    cl.choicesManager.reorderable = YES;
+    cl.valueConnector.autoSaveValue = NO;
   }
   [c endSection];
 }
 
 
-- (void)setupDateCellSection:(ZDetailTableViewController *)c
+- (void)setupDateCellSection:(ZDetailTableViewController *)c withGroupSwitch:(BOOL)aWithGroupSwitch
 {
   [c startSection];
-  /* Group on/off */ {
-    ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
-    sw.labelText = @"Dates";
-    sw.valueConnector.autoSaveValue = YES;
-    [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"showDates"];
-    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
-      [c changeDisplayedGroups:GROUP_DATETIME toVisible:[aConnector.value boolValue] animated:YES];
-      return NO; // don't abort handling process
-    }];
-  }
+  // add group switch for showing / hiding the group when aWithGroupSwitch is YES
+  [self startGroup:GROUP_DATETIME title:@"Dates" withSwitch:aWithGroupSwitch inController:c];
   /* All-day (date only) switch cell switch control */ {
     ZSwitchCell *sw = [c detailCell:[ZSwitchCell class] neededGroups:GROUP_DATETIME];
     sw.labelText = @"Allday";
@@ -357,19 +396,72 @@
 }
 
 
-/*
+- (void)setupSpecialCellSection:(ZDetailTableViewController *)c withGroupSwitch:(BOOL)aWithGroupSwitch
+{
+  [c startSection];
+  // add group switch for showing / hiding the group when aWithGroupSwitch is YES
+  [self startGroup:GROUP_SPECIAL title:@"Special" withSwitch:aWithGroupSwitch inController:c];
+  /* color represented as int */ {
+    ZColorChooserCell *co = [c detailCell:[ZColorChooserCell class] neededGroups:GROUP_SPECIAL];
+    [co.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"colorNumber"];
+    co.valueConnector.valueTransformer = [NSValueTransformer valueTransformerForName:@"ZIntToUIColorTransformer"];
+    co.valueConnector.autoSaveValue = YES;
+  }
+  /* slider for number */ {
+    ZSliderCell *sl = [c detailCell:[ZSliderCell class] neededGroups:GROUP_SPECIAL];
+    [sl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"colorNumber"];
+    sl.valueConnector.autoSaveValue = YES;
+    sl.sliderControl.maximumValue = 0xFFFFFF; // 24bit color range
+  }
+  /* inplace number editing cell */ {
+    ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class] neededGroups:GROUP_SPECIAL];
+    t.labelText = @"24bit Color";
+    t.descriptionLabel.numberOfLines = 2;
+    t.editInDetailView = NO;
+    [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"colorNumber"];
+    NSNumberFormatter *fmt = [[[NSNumberFormatter alloc] init] autorelease];
+    fmt.numberStyle = kCFNumberFormatterNoStyle;
+    t.valueConnector.formatter = fmt;
+    t.valueConnector.autoSaveValue = YES;
+  }
+  [c endSection];
+}
 
- //t.valueConnector.autoSaveValue = YES; // we want to see the other cells updating live!
- // hardcore: every keypress refreshes table visibility state
- [t setValueChangedHandler:^(ZDetailViewBaseCell *aCell, ZDetailValueConnector *aConnector) {
- // immediately save
- [aConnector saveValue];
- [c updateCellVisibilitiesAnimated:YES];
- return NO; // don't prevent other handling activities
- }];
- 
- 
- */
+
+
+
+- (void)setupSubMenu:(ZDetailTableViewController *)c withTitle:(NSString *)aTitle sectionBuilder:(void (^)(ZDetailTableViewController *c))aSectionBuilder
+{
+  /* Button */ {
+    ZButtonCell *b = [c detailCell:[ZButtonCell class]];
+    b.labelText = aTitle;
+    [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
+      // open subdetail
+      ZDetailTableViewController *dtvc2 = [ZDetailTableViewController controllerWithTitle:aTitle];
+      [dtvc2 setBuildDetailContentHandler:^(ZDetailTableViewController *c2) {
+        aSectionBuilder(c2);
+        return YES; // built
+      }];
+      [c pushViewControllerForDetail:dtvc2 animated:YES];
+      return YES; // handled
+    }]; // tapHandler
+  } // button
+}
+
+
+- (void)setupSubMenus:(ZDetailTableViewController *)c
+{
+  // include all the demo sections above again, but this time each one as a submenu
+  [c startSectionWithText:@"Same as Sub-Details" asTitle:YES];
+  // create a button cell for each of the demo categories
+  [self setupSubMenu:c withTitle:@"Controls" sectionBuilder:^(ZDetailTableViewController *c){ [self setupControlCellSection:c withGroupSwitch:NO]; }];
+  [self setupSubMenu:c withTitle:@"Text" sectionBuilder:^(ZDetailTableViewController *c){ [self setupTextCellSection:c withGroupSwitch:NO]; }];
+  [self setupSubMenu:c withTitle:@"Choosers" sectionBuilder:^(ZDetailTableViewController *c){ [self setupChoicesCellSection:c withGroupSwitch:NO]; }];
+  [self setupSubMenu:c withTitle:@"Dates" sectionBuilder:^(ZDetailTableViewController *c){ [self setupDateCellSection:c withGroupSwitch:NO]; }];
+  [self setupSubMenu:c withTitle:@"Special" sectionBuilder:^(ZDetailTableViewController *c){ [self setupSpecialCellSection:c withGroupSwitch:NO]; }];
+  [c endSection];
+}
+
 
 - (void)setupDetails:(ZDetailTableViewController *)dtvc
 {
@@ -385,168 +477,19 @@
     [c endSection];
     // sample sections
     // - cells with controls
-    [self setupControlCellSection:c];
+    [self setupControlCellSection:c withGroupSwitch:YES];
     // - cells for text editing
-    [self setupTextCellSection:c];
+    [self setupTextCellSection:c withGroupSwitch:YES];
     // - choosers
-    [self setupChoicesCellSection:c];
+    [self setupChoicesCellSection:c withGroupSwitch:YES];
     // - dates
-    [self setupDateCellSection:c];
-    
-    
-    
-    
-    // - numbers and dates
-    
-    
-    // - color, location
-    
-    // - special features
-    
-    // only show when not empty, 
-    
-    
-    // %%% old stuff
-    [c startSection];
-    /* Button */ {
-      ZButtonCell *b = [c detailCell:[ZButtonCell class]];
-      b.labelText = @"Hallo";
-      [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
-        // open subdetail
-        ZDetailTableViewController *dtvc2 = [ZDetailTableViewController controllerWithTitle:@"Welt"];
-        [dtvc2 setBuildDetailContentHandler:^(ZDetailTableViewController *c2) {
-          [c2 startSection];
-          /* base cell */ {
-            ZDetailViewBaseCell *x = [c2 detailCell:[ZDetailViewBaseCell class]];
-            x.labelText = @"Welt!";
-            x.valueLabel.text = @"Soweit mein Kommentar";
-          }
-          [c2 endSection];
-          return YES; // built
-        }];
-        [c pushViewControllerForDetail:dtvc2 animated:YES];          
-        return YES; // handled
-      }]; // tapHandler
-    } // button
-
-    /* inplace number editing cell, hex */ {
-      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
-      t.labelText = @"Inplace Number edit";
-      t.descriptionLabel.numberOfLines = 2;
-      t.editInDetailView = NO;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
-      NSNumberFormatter *fmt = [[[NSNumberFormatter alloc] init] autorelease];
-      fmt.numberStyle = NSNumberFormatterDecimalStyle;
-      t.valueConnector.formatter = fmt;
-      t.valueConnector.autoSaveValue = YES;
-    }
-    /* color represented as int */ {
-      ZColorChooserCell *co = [c detailCell:[ZColorChooserCell class]];
-      [co.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
-      co.valueConnector.valueTransformer = [NSValueTransformer valueTransformerForName:@"ZIntToUIColorTransformer"];
-      co.valueConnector.autoSaveValue = YES;
-    }
-//    /* slider for number */ {
-//      ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
-//      [sl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
-//      sl.valueConnector.autoSaveValue = YES;
-//      sl.sliderControl.maximumValue = 0xFFFFFF; // 24bit color range
-//    }
-    /* inplace start date text editing cell */ {
-      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
-      t.labelText = @"Start date";
-      t.editInDetailView = NO;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
-      NSDateFormatter *fmt = [[[NSDateFormatter alloc] init] autorelease];
-      fmt.dateStyle = NSDateFormatterMediumStyle;
-      fmt.timeStyle = NSDateFormatterMediumStyle;
-      t.valueConnector.formatter = fmt;
-      t.valueConnector.autoSaveValue = YES;
-      t.valueConnector.saveEmptyAsNil = YES;
-    }
-    /* inplace end date text editing cell */ {
-      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
-      t.labelText = @"End date";
-      t.editInDetailView = NO;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"endDate"];
-      NSDateFormatter *fmt = [[[NSDateFormatter alloc] init] autorelease];
-      fmt.dateStyle = NSDateFormatterMediumStyle;
-      fmt.timeStyle = NSDateFormatterMediumStyle;
-      t.valueConnector.formatter = fmt;
-      t.valueConnector.autoSaveValue = YES;
-      t.valueConnector.saveEmptyAsNil = YES;
-    }
-    /* segment choice cell */ {
-      ZSegmentChoicesCell *sg = [c detailCell:[ZSegmentChoicesCell class]];
-      sg.labelText = @"Segmented Choices";
-      [sg.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
-      [sg.choicesManager addChoice:@"11" order:1 key:[NSNumber numberWithInt:11]];
-      [sg.choicesManager addChoice:@"22" order:2 key:[NSNumber numberWithInt:22]];
-      [sg.choicesManager addChoice:@"33" order:3 key:[NSNumber numberWithInt:33]];
-      sg.valueConnector.autoSaveValue = YES;
-    }
-    /* switch cell switch control */ {
-      ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
-      sw.labelText = @"Switch Bit 0";
-      sw.bitMask = 0x01;
-      [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
-      sw.valueConnector.autoSaveValue = YES;
-    }
-    /* switch cell using checkmark toggle */ {
-      ZSwitchCell *t = [c detailCell:[ZSwitchCell class]];
-      t.labelText = @"!Switch Bit 7";
-      t.inverse = YES;
-      t.bitMask = 0x80;
-      t.checkMark = YES;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
-      t.valueConnector.autoSaveValue = YES;
-    }
-    /* list choice cell */ {
-      ZChoiceListCell *cl = [c detailCell:[ZChoiceListCell class]];
-      cl.labelText = @"Multiple Choices";
-      [cl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testChoices"];
-      [cl.choicesManager addChoice:@"OneOne" summary:@"11" order:1 key:[NSNumber numberWithInt:11]];
-      [cl.choicesManager addChoice:@"TwoTwo" summary:@"22" order:2 key:[NSNumber numberWithInt:22]];
-      [cl.choicesManager addChoice:@"ThreeThree" summary:@"33" order:3 key:[NSNumber numberWithInt:33]];
-      [cl.choicesManager addChoice:@"FourFour" summary:@"44" order:4 key:[NSNumber numberWithInt:44]];
-      [cl.choicesManager addChoice:@"FiveFive"  summary:@"55" order:5 key:[NSNumber numberWithInt:55]];
-      cl.choicesManager.mode = ZChoicesManagerModeDictArray;
-      cl.choicesManager.multipleChoices = YES;
-      cl.choicesManager.reorderable = YES;
-      cl.valueConnector.autoSaveValue = NO;
-    }
-    /* list choice cell */ {
-      ZChoiceListCell *cl = [c detailCell:[ZChoiceListCell class]];
-      cl.labelText = @"Single Choice";
-      [cl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testNumber2"];
-      [cl.choicesManager addChoice:@"One" order:1 key:[NSNumber numberWithInt:111]];
-      [cl.choicesManager addChoice:@"Two" order:2 key:[NSNumber numberWithInt:222]];
-      [cl.choicesManager addChoice:@"Seven" order:3 key:[NSNumber numberWithInt:777]];
-      cl.choicesManager.mode = ZChoicesManagerModeSingleKey;
-      cl.choicesManager.multipleChoices = NO;
-      cl.valueConnector.autoSaveValue = YES;
-    }
-    /* detailview editing cell */ {
-      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
-      t.labelText = @"Nonempty";
-      t.descriptionLabel.numberOfLines = 2;
-      t.neededModes = ZDetailDisplayModeBasicsNonEmpty; // must be non-empty to show up in basic view mode
-      t.editInDetailView = NO;
-      t.returnKeyType = UIReturnKeyNext;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testText"];
-    }
-    [c endSection];
-    [c startSectionWithText:@"More stuff" asTitle:YES];
-    /* inplace editing cell */ {
-      ZTextFieldCell *t = [c detailCell:[ZTextFieldCell class]];
-      t.labelText = @"Inplace edit 2";
-      t.contentIndent = 50;
-//      t.valueCellShare = 0.5;
-      t.editInDetailView = NO;
-      [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"testText"];
-    }
-    [c endSection];
-    return YES; // built
+    [self setupDateCellSection:c withGroupSwitch:YES];
+    // - special
+    [self setupSpecialCellSection:c withGroupSwitch:YES];
+    // - all the same stuff as submenues
+    [self setupSubMenus:c];
+    // built ok
+    return YES;
   }];
 }
 
