@@ -46,7 +46,9 @@
   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
     self.presentationModeSegControl.selectedSegmentIndex = SEGINDEX_NAV; // default for iPhone is pushing details onto navigation controller
   else
-    self.presentationModeSegControl.selectedSegmentIndex = SEGINDEX_SHEET; // default for iPad is sheet  
+    self.presentationModeSegControl.selectedSegmentIndex = SEGINDEX_SHEET; // default for iPad is sheet
+  // active link
+  [self.plan44linkLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(plan44linkTapped)]];
 }
 
 
@@ -69,6 +71,10 @@
 }
 
 
+- (void)plan44linkTapped
+{
+  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://www.plan44.ch"]];
+}
 
 
 #pragma mark - setting up the big sample dialog
