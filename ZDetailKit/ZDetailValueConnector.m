@@ -32,7 +32,7 @@
 
 + (id)connectorWithValuePath:(NSString *)aValuePath owner:(id)aOwner;
 {
-  return [[[self alloc] initWithValuePath:aValuePath owner:aOwner] autorelease];
+  return [[self alloc] initWithValuePath:aValuePath owner:aOwner];
 }
 
 
@@ -79,16 +79,11 @@
   // decativate to remove outside observers
   self.active = NO;
   // forget target
-  self.target = nil;
   self.keyPath = nil;
   // deactivate observation of internal object representing the cellValue
   self.valuePath = nil;
   // release handlers, important, as these may retain other objects!
-  [valueChangedHandler release];
-  [validationHandler release];
-  [validationChangedHandler release];
   // Note: owner itself is not retained
-  [super dealloc];
 }
 
 
@@ -188,11 +183,10 @@
       // release from KVO if we have a keyPath and an target object
       [self disconnectTargetValue];
       // forget old
-      [target release];
       target = nil;
     }
     if (aTarget) {
-      target = [aTarget retain];
+      target = aTarget;
       // connect to new target value via KVO
       [self connectTargetValue];
     }
@@ -207,12 +201,11 @@
       // release from KVO if we have a keyPath and a target object
       [self disconnectTargetValue];
       // forget old
-      [keyPath release];
       keyPath = nil;
     }
     if (aKeyPath) {
       // save
-      keyPath = [aKeyPath retain];
+      keyPath = aKeyPath;
       // register for KVO if we have a target object as well
       [self connectTargetValue];
     }
@@ -304,10 +297,9 @@
     if (valuePath && active) {
       [owner removeObserver:self forKeyPath:valuePath];      
     }
-    [valuePath release];
     valuePath = nil;
     if (aValuePath) {
-      valuePath = [aValuePath retain];
+      valuePath = aValuePath;
       if (active) {
         [owner addObserver:self
           forKeyPath:valuePath
@@ -413,13 +405,11 @@
     needsValidation = NO;
     if (val!=valueForExternal) {
       [self willChangeValueForKey:@"valueForExternal"];
-      [valueForExternal release];
-      valueForExternal = [val retain];
+      valueForExternal = val;
       [self didChangeValueForKey:@"valueForExternal"];
     }
     if (err!=validationError) {
-      [validationError release];
-      validationError = [err retain];
+      validationError = err;
       BOOL handled = NO;
       // - first call handler block, if any
       if (validationChangedHandler) {

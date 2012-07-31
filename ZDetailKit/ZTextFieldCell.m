@@ -37,11 +37,6 @@
 }
 
 
-- (void)dealloc
-{
-	[textField release];
-	[super dealloc];
-}
 
 
 #pragma mark - value management
@@ -49,8 +44,7 @@
 - (void)setEditedText:(NSString *)aEditedText
 {
   if (!samePropertyString(&aEditedText,editedText)) {
-    [editedText release];
-    editedText = [aEditedText retain];
+    editedText = aEditedText;
     if (self.editInDetailView || !self.allowsEditing) {
       // update value label
       if (self.secureTextEntry) {
@@ -135,7 +129,6 @@
     // remove the text field, we have the value label
     if (textField) {
       [textField removeFromSuperview]; // remove from view
-      [textField release];
       textField = nil;
     }
   }

@@ -21,12 +21,12 @@
   BOOL pickerInstalling;
   NSTimeInterval intervalFromMasterDate;
 }
-@property (retain, nonatomic) NSDate *startDate;
-@property (retain, nonatomic) NSDate *endDate;
+@property (strong, nonatomic) NSDate *startDate;
+@property (strong, nonatomic) NSDate *endDate;
 @property (assign, nonatomic) BOOL dateOnly;
-@property (retain, nonatomic) NSDate *suggestedDate;
-@property (retain, nonatomic) NSDate *masterDate;
-@property (retain, nonatomic) NSDate *pickerDate;
+@property (strong, nonatomic) NSDate *suggestedDate;
+@property (strong, nonatomic) NSDate *masterDate;
+@property (strong, nonatomic) NSDate *pickerDate;
 @property (readonly, nonatomic) UIDatePicker *datePicker;
 
 - (void)updateData;
@@ -88,12 +88,6 @@
 }
 
 
-- (void)dealloc
-{
-  [formatter release];
-  [datePicker release];
-	[super dealloc];
-}
 
 
 
@@ -169,7 +163,7 @@
       UIView *iv = dvc.customInputView;
       if (iv && iv.tag==ZDATETIMECELL_INPUTVIEW_TAG && [iv isKindOfClass:[UIDatePicker class]]) {
         // we can use this as-is
-        datePicker = [(UIDatePicker *)iv retain];
+        datePicker = (UIDatePicker *)iv;
       }
     }
     if (datePicker==nil) {
@@ -218,7 +212,6 @@
       ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
       [dvc releaseCustomInputView:datePicker];
     }
-    [datePicker release];
     datePicker = nil;
   }
   [super defocusCell];
@@ -340,8 +333,7 @@
     self.startDateConnector.unsavedChanges = YES;
   }
   if (!sameDate(aStartDate, startDate)) {
-    [startDate release];
-    startDate = [aStartDate retain];
+    startDate = aStartDate;
     [self updateData];
   }
 }
@@ -354,8 +346,7 @@
     self.endDateConnector.unsavedChanges = YES;
   }
   if (!sameDate(aEndDate, endDate)) {
-    [endDate release];
-    endDate = [aEndDate retain];
+    endDate = aEndDate;
     [self updateData];
   }
 }
@@ -373,8 +364,7 @@
 - (void)setSuggestedDate:(NSDate *)aSuggestedDate
 {
   if (!sameDate(aSuggestedDate, suggestedDate)) {
-    [suggestedDate release];
-    suggestedDate = [aSuggestedDate retain];
+    suggestedDate = aSuggestedDate;
   }  
 }
 
@@ -389,8 +379,7 @@
       // update start date, same interval relative to new master date
       self.startDate = [aMasterDate dateByAddingTimeInterval:intervalFromMasterDate];
     }
-    [masterDate release];
-    masterDate = [aMasterDate retain];
+    masterDate = aMasterDate;
     [self updateData];
   }
 }

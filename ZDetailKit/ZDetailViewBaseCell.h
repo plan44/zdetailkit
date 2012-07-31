@@ -50,7 +50,7 @@ typedef enum {
 @interface ZDetailViewBaseCell : UITableViewCell <ZDetailViewCell, ZDetailValueConnectorOwner>
 
 // declaration for ZDetailViewCell protocol
-@property (assign, nonatomic) id<ZDetailCellOwner> cellOwner;
+@property (unsafe_unretained, nonatomic) id<ZDetailCellOwner> cellOwner;
 @property (assign, nonatomic) BOOL active;
 
 
@@ -58,8 +58,8 @@ typedef enum {
 @property (readonly, nonatomic) ZDetailViewCellStyle detailViewCellStyle;
 @property (readonly, nonatomic) UITableViewCellStyle basicCellStyle;
 // aliases for the labels, default to UITableViewCell labels, but can be set to other labels
-@property (retain, nonatomic) UILabel *valueLabel;
-@property (retain, nonatomic) UILabel *descriptionLabel;
+@property (strong, nonatomic) UILabel *valueLabel;
+@property (strong, nonatomic) UILabel *descriptionLabel;
 
 
 // visibility depending on tableController's editing mode
@@ -72,8 +72,8 @@ typedef enum {
 @property (assign, nonatomic) CGFloat contentIndent; // content indent in pixels
 @property (assign, nonatomic) CGSize contentMargins; // content margins
 @property (assign, nonatomic) CGFloat labelValueMargin; // margin between deacription and value
-@property (retain, nonatomic) UIView *valueView; // for custom layout: must contain the view that shows the value 
-@property (retain, nonatomic) UIView *descriptionView; // for custom layout: must contain the view that shows the description
+@property (strong, nonatomic) UIView *valueView; // for custom layout: must contain the view that shows the value 
+@property (strong, nonatomic) UIView *descriptionView; // for custom layout: must contain the view that shows the description
 @property (assign, nonatomic) ZDetailCellItemAdjust descriptionViewAdjustment; // for custom layout: how to adjust description view
 @property (assign, nonatomic) ZDetailCellItemAdjust valueViewAdjustment; // for custom layout: how to adjust value view
 
@@ -92,10 +92,10 @@ typedef enum {
 - (void)setValidationStatusHandler:(ZDetailCellConnectionHandler)validationStatusHandler; // declaration needed only for XCode autocompletion of block
 
 // customizing look and behaviour
-@property (retain, nonatomic) NSString *labelText; // text for description label - defaults to keyPath of first valueConnector
-@property (readonly, nonatomic) NSString *specificLabelText; // returns text specifically set as labelText (is nil if label is autocalculated)
-@property (retain, nonatomic) NSString *detailTitleText; // text for detail editor - defaults to labelText
-@property (retain, nonatomic) NSString *placeholderText; // text for placeholder in editing fields - defaults to detailTitleText
+@property (strong, nonatomic) NSString *labelText; // text for description label - defaults to keyPath of first valueConnector
+@property (weak, readonly, nonatomic) NSString *specificLabelText; // returns text specifically set as labelText (is nil if label is autocalculated)
+@property (strong, nonatomic) NSString *detailTitleText; // text for detail editor - defaults to labelText
+@property (strong, nonatomic) NSString *placeholderText; // text for placeholder in editing fields - defaults to detailTitleText
 @property (assign, nonatomic) BOOL keepSelectedAfterTap; // keep selected after tapping cell
 @property (assign, nonatomic) BOOL autoSetDescriptionLabelText; // if not set, description label will not be touched
 @property (assign, nonatomic) BOOL readOnly;

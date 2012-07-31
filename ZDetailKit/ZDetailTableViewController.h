@@ -40,7 +40,7 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 
 
 // Outlet property for connecting the actual detail table view. 
-@property (retain, nonatomic) IBOutlet UITableView *detailTableView;
+@property (strong, nonatomic) IBOutlet UITableView *detailTableView;
 
 // content building
 @property (copy,nonatomic) ZDetailTableViewBuildContentHandler buildDetailContentHandler;
@@ -91,9 +91,9 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 - (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave;
 - (void)dismissDetailStack;
 @property (assign, nonatomic) ZDetailNavigationMode navigationMode;
-@property (retain, nonatomic) NSString *detailsButtonTitle;
+@property (strong, nonatomic) NSString *detailsButtonTitle;
 // - convenience property - returns root of ZDetailViewController protocol conforming controller chain
-@property (readonly, nonatomic) id<ZDetailViewController> rootDetailViewController;
+@property (unsafe_unretained, readonly, nonatomic) id<ZDetailViewController> rootDetailViewController;
 
 @property (copy,nonatomic) ZDetailTableViewDidCloseHandler detailDidCloseHandler; // will be called after closing a detail editor
 - (void)setDetailDidCloseHandler:(ZDetailTableViewDidCloseHandler)detailDidCloseHandler; // declaration needed only for XCode autocompletion of block

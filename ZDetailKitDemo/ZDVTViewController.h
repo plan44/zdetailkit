@@ -14,7 +14,7 @@
 - (IBAction)prefDetails:(id)sender;
 - (IBAction)taskZDetails:(id)sender;
 
-@property (retain, nonatomic) IBOutlet UILabel *plan44linkLabel;
-@property (retain, nonatomic) IBOutlet UISegmentedControl *presentationModeSegControl;
+@property (strong, nonatomic) IBOutlet UILabel *plan44linkLabel;
+@property (strong, nonatomic) IBOutlet UISegmentedControl *presentationModeSegControl;
 
 @end

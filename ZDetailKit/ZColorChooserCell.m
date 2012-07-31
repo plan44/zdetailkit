@@ -45,11 +45,6 @@
 }
 
 
-- (void)dealloc
-{
-	[colorChooser release];
-	[super dealloc];
-}
 
 
 #pragma mark - cell configuration

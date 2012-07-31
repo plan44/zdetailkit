@@ -17,6 +17,6 @@
 @property (assign, nonatomic) NSUInteger bitMask;
 @property (assign, nonatomic) NSUInteger switchVal;
 
-@property (readonly,nonatomic) ZDetailValueConnector *valueConnector;
+@property (weak, readonly,nonatomic) ZDetailValueConnector *valueConnector;
 
 @end

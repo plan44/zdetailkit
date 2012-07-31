@@ -19,8 +19,8 @@ typedef enum {
 
 
 @interface ZChoiceInfo: NSObject
-@property (retain, nonatomic) id key;
-@property (retain, nonatomic) NSDictionary *choice;
+@property (strong, nonatomic) id key;
+@property (strong, nonatomic) NSDictionary *choice;
 @property (assign, nonatomic) NSUInteger index; // original index to re-identify the choice even after potential reordering
 @property (assign, nonatomic) BOOL selected;
 + (ZChoiceInfo *)choiceWithDict:(NSDictionary *)aChoiceDict selected:(BOOL)aSelected index:(NSUInteger)aIndex;
@@ -50,11 +50,11 @@ typedef enum {
 @property (assign, nonatomic) BOOL reorderable;
 // operation
 @property (assign, nonatomic) BOOL active;
-@property (assign, nonatomic) id<ZChoicesManagerDelegate> delegate;
+@property (unsafe_unretained, nonatomic) id<ZChoicesManagerDelegate> delegate;
 // current choice, formatted according to mode
-@property (retain, nonatomic) id currentChoice;
+@property (strong, nonatomic) id currentChoice;
 // configured list of choices
-@property (retain, nonatomic) NSArray *choicesArray;
+@property (strong, nonatomic) NSArray *choicesArray;
 
 // internal array of choices plus selection status, in display order
 // (for use by subclasses)

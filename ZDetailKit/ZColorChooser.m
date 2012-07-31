@@ -17,21 +17,14 @@
 
 - (void)internalInit
 {
-	hueImage = [[UIImage imageNamed:@"ZCCH_hue.png"] retain];
-  color = [[UIColor yellowColor] retain];
+	hueImage = [UIImage imageNamed:@"ZCCH_hue.png"];
+  color = [UIColor yellowColor];
   hueColor = nil;
   noColorAllowed = YES;
   self.contentMode = UIViewContentModeRedraw;
 }
 
 
-- (void)dealloc
-{
-	[hueImage release];
-	[color release];
-  [hueColor release];
-  [super dealloc];
-}
 
 
 
@@ -57,9 +50,7 @@
 - (void)setColor:(UIColor *)aNewColor
 {
 	if (color!=aNewColor) {
-  	[color release];
-    color = [aNewColor retain];
-    [hueColor release];
+    color = aNewColor;
     hueColor = nil;
     [self setNeedsDisplay];
   }
@@ -122,11 +113,11 @@
         // in degrees: Hue = 180/pi*atan2( sqrt(3)*(G-B) , 2*R-G-B )
         float hue = atan2(sqrt(3)*(green-blue), 2*red-green-blue)/(2*3.1415926535);
         if (hue<0) hue+=1.0;
-        hueColor = [[UIColor colorWithHue:hue saturation:1 brightness:1 alpha:1] retain];
+        hueColor = [UIColor colorWithHue:hue saturation:1 brightness:1 alpha:1];
       }
       else {
         // use default hue
-        hueColor = [[UIColor orangeColor] retain];
+        hueColor = [UIColor orangeColor];
       }
     }
     // - get the middle color
@@ -204,8 +195,7 @@
 {
   if (mode==HUE_MODE) {
     // we are in hue bar
-    [hueColor release];
-    hueColor = [[UIColor colorWithHue:factor saturation:1 brightness:1 alpha:1] retain];
+    hueColor = [UIColor colorWithHue:factor saturation:1 brightness:1 alpha:1];
     [self setNeedsDisplay];
   }
   else if (mode==INTENSITY_MODE) {
@@ -232,15 +222,13 @@
       red = goal + red*(1-factor);
       green = goal + green*(1-factor);
       blue = goal + blue*(1-factor);
-      [color release];
-      color = [[UIColor colorWithRed:red green:green blue:blue alpha:1] retain];
+      color = [UIColor colorWithRed:red green:green blue:blue alpha:1];
       [self setNeedsDisplay];
     }
   }
   else if (mode==CANCEL_MODE) {
     // tap into the preview area: cancel the color
     if (noColorAllowed) {
-      [color release];
       color = nil;
       [self sendActionsForControlEvents:UIControlEventValueChanged];
       [self setNeedsDisplay];

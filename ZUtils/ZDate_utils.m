@@ -133,7 +133,7 @@ static NSTimeZone *cachedTimeZone = nil;
 + (NSTimeZone *)cachedTimezone
 {
   if (!cachedTimeZone) {
-    cachedTimeZone = [[NSTimeZone defaultTimeZone] retain];
+    cachedTimeZone = [NSTimeZone defaultTimeZone];
   }
   return cachedTimeZone;
 }
@@ -143,7 +143,6 @@ static NSTimeZone *cachedTimeZone = nil;
 {
   NSTimeZone *t = cachedTimeZone;
   cachedTimeZone = nil;
-  [t release];
 }
 
 
@@ -196,7 +195,7 @@ static NSTimeZone *cachedTimeZone = nil;
   NSMutableDictionary *td = [[NSThread currentThread] threadDictionary];
   NSCalendar *cal = [td objectForKey:CACHED_CALENDAR_KEY];
   if (!cal) {
-    cal = [[NSCalendar currentCalendar] retain];
+    cal = [NSCalendar currentCalendar];
     [cal setTimeZone:[NSTimeZone cachedTimezone]];
     [td setObject:cal forKey:CACHED_CALENDAR_KEY];
   }
@@ -209,7 +208,7 @@ static NSTimeZone *cachedTimeZone = nil;
   NSMutableDictionary *td = [[NSThread currentThread] threadDictionary];
   NSCalendar *cal = [td objectForKey:CACHED_UTC_CALENDAR_KEY];
   if (!cal) {
-    cal = [[NSCalendar currentCalendar] retain];
+    cal = [NSCalendar currentCalendar];
     [cal setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     [td setObject:cal forKey:CACHED_UTC_CALENDAR_KEY];
   }
@@ -239,7 +238,7 @@ static NSTimeZone *cachedTimeZone = nil;
 
 + (NSDateComponents *)dateComponents
 {
-  return [[[NSDateComponents alloc] init] autorelease];
+  return [[NSDateComponents alloc] init];
 }
 
 

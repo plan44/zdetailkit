@@ -36,12 +36,6 @@
 }
 
 
-- (void)dealloc
-{
-  // as value connectors refer to it, make sure choicesManager stays around for now
-  [choicesManager autorelease]; choicesManager = nil;
-	[super dealloc];
-}
 
 
 #pragma mark - updating

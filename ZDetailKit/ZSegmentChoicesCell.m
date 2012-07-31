@@ -31,11 +31,6 @@
 }
 
 
-- (void)dealloc
-{
-	[segmentedControl release];
-	[super dealloc];
-}
 
 
 #pragma mark - cell configuration

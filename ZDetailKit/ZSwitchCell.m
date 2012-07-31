@@ -50,11 +50,6 @@
 }
 
 
-- (void)dealloc
-{
-	[switchControl release];
-	[super dealloc];
-}
 
 
 #pragma mark - cell configuration
@@ -77,7 +72,7 @@
   if (checkMark) {
     // boolean value is represented by checkmark
     self.valueView = nil; // no value view
-    [switchControl release]; switchControl = nil; // no switch
+     switchControl = nil; // no switch
   }
   else {
     // boolean value is represented by switch control

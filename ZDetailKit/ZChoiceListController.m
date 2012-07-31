@@ -35,12 +35,6 @@
 }
 
 
-- (void)dealloc
-{
-  [buildCellHandler release];
-  [choicesManager release];
-  [super dealloc];
-}
 
 
 #pragma mark - choices list generation

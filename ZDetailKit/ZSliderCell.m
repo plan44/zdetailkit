@@ -41,11 +41,6 @@
 }
 
 
-- (void)dealloc
-{
-	[_sliderControl release];
-	[super dealloc];
-}
 
 
 #pragma mark - cell configuration

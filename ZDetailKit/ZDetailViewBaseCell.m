@@ -88,26 +88,6 @@
 }
 
 
-- (void)dealloc
-{
-  // release handlers, important, as these may retain other objects!
-  [cellVisibleInModeHandler release];
-  [valueChangedHandler release];
-  [tapHandler release];
-  [editorFinishedHandler release];
-  [editingEndedHandler release];
-  [validationStatusHandler release];
-  // release other objects
-  [valueConnectors release];
-  [valueLabel release];
-  [descriptionLabel release];
-  [valueView release];
-  [descriptionView release];
-  [labelText release];
-  [detailTitleText release];
-  [placeholderText release];
-  [super dealloc];
-}
 
 
 
@@ -449,7 +429,7 @@ static NSInteger numObjs = 0;
   // %%% simplistic mechanism in base class: make label red when we have an error
   if (aError) {
     if (nonErrorTextColor==nil)
-      nonErrorTextColor = [self.descriptionLabel.textColor retain]; // capture this
+      nonErrorTextColor = self.descriptionLabel.textColor; // capture this
     self.descriptionLabel.textColor = [UIColor redColor];
   }
   else {

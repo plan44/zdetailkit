@@ -26,7 +26,7 @@
 }
 @property(readonly) NSMutableArray *cells;
 @property(assign) NSUInteger overallSectionIndex;
-@property(retain,nonatomic) id titleTextOrView;
+@property(strong,nonatomic) id titleTextOrView;
 - (id)initFromTemplate:(ZDetailViewSection *)aDetailViewSection;
 @end // ZDetailViewSection
 
@@ -84,20 +84,13 @@
 - (id)initFromTemplate:(ZDetailViewSection *)aDetailViewSection;
 {
 	if ([self init]) {
-  	titleTextOrView = [aDetailViewSection.titleTextOrView retain];
+  	titleTextOrView = aDetailViewSection.titleTextOrView;
     overallSectionIndex = aDetailViewSection.overallSectionIndex;
   }
   return self;
 }
 
 
-- (void)dealloc
-{
-	[cells release];
-  [titleTextOrView release];
-  // done
-  [super dealloc];
-}
 
 @end // ZDetailViewSection
 
@@ -110,7 +103,7 @@
 - (id)initWithCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups
 {
 	if ((self = [super init])) {
-  	cell = [aCell retain];
+  	cell = aCell;
     neededGroups = aNeededGroups;
     // these need to be updated later
     overallRowIndex = 0;
@@ -120,12 +113,6 @@
 }
 
 
-- (void)dealloc
-{
-	[cell release];
-  // done
-  [super dealloc];
-}
 
 
 // true if cell should be visible in the passed mode
@@ -184,7 +171,7 @@
   UINavigationController *modalViewWrapper;
   UIPopoverController *popoverWrapper;
 }
-@property (retain, nonatomic) UITableViewCell *cellThatOpenedChildDetail;
+@property (strong, nonatomic) UITableViewCell *cellThatOpenedChildDetail;
 // private methods
 - (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
 - (void)updateCellsDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated;
@@ -291,7 +278,7 @@
 
 + (id)controllerWithTitle:(NSString *)aTitle
 {
-  ZDetailTableViewController *dvc = [[[self alloc] init] autorelease];
+  ZDetailTableViewController *dvc = [[self alloc] init];
   dvc.title = aTitle;
   dvc.navigationItem.title = aTitle;
   return dvc;
@@ -305,10 +292,10 @@
   // if initialized w/o NIB, autocreate and connect fullscreen table view
   if (self.nibName==nil && self.detailTableView==nil) {
     // no nib AND detail table view not provided by a subclassed loadView already
-    self.detailTableView = [[[UITableView alloc]
+    self.detailTableView = [[UITableView alloc]
       initWithFrame:[[UIScreen mainScreen] applicationFrame]
       style:UITableViewStyleGrouped
-    ] autorelease];
+    ];
     // this is the one and only view
     self.view = detailTableView;
   }
@@ -326,8 +313,7 @@
 {
   if (aDetailTableView!=detailTableView) {
     [detailTableView removeFromSuperview];
-    [detailTableView release];
-    detailTableView = [aDetailTableView retain];
+    detailTableView = aDetailTableView;
     // I need to be datasource and delegate
     detailTableView.delegate = (id)self;
     detailTableView.dataSource = (id)self;
@@ -341,23 +327,7 @@
 - (void) dealloc
 {
   self.cellsActive = NO;
-  self.currentChildDetailViewController = nil;
-  self.cellThatOpenedChildDetail = nil;
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-  // release handlers, important, as these may retain other objects!
-  [buildDetailContentHandler release];
-  [detailDidCloseHandler release];
-  [cellSetupHandler release];
-  // release other objects
-  [valueConnectors release];
-	[detailTableView release];
-  [currentSectionsAndCells release];
-  [allSectionsAndCells release];
-  [sectionToAdd release];
-  [modalViewWrapper release];
-  [popoverWrapper release];
-  // done
-  [super dealloc];
 }
 
 
@@ -442,15 +412,12 @@ static NSInteger numObjs = 0;
     // add views
     [sectionHdrView addSubview:biglbl];
     sectionToAdd.titleTextOrView = sectionHdrView;
-    [sectionHdrView release];
-    [biglbl release];
   }
 }
 
 
 - (void)startSection
 {
-	if (sectionToAdd) [sectionToAdd release];
   sectionToAdd = [[ZDetailViewSection alloc] init];
   sectionToAdd.titleTextOrView = nil;
 }
@@ -462,7 +429,6 @@ static NSInteger numObjs = 0;
   	allSectionsAndCells = [[NSMutableArray alloc] init];
   [allSectionsAndCells addObject:sectionToAdd];
   sectionToAdd.overallSectionIndex = allSectionsAndCells.count-1;
-  [sectionToAdd release];
 	sectionToAdd = nil;	
   currentSectionsAndCellsDirty = YES;
 }
@@ -499,7 +465,6 @@ static NSInteger numObjs = 0;
   ZDetailViewCellHolder *ch = [[ZDetailViewCellHolder alloc] initWithCell:aCell neededGroups:aNeededGroups];
   ch.cellEnabled = aNowEnabled;
   [sectionToAdd.cells addObject:ch];
-  [ch release];
   // configure if it is a ZDetailViewCell
   if ([aCell conformsToProtocol:@protocol(ZDetailViewCell)]) {
     id<ZDetailViewCell> dvc = (id<ZDetailViewCell>)aCell;
@@ -537,7 +502,7 @@ static NSInteger numObjs = 0;
     cellSetupHandler(self,newCell,sectionToAdd.overallSectionIndex);
   }
   // return the cell for further configuration
-  return [newCell autorelease];
+  return newCell;
 }
 
 
@@ -783,8 +748,7 @@ static NSInteger numObjs = 0;
 - (void)setDetailsButtonTitle:(NSString *)aDetailsButtonTitle
 {
   if (!samePropertyString(&aDetailsButtonTitle, detailsButtonTitle)) {
-    [detailsButtonTitle release];
-    detailsButtonTitle = [aDetailsButtonTitle retain];
+    detailsButtonTitle = aDetailsButtonTitle;
     [self updateNavigationButtonsAnimated:NO];
   }
 }
@@ -794,7 +758,6 @@ static NSInteger numObjs = 0;
 - (UIPopoverController *)popoverControllerForPresentation
 {
   // special case, create popover
-  [popoverWrapper release];
   popoverWrapper = [[UIPopoverController alloc] initWithContentViewController:[self viewControllerForModalPresentation]];
   return popoverWrapper;
 }
@@ -804,7 +767,6 @@ static NSInteger numObjs = 0;
 - (UIViewController *)viewControllerForModalPresentation
 {
 	// need to wrap in a navigation controller of my own
-  [modalViewWrapper release];
   modalViewWrapper = [[ZModalViewWrapper alloc] initWithRootViewController:self];
   modalViewWrapper.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
   // inherit styles
@@ -872,7 +834,6 @@ static NSInteger numObjs = 0;
           otherButtonTitles:nil
         ];
         [alert show];
-        [alert release];
         // cannot dismiss!
         dismissing = NO; // not dismissing any more, but still not dismissed
         return NO;           
@@ -1315,7 +1276,6 @@ static NSInteger numObjs = 0;
               [newSection.cells addObject:cellholder];
             }
           }
-          [newSection release];
           // insert section in the table as well
           if (aWithTableAdjust) {
             // inserts are relative to state of table with already deleted sections, so it's just the new target index
@@ -1345,7 +1305,6 @@ static NSInteger numObjs = 0;
     self.cellsActive = NO; // deactivate all cells already to make no undisplayed one remains active
     // then remove
   	[allSectionsAndCells removeAllObjects];
-    [allSectionsAndCells release];
     allSectionsAndCells = nil;
   }
   // - currently visible cells
@@ -1353,7 +1312,6 @@ static NSInteger numObjs = 0;
 	if (currentSectionsAndCells) {
     // remove as well
   	[currentSectionsAndCells removeAllObjects];
-    [currentSectionsAndCells release];
     currentSectionsAndCells = nil;
   }
 }
@@ -1516,7 +1474,7 @@ static NSInteger numObjs = 0;
     // if it's a back button, intercept its action
     #warning "%%% tbd - intercept back button press"
   }
-  [self.navigationItem setLeftBarButtonItem:[leftButton autorelease] animated:aAnimated];
+  [self.navigationItem setLeftBarButtonItem:leftButton animated:aAnimated];
   // Right button
   UIBarButtonItem *rightButton = nil;
   if (navMode & ZDetailNavigationModeRightButtonSave) {
@@ -1534,7 +1492,7 @@ static NSInteger numObjs = 0;
   }
   else if (navMode & ZDetailNavigationModeRightButtonTableEditDone) {
     // use the standard editing button from UIViewController which is auto connected to the editing property
-    rightButton = [self.editButtonItem retain]; // will be autoreleased below
+    rightButton = self.editButtonItem; // will be autoreleased below
   }
   else if (navMode & ZDetailNavigationModeRightButtonDetailsBasics) {
     if (self.displayMode & ZDetailDisplayModeDetails) {
@@ -1546,7 +1504,7 @@ static NSInteger numObjs = 0;
       rightButton = [[UIBarButtonItem alloc] initWithTitle:detailsButtonTitle style:UIBarButtonItemStyleBordered target:self action:@selector(detailsStartButtonAction)];
     }
   }
-  [self.navigationItem setRightBarButtonItem:[rightButton autorelease] animated:aAnimated];
+  [self.navigationItem setRightBarButtonItem:rightButton animated:aAnimated];
 }
 
 
@@ -1789,7 +1747,6 @@ static NSInteger numObjs = 0;
 	if (detailTableView.tableFooterView==nil) {
     UIView *fv = [[UIView alloc] initWithFrame:CGRectMake(0, 0, aInputViewSize.width, aInputViewSize.height+MIN_SPACE_ABOVE_KBD)];
     detailTableView.tableFooterView = fv;
-    [fv release];
   }
   [self bringEditRectInView];
 }
@@ -1914,7 +1871,7 @@ static NSInteger numObjs = 0;
       // have table re-adjust to no input view shown
       [self releaseRoomForInputView];
       // slide out
-      UIView *civ = [customInputView retain];
+      UIView *civ = customInputView;
       [UIView animateWithDuration:0.25 animations:^{
         CGRect avf = civ.frame;
         avf.origin.y += avf.size.height;
@@ -1923,7 +1880,6 @@ static NSInteger numObjs = 0;
       completion:^(BOOL finished) {
         if (finished) {
           [civ removeFromSuperview];
-          [civ release];
         }
       }];
     }
@@ -1932,7 +1888,6 @@ static NSInteger numObjs = 0;
       [customInputView removeFromSuperview];
     }
     // forget
-    [customInputView release];
     customInputView = nil;
     customInputViewUsers = 0;
     // finally, always remove the extra footer
@@ -1959,7 +1914,7 @@ static NSInteger numObjs = 0;
       // - dismiss it
       [self.detailTableView endEditing:NO]; // not forced
     }
-    customInputView = [aCustomInputView retain];
+    customInputView = aCustomInputView;
     customInputViewUsers = 1;
     // present at bottom of current window
     if (hasAppeared) {
@@ -2015,10 +1970,9 @@ static NSInteger numObjs = 0;
   NSAssert(aFromIndexPath.section==aToIndexPath.section, @"Cannot move rows between sections");
   // volatile - rebuilding currentSectionsAndCells will destroy the new order
   NSMutableArray *cells = ((ZDetailViewSection *)[currentSectionsAndCells objectAtIndex:aFromIndexPath.section]).cells;
-  id movedCell = [[cells objectAtIndex:aFromIndexPath.row] retain];
+  id movedCell = [cells objectAtIndex:aFromIndexPath.row];
   [cells removeObjectAtIndex:aFromIndexPath.row];
   [cells insertObject:movedCell atIndex:aToIndexPath.row];
-  [movedCell release];
   return YES; // could be moved
 }
 

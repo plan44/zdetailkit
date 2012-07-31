@@ -20,9 +20,9 @@
   ZChoiceInfo *i = [[ZChoiceInfo alloc] init];
   i.key = key;
   i.selected = aSelected;
-  i.choice = [aChoiceDict retain];
+  i.choice = aChoiceDict;
   i.index = aIndex;
-  return [i autorelease];
+  return i;
 }
 
 - (NSString *)description
@@ -73,10 +73,6 @@
 
 
 
-- (void)dealloc
-{
-	[super dealloc];
-}
 
 
 #pragma mark - configuration
@@ -122,8 +118,7 @@
     if (![choicesArray isKindOfClass:[NSMutableArray class]]) {
       // convert to mutable
       NSMutableArray *newChoices = [NSMutableArray arrayWithArray:choicesArray];
-      [choicesArray release];
-      choicesArray = [newChoices retain];
+      choicesArray = newChoices;
     }
     // now add
     [(NSMutableArray *)choicesArray addObject:aChoiceDict];
@@ -247,8 +242,7 @@
       ]];
     }
     // install new infos
-    [choiceInfos release];
-    choiceInfos = [newChoiceInfos retain];
+    choiceInfos = newChoiceInfos;
   }
   // return if currentChoice relevant changes have happened
   if (choicesChanged) {
@@ -264,7 +258,7 @@
 - (NSArray *)choicesArray
 {
   if (choicesArray==nil) {
-    choicesArray = [[NSArray array] retain];
+    choicesArray = [NSArray array];
   }
   return choicesArray;
 }
@@ -274,8 +268,7 @@
 - (void)setChoicesArray:(NSArray *)aChoicesArray
 {
   if (aChoicesArray!=choicesArray) {
-    [choicesArray release];
-    choicesArray = [aChoicesArray retain];
+    choicesArray = aChoicesArray;
     // changing choices while active may have impact on currentChoice
     // so we need to update the infos
     if (self.active) {
@@ -402,7 +395,6 @@
   }
   else if (mode==ZChoicesManagerModeDictArray) {
     // rebuild
-    [choiceInfos release];
     choiceInfos = [[NSMutableArray alloc] initWithCapacity:[choicesArray count]];
     nextChoiceIndex = 0;
     // rebuild from dictArray (retaining key order!)
@@ -424,7 +416,6 @@
   }
   else if (mode==ZChoicesManagerModeChoiceInfoArray) {
     // replace raw infos
-    [choiceInfos release];
     choiceInfos = [aCurrentChoice mutableCopy]; // mutable copy
     nextChoiceIndex = 0;
     // needs to be verified/adjusted against actual choices
@@ -458,12 +449,11 @@
 //   as part of the user interaction, so we only need to adjust the data here
 - (void)moveChoiceFrom:(NSInteger)aFromIndex to:(NSInteger)aToIndex
 {
-  ZChoiceInfo *movedChoice = [[self.choiceInfos objectAtIndex:aFromIndex] retain];
+  ZChoiceInfo *movedChoice = [self.choiceInfos objectAtIndex:aFromIndex];
   [self willChangeValueForKey:@"currentChoice"];
   [self.choiceInfos removeObjectAtIndex:aFromIndex];
   [self.choiceInfos insertObject:movedChoice atIndex:aToIndex];
   [self didChangeValueForKey:@"currentChoice"];
-  [movedChoice release];
 }
 
 

@@ -26,17 +26,17 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 
 @interface ZDetailValueConnector : NSObject
 
-@property (readonly, nonatomic) id owner; // the parent of this connector, origin of value paths
+@property (unsafe_unretained, readonly, nonatomic) id owner; // the parent of this connector, origin of value paths
 
 // specifies the remote object being displayed or edited
 // Note: this is where values are loaded from/stored to, but actual editing does not
 //       happen directly on this (but on some UI representation of it, such as a text field or switch)
 @property (assign, nonatomic) BOOL active; // initially off, such that detail views can be built and then activated when everything is in place 
 @property (readonly, nonatomic) BOOL connected; // set if a value is connected
-@property (retain, nonatomic) id target; // target (model) object
-@property (retain, nonatomic) NSString *keyPath; // keyPath to value in target (model) object
+@property (strong, nonatomic) id target; // target (model) object
+@property (strong, nonatomic) NSString *keyPath; // keyPath to value in target (model) object
 // options
-@property (retain, nonatomic) id nilNulValue; // if set, external value nil or NSNull are converted to this value internally
+@property (strong, nonatomic) id nilNulValue; // if set, external value nil or NSNull are converted to this value internally
 @property (assign, nonatomic) BOOL saveEmptyAsNil; // if set, internal empty string is stored as nil (or NSNull if saveNilAsNull is set)
 @property (assign, nonatomic) BOOL saveNilAsNull; // if set, nil is always stored as NSNull
 @property (assign, nonatomic) BOOL nilAllowed; // if set, value stored may be Nil/Null
@@ -52,14 +52,14 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 
 // value transformation and formatting
 // - transformer applied beween connected value and internal value (forward: external->internal, reverse: internal->external)
-@property (retain, nonatomic) NSValueTransformer *valueTransformer;  
+@property (strong, nonatomic) NSValueTransformer *valueTransformer;  
 // - transformer applied beween connected, transformed value and internal string representation (forward: external->internal, reverse: internal->external)
-@property (retain, nonatomic) NSFormatter *formatter;
+@property (strong, nonatomic) NSFormatter *formatter;
 
 // The object that the cell represents
-@property (retain, nonatomic) NSString *valuePath; // Path to internal object that represents the current cell value.
-@property (retain, nonatomic) id value; // ONLY CHANGE FROM EXTERNAL! (internal edits should access internalValue or the KVO observed object at owner/valuePath)
-@property (retain, nonatomic) id internalValue; // internal (formatted, converted) representation of the value
+@property (strong, nonatomic) NSString *valuePath; // Path to internal object that represents the current cell value.
+@property (strong, nonatomic) id value; // ONLY CHANGE FROM EXTERNAL! (internal edits should access internalValue or the KVO observed object at owner/valuePath)
+@property (strong, nonatomic) id internalValue; // internal (formatted, converted) representation of the value
 @property (readonly, nonatomic) id valueForExternal; // representation of the value for external storage (validated)
 @property (readonly, nonatomic) BOOL validated; // check if value is validated
 @property (readonly, nonatomic) NSError *validationError; // nil if validation ok, error otherwise

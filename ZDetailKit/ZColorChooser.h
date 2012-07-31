@@ -22,10 +22,10 @@
   UIColor *hueColor;
 	int trackmode;
   BOOL noColorAllowed;
-  id<ZColorChooserDelegate> delegate;
+  id<ZColorChooserDelegate> __unsafe_unretained delegate;
 }
-@property(retain,nonatomic) UIColor *color;
+@property(strong,nonatomic) UIColor *color;
 @property(assign) BOOL noColorAllowed;
-@property(assign,nonatomic) id delegate;
+@property(unsafe_unretained,nonatomic) id delegate;
 
 @end

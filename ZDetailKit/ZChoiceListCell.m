@@ -26,10 +26,6 @@
 }
 
 
-- (void)dealloc
-{
-	[super dealloc];
-}
 
 
 #pragma mark - cell configuration

@@ -42,7 +42,7 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+	// Select default presentation mode
   if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
     self.presentationModeSegControl.selectedSegmentIndex = SEGINDEX_NAV; // default for iPhone is pushing details onto navigation controller
   else
@@ -69,12 +69,6 @@
 }
 
 
-- (void)dealloc
-{
-  [plan44linkLabel release];
-  [presentationModeSegControl release];
-  [super dealloc];
-}
 
 
 #pragma mark - setting up the big sample dialog
@@ -219,7 +213,7 @@
     t.labelText = @"Result";
     t.descriptionLabel.numberOfLines = 2;
     t.editInDetailView = NO;
-    NSNumberFormatter *fmt = [[[NSNumberFormatter alloc] init] autorelease];
+    NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
     fmt.numberStyle = NSNumberFormatterDecimalStyle;
     t.valueConnector.formatter = fmt;
     [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
@@ -419,7 +413,7 @@
     t.descriptionLabel.numberOfLines = 2;
     t.editInDetailView = NO;
     [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"colorNumber"];
-    NSNumberFormatter *fmt = [[[NSNumberFormatter alloc] init] autorelease];
+    NSNumberFormatter *fmt = [[NSNumberFormatter alloc] init];
     fmt.numberStyle = kCFNumberFormatterNoStyle;
     t.valueConnector.formatter = fmt;
     t.valueConnector.autoSaveValue = YES;

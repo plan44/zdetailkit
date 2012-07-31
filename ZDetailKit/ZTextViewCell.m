@@ -51,14 +51,6 @@
 }
 
 
-- (void)dealloc
-{
-	[textView release];
-  #ifdef TEXTEXPANDER_SUPPORT
-  [textExpander release];
-  #endif
-	[super dealloc];
-}
 
 
 #pragma mark - value management
@@ -318,7 +310,6 @@
     tgr.numberOfTapsRequired = 1;
     tgr.cancelsTouchesInView = NO;
     [textView addGestureRecognizer:tgr];
-    [tgr release];
 		// KVO does not catch all changes to textView.text (KVO triggers when field resigns first responder,
     // but that does not always happen reliably in time depending on how view is dismissed
     // So: we need notice when editing so we can set the value connector dirty
