@@ -15,7 +15,7 @@ enum ZAppOrientations {
 };
 
 
-@interface ZOrientation
+@interface ZOrientation : NSObject
 
 + (int)supportedOrientationsMaskFromInfoDict;
 + (BOOL)supportsInterfaceOrientation:(UIInterfaceOrientation)aInterfaceOrientation orientationsMask:(int)aOrientationsMask;
