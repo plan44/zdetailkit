@@ -1324,6 +1324,8 @@ static NSInteger numObjs = 0;
 	[self forgetTableData];
   // important to prevent tableview to try fetching cells that don't exist any more
   [detailTableView reloadData];
+  // mark data as unloaded, so next appearance will re-load it
+  contentLoaded = NO;
 }
 
 
