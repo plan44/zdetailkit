@@ -19,6 +19,8 @@
 @property (strong,nonatomic) NSString *endDateLabelText;
 @property (strong,nonatomic) NSString *dateOnlyLabelText;
 
+@property (assign, nonatomic) BOOL dateOnly;
+@property (strong, nonatomic) NSDate *suggestedDate;
 
 @property (assign,nonatomic) BOOL editInDetailView; // just show the value, edit it in detail view
 @property (weak, readonly,nonatomic) ZDetailValueConnector *suggestedDateConnector;

@@ -23,8 +23,6 @@
 }
 @property (strong, nonatomic) NSDate *startDate;
 @property (strong, nonatomic) NSDate *endDate;
-@property (assign, nonatomic) BOOL dateOnly;
-@property (strong, nonatomic) NSDate *suggestedDate;
 @property (strong, nonatomic) NSDate *masterDate;
 @property (strong, nonatomic) NSDate *pickerDate;
 @property (readonly, nonatomic) UIDatePicker *datePicker;
