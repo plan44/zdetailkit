@@ -7,7 +7,8 @@
 //
 
 #ifdef TEXTEXPANDER_SUPPORT
-#import "SMTEDelegateController.h"
+
+#import <TextExpander/SMTEDelegateController.h>
 
 @interface TextExpanderSingleton : NSObject
 + (void)initialize;
