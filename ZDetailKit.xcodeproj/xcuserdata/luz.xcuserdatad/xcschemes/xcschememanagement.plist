@@ -4,15 +4,25 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>ZDetailKit appledoc.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
+		</dict>
 		<key>ZDetailKitDemo.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>6</integer>
+			<integer>7</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>ED12E7371582494C00DE3ED3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>ED43CA3A16CE9FF200C28E48</key>
 		<dict>
 			<key>primary</key>
 			<true/>
