@@ -65,6 +65,8 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 @property (readonly, nonatomic) NSError *validationError; // nil if validation ok, error otherwise
 @property (copy, nonatomic) ZDetailValueConnectorHandler valueChangedHandler;
 - (void)setValueChangedHandler:(ZDetailValueConnectorHandler)valueChangedHandler;
+@property (copy, nonatomic) ZDetailValueConnectorHandler valueSavedHandler;
+- (void)setValueSavedHandler:(ZDetailValueConnectorHandler)valueSavedHandler;
 @property (copy, nonatomic) ZDetailValueConnectorValidationHandler validationHandler;
 - (void)setValidationHandler:(ZDetailValueConnectorValidationHandler)validationHandler; // declaration needed only for XCode autocompletion of block
 @property (copy, nonatomic) ZDetailValueConnectorHandler validationChangedHandler;

@@ -43,6 +43,7 @@
     owner = aOwner; // not retained!
     valuePath = nil;
     valueChangedHandler = nil;
+    valueSavedHandler = nil;
     validationHandler = nil;
     validationChangedHandler = nil;
     valueTransformer = nil;
@@ -101,6 +102,7 @@
 @synthesize active;
 @synthesize unsavedChanges;
 @synthesize valueChangedHandler;
+@synthesize valueSavedHandler;
 @synthesize validationHandler;
 @synthesize formatter, valueTransformer;
 @synthesize nilNulValue;
@@ -593,6 +595,10 @@
       if (target && keyPath) {
         [target setValue:self.value forKeyPath:keyPath];
         unsavedChanges = NO;
+      }
+      // call the handler for possible after-save processing
+      if (valueSavedHandler) {
+        valueSavedHandler(self);
       }
     }
     saving = NO;
