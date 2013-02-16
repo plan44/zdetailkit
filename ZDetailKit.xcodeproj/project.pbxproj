@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ED03B83716D037D800ADA844 /* ZDetailViewBaseController.h in Resources */ = {isa = PBXBuildFile; fileRef = ED03B83516D037D800ADA844 /* ZDetailViewBaseController.h */; };
+		ED03B83816D037D800ADA844 /* ZDetailViewBaseController.m in Resources */ = {isa = PBXBuildFile; fileRef = ED03B83616D037D800ADA844 /* ZDetailViewBaseController.m */; };
 		ED12E75D158249BB00DE3ED3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED12E752158249BB00DE3ED3 /* InfoPlist.strings */; };
 		ED12E75E158249BB00DE3ED3 /* ZDVTViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED12E754158249BB00DE3ED3 /* ZDVTViewController.xib */; };
 		ED12E75F158249BB00DE3ED3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E756158249BB00DE3ED3 /* main.m */; };
@@ -47,9 +49,12 @@
 		ED1F708C15BDA4100046CFBC /* ZColor_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708B15BDA4100046CFBC /* ZColor_utils.m */; };
 		ED49A99B1585F623007FEBF0 /* ZDateTimeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */; };
 		ED5D933815BEDC35008A98FF /* ZSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED5D933715BEDC35008A98FF /* ZSliderCell.m */; };
+		EDA57D7216D040020044EB9C /* ZDetailViewBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED03B83616D037D800ADA844 /* ZDetailViewBaseController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		ED03B83516D037D800ADA844 /* ZDetailViewBaseController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailViewBaseController.h; sourceTree = "<group>"; };
+		ED03B83616D037D800ADA844 /* ZDetailViewBaseController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDetailViewBaseController.m; sourceTree = "<group>"; };
 		ED12E7381582494C00DE3ED3 /* ZDetailKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZDetailKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED12E753158249BB00DE3ED3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
 		ED12E755158249BB00DE3ED3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = ZDVTViewController.xib; sourceTree = "<group>"; };
@@ -206,6 +211,8 @@
 				ED12E77815824B8200DE3ED3 /* ZDetailValueConnector.m */,
 				ED12E77915824B8200DE3ED3 /* ZDetailViewBaseCell.h */,
 				ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */,
+				ED03B83516D037D800ADA844 /* ZDetailViewBaseController.h */,
+				ED03B83616D037D800ADA844 /* ZDetailViewBaseController.m */,
 				ED12E77515824B8200DE3ED3 /* ZDetailTableViewController.h */,
 				ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */,
 				ED12E76A15824B8200DE3ED3 /* ZButtonCell.h */,
@@ -353,6 +360,8 @@
 				ED1F706015BD51D30046CFBC /* ZCCH_hue.png in Resources */,
 				ED1F706115BD51D30046CFBC /* ZCCH_noColor.png in Resources */,
 				ED1F706215BD51D30046CFBC /* ZCCH_noColor@2x.png in Resources */,
+				ED03B83716D037D800ADA844 /* ZDetailViewBaseController.h in Resources */,
+				ED03B83816D037D800ADA844 /* ZDetailViewBaseController.m in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,6 +372,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDA57D7216D040020044EB9C /* ZDetailViewBaseController.m in Sources */,
 				ED12E75F158249BB00DE3ED3 /* main.m in Sources */,
 				ED12E761158249BB00DE3ED3 /* ZDVTAppDelegate.m in Sources */,
 				ED12E762158249BB00DE3ED3 /* ZDVTViewController.m in Sources */,

@@ -48,18 +48,16 @@ typedef enum {
 @class ZDetailViewBaseCell;
 
 
-// a object than can act as the parent of a detail view controller
+// an object than can act as the parent of a detail view controller
 @protocol ZDetailViewParent <NSObject>
 - (void)childDetailEditingDoneWithCancel:(BOOL)aCancelled; // should be called by child detail editor when editing completes
 @end
 
 
-// a object than can act as a detail view controller
-@protocol ZDetailViewController <ZDetailViewParent>
-// must specify a parent 
-@property(assign, nonatomic) id<ZDetailViewParent> parentDetailViewController;
-// must be able to specify a child
-@property(retain, nonatomic) id<ZDetailViewController> currentChildDetailViewController;
+// an object than can act as a detail view controller
+@protocol ZDetailViewController <NSObject>
+// must be able to store a (weak) link to the parent that opened this editor
+@property(weak, nonatomic) id<ZDetailViewParent> parentDetailViewController;
 @end
 
 

@@ -115,13 +115,13 @@
 
 #pragma mark - ZDetailTableViewController subclassed methods
 
-- (void)setCellsActive:(BOOL)aCellsActive
+- (void)setActive:(BOOL)aActive
 {
-  if (aCellsActive!=self.cellsActive) {
+  if (aActive!=self.active) {
     // the choice manager must be active before value connectors are accessing it 
-    choicesManager.active = aCellsActive;
+    choicesManager.active = aActive;
   }
-  [super setCellsActive:aCellsActive];
+  [super setActive:aActive];
 }
 
 

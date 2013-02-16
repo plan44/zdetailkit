@@ -8,14 +8,8 @@
 
 #import "ZDetailTableViewController.h"
 
-#import "ZOrientation.h"
-
 
 #pragma mark - internal Helper classes declarations
-
-@interface ZModalViewWrapper : UINavigationController
-
-@end
 
 
 @interface ZDetailViewSection : NSObject
@@ -47,25 +41,6 @@
 
 
 #pragma mark - internal Helper classes implementation
-
-
-@implementation ZModalViewWrapper
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-{
-  // reflect wish of wrapped controller
-  if ([self.viewControllers count]==0) return NO;
-  return [[self.viewControllers objectAtIndex:0] shouldAutorotateToInterfaceOrientation:toInterfaceOrientation];
-}
-
-- (BOOL)disablesAutomaticKeyboardDismissal
-{
-  // we want the keyboard to go away in all cases
-  // (apple prevents it to disappear in UIModalPresentationFormSheet mode)
-  return NO;
-}
-
-@end
 
 
 @implementation ZDetailViewSection
@@ -133,12 +108,10 @@
 
 
 
-#pragma mark - ZDetailTableViewController private (class extension)
+#pragma mark - ZDetailTableViewController
 
 @interface ZDetailTableViewController ( /* class extension */ )
 {
-  // controller level value connectors
-  NSMutableArray *valueConnectors;
   // all available table sections, including all available cells, each consisting of a DetailViewCellHolders
   NSMutableArray *allSectionsAndCells;
 	// set of enabled groups (by number as NSNumbers)
@@ -146,36 +119,20 @@
   // current view of the table
   BOOL currentSectionsAndCellsDirty;
   NSMutableArray *currentSectionsAndCells;
-  // if set, updateData was called at least once already
-  BOOL contentLoaded;
   // input view management 
   CGRect editRect; // navigation controller view coordinates of where next edit area is (needed to move it in view when input views show)
   CGSize inputViewSize;
   CGFloat topOfInputView; // if >=0, keyboard or custom input view is up and inputViewSize valid
   // auto tap cell
   id<ZDetailViewCell> autoTapCell;
-  // cause for view to disappear
-  BOOL disappearsUnderPushed;
-  // protection flag agains dismissing more than once
-  BOOL dismissed; // set when view has been completely and successfully dismissed
-  BOOL dismissing; // dismissing in process, but save exception could block it
   // number of cells that have requested but not yet released the current input view
   NSInteger customInputViewUsers;
-  // set if editor is visible (has appeared)
-  BOOL hasAppeared;
-  // set if editor was dismissed with cancel
-  BOOL cancelled;
   // temporary for constructing sections
   ZDetailViewSection *sectionToAdd;
-  // for modally displaying the detail view (instead of pushing on existing navigation stack)
-  UINavigationController *modalViewWrapper;
-  UIPopoverController *popoverWrapper;
 }
 @property (strong, nonatomic) UITableViewCell *cellThatOpenedChildDetail;
 // private methods
 - (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
-- (void)updateCellsDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated;
-- (void)updateNavigationButtonsAnimated:(BOOL)aAnimated;
 - (void)updateTableRepresentationWithAdjust:(BOOL)aWithTableAdjust animated:(BOOL)aAnimated;
 - (void)defocusAllBut:(id)aFocusedCell;
 - (NSIndexPath *)indexPathForCell:(UITableViewCell *)aCell;
@@ -190,17 +147,13 @@
 #define SECTION_HEADER_HEIGHT 8
 #define SECTION_FOOTER_HEIGHT 3
 
-@synthesize parentDetailViewController;
-@synthesize currentChildDetailViewController;
 @synthesize cellThatOpenedChildDetail;
 
 - (void)internalInit
 {
+  [super internalInit];
   // no referenced objects
-  parentDetailViewController = nil;
-  currentChildDetailViewController = nil;
   cellThatOpenedChildDetail = nil;
-  valueConnectors = [[NSMutableArray alloc] initWithCapacity:3];
 	// none configured yet
   allSectionsAndCells = nil;
   // only group 0 is enabled
@@ -209,26 +162,11 @@
   // table not yet represented
   currentSectionsAndCells = nil;
   currentSectionsAndCellsDirty = YES;
-  // default mode: editing basics, scroll enabled
-  displayMode = ZDetailDisplayModeBasics+ZDetailDisplayModeEditing; // no details, enabled for editing
-  navigationMode = ZDetailNavigationModeLeftButtonAuto; // no extra buttons, but left button automatically set to "done" for modally presented details
   scrollEnabled = YES;
   autoStartEditing = NO;
-  // internal flags
-  contentLoaded = NO;
-  cellsActive = NO;
-  // flag to detect if view disappears because another one is pushed on top (no save then)
-  disappearsUnderPushed = NO;
-  hasAppeared = NO;
-  dismissed = NO;
-  dismissing = NO;
-  cancelled = NO;
   // section construction
   sectionToAdd = nil;
   defaultCellStyle = ZDetailViewCellStyleDefault;
-  // not modally displayed
-  modalViewWrapper = nil;
-  popoverWrapper = nil;
   // no custom input view
   customInputView = nil;
   customInputViewUsers = 0;
@@ -239,51 +177,11 @@
   // handlers
   cellSetupHandler = nil;
   buildDetailContentHandler = nil;
-  detailDidCloseHandler = nil;
   // cell that needs automatic tap on viewDidAppear
   autoTapCell = nil;
   // popover display default size
   self.contentSizeForViewInPopover = CGSizeMake(320, 500);
 }
-
-
-// designated initializer for UIViewControllers
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-  // UIViewController init loads 
-	if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
-    [self internalInit];
-	}
-	return self;
-}
-
-
-// when loaded as part of a nib (not the root nib)
-- (id)initWithCoder:(NSCoder *)decoder
-{
-	if ((self = [super initWithCoder:decoder])) {
-    [self internalInit];
-	}
-	return self;
-}
-
-
-// convenience initializer for default ZDetailTableView which is
-// fullscreen detail table view
-- (id)init
-{
-  return [self initWithNibName:nil bundle:nil];
-}
-
-
-+ (id)controllerWithTitle:(NSString *)aTitle
-{
-  ZDetailTableViewController *dvc = [[self alloc] init];
-  dvc.title = aTitle;
-  dvc.navigationItem.title = aTitle;
-  return dvc;
-}
-
 
 
 // load view
@@ -326,8 +224,17 @@
 
 - (void) dealloc
 {
-  self.cellsActive = NO;
+  self.active = NO;
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
++ (id)controllerWithTitle:(NSString *)aTitle
+{
+  ZDetailTableViewController *dvc = [[self alloc] init];
+  dvc.title = aTitle;
+  dvc.navigationItem.title = aTitle;
+  return dvc;
 }
 
 
@@ -563,49 +470,7 @@ static NSInteger numObjs = 0;
 
 
 
-#pragma mark - controller level value connectors
-
-
-// for subclasses to register connectors
-- (ZDetailValueConnector *)registerConnector:(ZDetailValueConnector *)aConnector
-{
-  [valueConnectors addObject:aConnector];
-  return aConnector;
-}
-
-
-
 #pragma mark - appearance and behaviour properties
-
-@synthesize displayMode;
-
-// Note: displayMode is readonly, must be set with this method!
-- (void)setDisplayMode:(ZDetailDisplayMode)aDisplayMode animated:(BOOL)aAnimated
-{
-  if (aDisplayMode!=displayMode) {
-    // mode changes
-    BOOL editingEnds =
-      (displayMode & ZDetailDisplayModeEditing) != 0 && // editing before
-      (aDisplayMode & ZDetailDisplayModeEditing) == 0; // but not any more
-    // - save if editing ends
-    if (editingEnds) {
-      [self save];
-    }
-    // - make sure we always have one of details/basic and one of editing/viewing flags set
-    if ((displayMode & ZDetailDisplayModeBasics+ZDetailDisplayModeDetails)==0)
-      displayMode |= ZDetailDisplayModeBasics; // if none set, use basic by default
-    if ((displayMode & ZDetailDisplayModeViewing+ZDetailDisplayModeEditing)==0)
-      displayMode |= ZDetailDisplayModeViewing; // if none set, use viewing by default    
-    // - set new
-    displayMode = aDisplayMode;
-    // - changing mode needs checking which cells are now active
-    [self updateCellVisibilitiesAnimated:aAnimated];
-    // - update cell modes
-    [self updateCellsDisplayMode:displayMode animated:aAnimated];
-    // - update the editing button (if any)
-    [self updateNavigationButtonsAnimated:aAnimated];
-  }
-}
 
 @synthesize autoStartEditing;
 
@@ -635,31 +500,16 @@ static NSInteger numObjs = 0;
 #pragma mark - detailview data connection control
 
 
-@synthesize cellsActive;
-
-- (void)setCellsActive:(BOOL)aCellsActive
+- (void)setActive:(BOOL)aActive
 {
-  if (aCellsActive!=cellsActive) {
-    cellsActive = aCellsActive;
-    // controller level value connectors
-    for (ZDetailValueConnector *connector in valueConnectors) {
-      connector.active = aCellsActive;
-    }    
+  if (self.active!=aActive) {
+    [super setActive:aActive];
     // cells
     [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
       // set active/inactive state
-      [aCell setActive:cellsActive];
+      [aCell setActive:self.active];
     }];
   }
-}
-
-
-- (void)cancel
-{
-  // mark cancelled
-  cancelled = YES;
-  // deactivate the cell connections (prevents further saves)
-  self.cellsActive = NO;
 }
 
 
@@ -667,7 +517,7 @@ static NSInteger numObjs = 0;
 - (BOOL)validatesWithErrors:(NSMutableArray **)aErrorsP
 {
   BOOL validates = YES;
-  if (self.cellsActive) {
+  if (self.active) {
     // collect validation status from all cells
     for (ZDetailViewSection *section in allSectionsAndCells) {
       for (ZDetailViewCellHolder *dvch in section.cells) {
@@ -676,10 +526,7 @@ static NSInteger numObjs = 0;
         }
       }
     }
-    // controller level value connectors
-    for (ZDetailValueConnector *connector in valueConnectors) {
-      validates = validates && [connector validatesWithErrors:aErrorsP];
-    }
+    validates = validates && [super validatesWithErrors:aErrorsP];
   }
   return validates;
 }
@@ -689,17 +536,13 @@ static NSInteger numObjs = 0;
 - (void)save
 {
 	[self defocusAllBut:nil]; // defocus all cells
-  if (self.cellsActive) {
+  if (self.active) {
     // let all cells save their data first (controller level values might depend)
     [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
       [aCell saveCell];
     }];
     // let controller level value connectors save now (might depend on cells)
-    for (ZDetailValueConnector *connector in valueConnectors) {
-      [connector saveValue];
-    }
-    // mark saved
-    cancelled = NO;
+    [super save];
   }
   // subclass might save the master object after calling this super
 }
@@ -710,214 +553,14 @@ static NSInteger numObjs = 0;
   // subclass might reload the master object before calling this super,
   // (but note that autoupdating connections might get activated)
 	[self defocusAllBut:nil]; // defocus all cells
-  if (self.cellsActive) {
+  if (self.active) {
     // let all cells reload their data
     [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
       [aCell loadCell];
     }];
     // let controller level value connectors revert
-    for (ZDetailValueConnector *connector in valueConnectors) {
-      [connector loadValue];
-    }
+    [super revert];
   }
-}
-
-
-#pragma mark - presentation and navigation
-
-@synthesize navigationMode;
-
-- (void)setNavigationMode:(ZDetailNavigationMode)aNavigationMode
-{
-  if (aNavigationMode!=navigationMode) {
-    navigationMode = aNavigationMode;
-    [self updateNavigationButtonsAnimated:NO];
-  }
-}
-
-@synthesize detailsButtonTitle;
-
-- (NSString *)detailsButtonTitle
-{
-  // return specific text if any
-  if (detailsButtonTitle) return detailsButtonTitle;
-  // return sensible default instead
-  return ZLocalizedStringWithDefault(@"ZDetailButtonTitle", @"Details");
-}
-
-- (void)setDetailsButtonTitle:(NSString *)aDetailsButtonTitle
-{
-  if (!samePropertyString(&aDetailsButtonTitle, detailsButtonTitle)) {
-    detailsButtonTitle = aDetailsButtonTitle;
-    [self updateNavigationButtonsAnimated:NO];
-  }
-}
-
-
-
-- (UIPopoverController *)popoverControllerForPresentation
-{
-  // special case, create popover
-  popoverWrapper = [[UIPopoverController alloc] initWithContentViewController:[self viewControllerForModalPresentation]];
-  return popoverWrapper;
-}
-
-
-
-- (UIViewController *)viewControllerForModalPresentation
-{
-	// need to wrap in a navigation controller of my own
-  modalViewWrapper = [[ZModalViewWrapper alloc] initWithRootViewController:self];
-  modalViewWrapper.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  // inherit styles
-  modalViewWrapper.modalTransitionStyle = self.modalTransitionStyle;
-  modalViewWrapper.modalPresentationStyle = self.modalPresentationStyle;
-  modalViewWrapper.modalInPopover = self.modalInPopover;
-  // return the wrapper
-  return modalViewWrapper;
-}
-
-
-- (void)pushViewControllerForDetail:(UIViewController *)aViewController animated:(BOOL)aAnimated
-{
-  disappearsUnderPushed = YES;
-  // defocus edit fields
-  [self defocusAllBut:nil];
-  // inherit default content size for popovers
-  if (self.navigationController) {
-    aViewController.contentSizeForViewInPopover = self.navigationController.contentSizeForViewInPopover;
-  }
-  // extras for ZDetailViewControllers
-  if ([aViewController conformsToProtocol:@protocol(ZDetailViewController)]) {
-    // make myself the parent of this controller
-    ((id<ZDetailViewController>)aViewController).parentDetailViewController = self; // weak
-    // remember opened child
-    self.currentChildDetailViewController = (id<ZDetailViewController>)aViewController; // strong
-  }
-  [self.navigationController pushViewController:aViewController animated:YES];
-}
-
-
-
-// dismiss myself - save if selected. Returns NO if dismissal is not possible (save throws exception, validation error usually)
-- (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave
-{
-  // Protect against dismissing more than once
-  if (!dismissed && !dismissing) {
-    // save or cancel
-    dismissing = YES;
-    if (!aWithSave) {
-      // cancel
-      [self cancel];
-    }
-    else {
-      // validate
-      NSMutableArray *errors = nil;
-      if ([self validatesWithErrors:&errors]) {
-        // ok, save
-        [self save];
-      }
-      else {
-        // validation error, can't save
-        #warning "%%% Simple Alert only for now"
-        NSMutableString *errMsg = [NSMutableString string];
-        for (NSError *err in errors) {
-          if (errMsg.length>0) [errMsg appendString:@"\n"];
-          [errMsg appendString:err.localizedDescription];
-        }
-        // show alert
-        UIAlertView *alert = [[UIAlertView alloc]
-          initWithTitle:@"Cannot save"
-          message:errMsg
-          delegate:nil
-          cancelButtonTitle:@"OK"
-          otherButtonTitles:nil
-        ];
-        [alert show];
-        // cannot dismiss!
-        dismissing = NO; // not dismissing any more, but still not dismissed
-        return NO;           
-      }
-      // save successful, dismissed, disconnect cells
-      self.cellsActive = NO;
-    }
-    // allowed, block further attempts to do it again
-    dismissing = NO; // dismissing done
-    dismissed = YES;    
-    @try {
-      if (popoverWrapper) {
-        // dismiss popover
-        [popoverWrapper dismissPopoverAnimated:YES];
-      }
-      else if (modalViewWrapper) {
-        // was modally presented, dismiss it
-        [self.parentViewController dismissModalViewControllerAnimated:YES];
-      }
-      else {
-        // assume part of a navigation stack, pop it
-        [self.navigationController popViewControllerAnimated:YES];
-      }
-    }
-    @catch (NSException *exception) {
-      // swallow exceptions that may happen - readyForDismissal should handle validation and alert users beforehand!
-      NSLog(@"Exception dismissing %@ : %@",self.description, exception.description);
-    }
-  }
-  // dismissed
-  return YES;
-}
-
-
-
-// dismiss entire open stack, and then myself
-- (void)dismissDetailStack
-{
-  #warning "%%% needs work"
-  // close stack on top of me
-  [self.navigationController popToViewController:self animated:NO];
-  // ...and myself
-  [self dismissDetailViewWithSave:NO];
-}
-
-
-// root detail view controller
-- (id<ZDetailViewController>)rootDetailViewController
-{
-  id<ZDetailViewController> dvc = self; // start at myself
-  while (dvc.parentDetailViewController!=nil) {
-    id dvcp = dvc.parentDetailViewController;
-    if (dvcp && [dvcp conformsToProtocol:@protocol(ZDetailViewController)]) {
-      dvc = (id<ZDetailViewController>)dvcp;
-    }
-  }
-  return dvc;
-}
-
-
-- (void)prepareForPossibleTermination
-{
-  [self save];
-}
-
-
-
-#pragma mark - ZDetailViewParent protocol
-
-
-// should be called by child detail editor when editing completes
-- (void)childDetailEditingDoneWithCancel:(BOOL)aCancelled
-{
-  self.currentChildDetailViewController = nil; // forget it
-  if (self.cellThatOpenedChildDetail) {
-    // inform the cell that the editor has closed
-    if ([self.cellThatOpenedChildDetail conformsToProtocol:@protocol(ZDetailViewCell)]) {
-      [(id<ZDetailViewCell>)(self.cellThatOpenedChildDetail) editorFinishedWithCancel:aCancelled];
-    }
-    // done
-    self.cellThatOpenedChildDetail = nil;
-  }
-  // re-evaluate visibilities of cells
-  [self updateCellVisibilitiesAnimated:YES];
 }
 
 
@@ -1033,21 +676,42 @@ static NSInteger numObjs = 0;
 // called before detail view opens
 - (void)detailViewWillOpen:(BOOL)aAnimated
 {
-  // NOP in base class
+  [super detailViewWillOpen:aAnimated];
+  // - forget possibly left-over child editor links (should be nil, but just in case)
+  self.cellThatOpenedChildDetail = nil;
+  @try {
+    // appears new on top of stack: scroll to top
+    [detailTableView scrollToRowAtIndexPath:
+      [NSIndexPath indexPathForRow:0 inSection:0]
+      atScrollPosition:UITableViewScrollPositionTop
+      animated:NO
+    ];
+  }
+  @catch (NSException *e) {
+    DBGNSLOG(@"Detailview scroll exception: %@",[e description]);
+  }
+  // focus first editable field?
+  if (autoStartEditing) {
+    [self beginEditingInNextCellAfter:nil];
+  }
 }
 
 
 // called before detail view closes
 - (void)detailViewWillClose:(BOOL)aAnimated
 {
-  // NOP in base class
+  [super detailViewWillClose:aAnimated];
+  // Forget possibly left-over child editor links (should be nil, but just in case)
+  self.cellThatOpenedChildDetail = nil;
 }
 
 
 // called after detail view has closed (already unloaded data etc.)
 - (void)detailViewDidClose:(BOOL)aAnimated
 {
-  // NOP in base class
+  [super detailViewDidClose:aAnimated];
+  // close custom input view in case we have any
+  [self removeCustomInputViewAnimated:NO];
 }
 
 
@@ -1110,8 +774,9 @@ static NSInteger numObjs = 0;
 
 
 // can be called to force visibility update when based on empty/nonempty state
-- (void)updateCellVisibilitiesAnimated:(BOOL)aAnimated
+- (void)updateVisibilitiesAnimated:(BOOL)aAnimated
 {
+  [super updateVisibilitiesAnimated:aAnimated];
   currentSectionsAndCellsDirty = YES; // check cells, as empty status might have changed
   [self updateTableRepresentationWithAdjust:aAnimated animated:aAnimated];
   if (!aAnimated) [self.detailTableView reloadData];
@@ -1302,13 +967,13 @@ static NSInteger numObjs = 0;
 	if (allSectionsAndCells) {
   	// first save to objects (unless already deactivated)
     [self save];
-    self.cellsActive = NO; // deactivate all cells already to make no undisplayed one remains active
+    self.active = NO; // deactivate all cells already to make no undisplayed one remains active
     // then remove
   	[allSectionsAndCells removeAllObjects];
     allSectionsAndCells = nil;
   }
   // - currently visible cells
-  self.cellsActive = NO; // deactivate all cells again (in case we had no allSectionsAndCells above)
+  self.active = NO; // deactivate all cells again (in case we had no allSectionsAndCells above)
 	if (currentSectionsAndCells) {
     // remove as well
   	[currentSectionsAndCells removeAllObjects];
@@ -1325,14 +990,12 @@ static NSInteger numObjs = 0;
   // important to prevent tableview to try fetching cells that don't exist any more
   [detailTableView reloadData];
   // mark data as unloaded, so next appearance will re-load it
-  contentLoaded = NO;
+  [super unloadData];
 }
 
 
 - (void)updateData
 {
-  // we're loading now, prevent later auto-loading again
-  contentLoaded = YES;
 	// set table options
   detailTableView.sectionHeaderHeight = SECTION_HEADER_HEIGHT;
   detailTableView.sectionFooterHeight = SECTION_FOOTER_HEIGHT;
@@ -1344,15 +1007,13 @@ static NSInteger numObjs = 0;
   autoTapCell = nil;
   // activate controller-level value connectors already here before building cells,
   // as these might be needed during build (will be done again at cellsActive)
-  for (ZDetailValueConnector *connector in valueConnectors) {
-    connector.active = YES;
-  }  
+  [super updateData];
   // Note: subclasses build the content here (by adding sections and cells)
  	BOOL built = [self buildDetailContent];
   NSAssert(built, @"detail content was not built");
   NSAssert(sectionToAdd==nil,@"unterminated section at end of build");
   // activate the cells, so they can check their values (for detecting empty values that might not need to be shown)
-  self.cellsActive = YES; // activate them now  
+  self.active = YES; // activate them now
   // create array of currently visible sections and cells
   [self updateTableRepresentationWithAdjust:NO animated:NO];
 	// now reload data
@@ -1384,7 +1045,6 @@ static NSInteger numObjs = 0;
 }
 
 
-
 - (void)defocusAllBut:(id)aFocusedCell
 {
   // TODO: there's a UIView method endEditing: which finds any first responder
@@ -1400,175 +1060,32 @@ static NSInteger numObjs = 0;
 }
 
 
-// update cell display modes
-- (void)updateCellsDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated
+- (void)defocus
 {
+  [self defocusAllBut:nil];
+  [super defocus];
+}
+
+
+// update cell display modes
+- (void)updateDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated
+{
+  [super updateDisplayMode:aMode animated:aAnimated];
   [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
     [aCell setDisplayMode:aMode animated:aAnimated];
   }];
 }
 
 
-- (void)cancelButtonAction
-{
-  [self dismissDetailViewWithSave:NO]; // dismiss view without save
-}
+#pragma mark - Input view management (keyboard, custom)
 
 
-- (void)saveButtonAction
-{
-  [self dismissDetailViewWithSave:YES]; // (try to) dismiss view with save
-}
-
-
-- (void)editDoneButtonAction
-{
-  // remove content editing mode
-  [self setDisplayMode:self.displayMode & ~ZDetailDisplayModeEditing animated:YES];
-}
-
-
-- (void)editStartButtonAction
-{
-  // start content editing mode
-  [self setDisplayMode:self.displayMode | ZDetailDisplayModeEditing animated:YES];
-}
-
-
-- (void)detailsDoneButtonAction
-{
-  // switch to basic mode
-  [self setDisplayMode:(self.displayMode & ~ZDetailDisplayModeDetails) | ZDetailDisplayModeBasics animated:YES];
-}
-
-
-- (void)detailsStartButtonAction
-{
-  // switch to basic mode
-  [self setDisplayMode:(self.displayMode & ~ZDetailDisplayModeDetails) | ZDetailDisplayModeBasics animated:YES];
-}
-
-
-
-- (void)updateNavigationButtonsAnimated:(BOOL)aAnimated
-{
-  // Left button
-  UIBarButtonItem *leftButton = nil;
-  ZDetailNavigationMode navMode = navigationMode;
-  // check if we need automatic adjustments
-  if (navMode & ZDetailNavigationModeLeftButtonAuto) {
-    // make sure we can leave the modal (or popover) presentation
-    if (modalViewWrapper && (modalViewWrapper.modalInPopover || !popoverWrapper)) {
-      // non-popovers and modal popovers need a Done button
-      navMode = navMode | ZDetailNavigationModeLeftButtonDone;
-    }
-  }
-  // now apply
-  if (navMode & ZDetailNavigationModeLeftButtonCancel) {
-    // left side must be a cancel button
-    leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonAction)];
-  }
-  else if (navMode & ZDetailNavigationModeLeftButtonDone) {
-    // done button for root view controllers, saves content
-    leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveButtonAction)];
-  }
-  else {
-    // if it's a back button, intercept its action
-    #warning "%%% tbd - intercept back button press"
-  }
-  [self.navigationItem setLeftBarButtonItem:leftButton animated:aAnimated];
-  // Right button
-  UIBarButtonItem *rightButton = nil;
-  if (navMode & ZDetailNavigationModeRightButtonSave) {
-    rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveButtonAction)];
-  }
-  else if (navMode & ZDetailNavigationModeRightButtonEditViewing) {
-    if (self.displayMode & ZDetailDisplayModeEditing) {
-      // is editing, show "done"
-      rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(editDoneButtonAction)];
-    }
-    else {
-      // is viewing, show "edit"
-      rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editStartButtonAction)];
-    }
-  }
-  else if (navMode & ZDetailNavigationModeRightButtonTableEditDone) {
-    // use the standard editing button from UIViewController which is auto connected to the editing property
-    rightButton = self.editButtonItem; // will be autoreleased below
-  }
-  else if (navMode & ZDetailNavigationModeRightButtonDetailsBasics) {
-    if (self.displayMode & ZDetailDisplayModeDetails) {
-      // is showing details, show "done"
-      rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(detailsDoneButtonAction)];
-    }
-    else {
-      // is showing basics, show "details"
-      rightButton = [[UIBarButtonItem alloc] initWithTitle:detailsButtonTitle style:UIBarButtonItemStyleBordered target:self action:@selector(detailsStartButtonAction)];
-    }
-  }
-  [self.navigationItem setRightBarButtonItem:rightButton animated:aAnimated];
-}
-
-
-
-#pragma mark - appearance management
-
-@synthesize detailDidCloseHandler;
-
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-{
-	// return YES for all globally supported orientations (essential even if not being rotated myself)
-  return [ZOrientation supportsInterfaceOrientation:toInterfaceOrientation];
-}
-
-
-- (void)viewWillAppear:(BOOL)aAnimated
-{
-  // auto-load content if not already done so
-  if (!contentLoaded) {
-    // nothing has loaded the content so far, so let's do it automatically now
-    [self updateData];
-  }
-  if (!disappearsUnderPushed) {
-  	// was not only hidden under pushed detail
-    // - forget possibly left-over child editor links (should be nil, but just in case)
-    self.cellThatOpenedChildDetail = nil;
-    self.currentChildDetailViewController = nil;
-    cancelled = NO;
-    dismissed = NO;
-    // let subclasses know
-    [self detailViewWillOpen:aAnimated];
-  	@try {
-      // appears new on top of stack: scroll to top
-      [detailTableView scrollToRowAtIndexPath:
-        [NSIndexPath indexPathForRow:0 inSection:0]
-        atScrollPosition:UITableViewScrollPositionTop
-        animated:NO
-      ];
-    }
-    @catch (NSException *e) {
-      DBGNSLOG(@"Detailview scroll exception: %@",[e description]);
-    }
-    // focus first editable field?
-    if (autoStartEditing) {
-      [self beginEditingInNextCellAfter:nil];
-    }
-  }
-  [super viewWillAppear:aAnimated];
-}
+#define MIN_SPACE_ABOVE_KBD 10
+#define MIN_MARGIN_ABOVE_EDITRECT 5
 
 
 - (void)viewDidAppear:(BOOL)aAnimated
 {
-  // has appeared (again), next disappear is not push unless the flag is set again explicitly
-  hasAppeared = YES;
-  disappearsUnderPushed = NO;
-  // make sure we have a title view, in case something is pushed on top
-  if ([self.navigationItem.title length]==0)
-    self.navigationItem.title = self.title;
-  // update/install navigation buttons
-  [self updateNavigationButtonsAnimated:NO];
   // install editing start notification handler
 	[[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -1607,8 +1124,6 @@ static NSInteger numObjs = 0;
   if (customInputView) {
     [self showCustomInputViewAnimated:NO];
   }
-  //%%% finally, issue auto-tap if one is set up
-  //[self checkAutoTap];
 }
 
 
@@ -1620,61 +1135,10 @@ static NSInteger numObjs = 0;
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
-	if (!disappearsUnderPushed) {
-    // save if not cancelled before
-    [self save];
-    // Forget possibly left-over child editor links (should be nil, but just in case)
-    self.cellThatOpenedChildDetail = nil;
-    self.currentChildDetailViewController = nil;
-  	// view will disappear definitely, disable editors
-    self.cellsActive = NO; // deactivate now
-  	// let descendants know
-    [self detailViewWillClose:aAnimated];
-  }
   [super viewWillDisappear:aAnimated];
 }
 
 
-- (void)viewDidDisappear:(BOOL)aAnimated
-{
-	if (!disappearsUnderPushed || !hasAppeared) {
-    // Note: if we see a disappear while not hasAppeared, this apparently means that the view stack is being
-    //       emptied without re-showing views that are under pushed views, so we still need to do cleanup.
-    // Forget all cells (needed HERE because otherwise we'll get saved when detail view is re-opened with a new object, which
-    // can be the wrong thing, namely when the object is a TTEntry intentionally not-saved+not-dirty - then it would get deleted
-    // BEFORE the user actually sees it the first time)
-  	[self unloadData];
-  }
-  if (!disappearsUnderPushed) {
-    hasAppeared = NO;
-    // close custom input view in case we have any
-    [self removeCustomInputViewAnimated:NO];
-    // inform parent
-    if (self.parentDetailViewController) {
-      [self.parentDetailViewController childDetailEditingDoneWithCancel:cancelled];
-    }
-    // let descendants know
-    [self detailViewDidClose:aAnimated];
-    // call user handler for end-of-editing
-    if (self.detailDidCloseHandler) {
-      detailDidCloseHandler(self,cancelled);
-    }
-    // unload the table data such that cells are deallocated and release their possible hold on me
-    // (mostly through handler blocks)
-    [self unloadData];
-    // apparently, we got dismissed (might be set long before here, but if not, now it's certain)
-    dismissed = YES;
-    dismissing = NO;
-  }
-  [super viewDidDisappear:aAnimated];
-}
-
-
-#pragma mark - Input view management (keyboard, custom)
-
-
-#define MIN_SPACE_ABOVE_KBD 10
-#define MIN_MARGIN_ABOVE_EDITRECT 5
 
 - (void)bringEditRectInView
 {
@@ -1778,7 +1242,7 @@ static NSInteger numObjs = 0;
 - (void)keyboardWillShow:(NSNotification *)aNotification
 {
   // dismiss other input view that might be present (not yet in iPad modal views)
-  if (modalViewWrapper==nil || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+  if (self.modalViewWrapper==nil || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
     [self removeCustomInputViewAnimated:YES];
   }
   // get info about keyboard and window (received in screen coordinates)
@@ -1788,7 +1252,7 @@ static NSInteger numObjs = 0;
   DBGSHOWRECT(@"UIKeyboardFrameEndUserInfoKey (in tableview coords)",kf);
   inputViewSize = kf.size;
   // in modal views on iPad, don't make room yet, as we need to wait until all keyboard magic is done
-  if (modalViewWrapper==nil || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+  if (self.modalViewWrapper==nil || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
     [self makeRoomForInputViewOfSize:inputViewSize];    
   }
 }
@@ -1798,7 +1262,7 @@ static NSInteger numObjs = 0;
 {
   // in modal views on iPad, we need to wait until here, because only now all view resizing
   // magic caused by keyboard appearance is done
-  if (modalViewWrapper && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+  if (self.modalViewWrapper && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
     [self removeCustomInputViewAnimated:NO];
     [self makeRoomForInputViewOfSize:inputViewSize];
   }
@@ -1919,7 +1383,7 @@ static NSInteger numObjs = 0;
     customInputView = aCustomInputView;
     customInputViewUsers = 1;
     // present at bottom of current window
-    if (hasAppeared) {
+    if (self.hasAppeared) {
       // already appeared - do it now
       [self showCustomInputViewAnimated:YES];
     }    
@@ -2098,6 +1562,24 @@ static NSInteger numObjs = 0;
   return UITableViewCellEditingStyleNone;
 }
 
+
+#pragma mark - ZDetailViewParent protocol
+
+
+// should be called by child detail editor when editing completes
+- (void)childDetailEditingDoneWithCancel:(BOOL)aCancelled
+{
+  if (self.cellThatOpenedChildDetail) {
+    // inform the cell that the editor has closed
+    if ([self.cellThatOpenedChildDetail conformsToProtocol:@protocol(ZDetailViewCell)]) {
+      [(id<ZDetailViewCell>)(self.cellThatOpenedChildDetail) editorFinishedWithCancel:aCancelled];
+    }
+    // done
+    self.cellThatOpenedChildDetail = nil;
+  }
+  // let superclass handle it as well
+  [super childDetailEditingDoneWithCancel:aCancelled];
+}
 
 
 @end
