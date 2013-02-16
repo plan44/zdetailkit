@@ -31,6 +31,7 @@ typedef BOOL (^ZDetailCellVisibleInModeHandler)(ZDetailViewBaseCell *aCell, ZDet
 // handler for custom end-of-editing behaviour
 typedef BOOL (^ZDetailCellEditingEndedHandler)(ZDetailViewBaseCell *aCell);
 
+/// Bitmasks to set label adjustments in descriptionViewAdjustment and valueViewAdjustment
 typedef enum {
   ZDetailCellItemAdjustNone = 0,
   ZDetailCellItemAdjustLeft = 0x01,
@@ -47,94 +48,253 @@ typedef enum {
 } ZDetailCellItemAdjust;
 
 
+/// Base cell for use in ZDetailTableViewController
 @interface ZDetailViewBaseCell : UITableViewCell <ZDetailViewCell, ZDetailValueConnectorOwner>
 
-// declaration for ZDetailViewCell protocol
+/// @name ZDetailViewCell basics
+
+/// @name Initializing a cell
+
+/// Initialize the cell
+/// @param aStyle the UITableViewCell style plus optional ZDetailViewCellStyleXXX flags
+/// @param aReuseIdentifier reuse identifier, see UITableViewCell
+/// @note this method has the standard UITableViewCell compatible signature, except that style has extended functionality (includes flags).
+/// This simplifies porting existing UITableViewCell subclasses to become ZDetailViewBaseCell subclasses.
+- (id)initWithStyle:(ZDetailViewCellStyle)aStyle reuseIdentifier:(NSString *)aReuseIdentifier;
+
+
+/// reference to the owning object.
+///
+/// Usually this is a ZDetailTableViewController, but
+/// any other object implemenbe ting the ZDetailCellOwner protocol can be the owner
+/// @note this property will automatically set when a cell is added using
+/// one of the [ZDetailTableViewController detailCell:] factory method variants
 @property (unsafe_unretained, nonatomic) id<ZDetailCellOwner> cellOwner;
-@property (assign, nonatomic) BOOL active;
 
 
-// the style as passed when initialized
+/// @name Cell style
+
+/// the ZDetailViewCellStyle as passed at initWithStyle:reuseIdentifier:
+/// @note This is a combination of UITableViewCell styles enhanced with ZDetailViewCellStyleXXX flags for additional styling options
 @property (readonly, nonatomic) ZDetailViewCellStyle detailViewCellStyle;
+/// the pure UITableViewCellStyle as passed at initWithStyle:reuseIdentifier: (ZDetailViewCellStyleXXX flags masked out)
 @property (readonly, nonatomic) UITableViewCellStyle basicCellStyle;
-// aliases for the labels, default to UITableViewCell labels, but can be set to other labels
-@property (strong, nonatomic) UILabel *valueLabel;
-@property (strong, nonatomic) UILabel *descriptionLabel;
 
 
-// visibility depending on tableController's editing mode
+/// display mode flags describing which modes (display, details, editing) and condtions (non-empty value) must be set to make this cell to become visible
 @property (assign, nonatomic) ZDetailDisplayMode neededModes;
 
-// geometry info
-@property (assign, nonatomic) CGFloat standardCellHeight; // standard cell height (defaults to table's rowHeight)
-@property (readonly, nonatomic) CGFloat cellHeight; // cell height, equal to standardCellHeight in base class, can vary for subclasses which dynamically resize cells
-@property (assign, nonatomic) CGFloat valueCellShare; // share of the entire cell that is used to represent value in (0..1)
-@property (assign, nonatomic) CGFloat contentIndent; // content indent in pixels
-@property (assign, nonatomic) CGSize contentMargins; // content margins
-@property (assign, nonatomic) CGFloat labelValueMargin; // margin between deacription and value
-@property (strong, nonatomic) UIView *valueView; // for custom layout: must contain the view that shows the value 
-@property (strong, nonatomic) UIView *descriptionView; // for custom layout: must contain the view that shows the description
+/// @name Cell geometry and layout
+
+/// standard cell height (defaults to table's rowHeight)
+@property (assign, nonatomic) CGFloat standardCellHeight;
+
+/// actual cell height, equal to standardCellHeight in base class, can vary for subclasses which dynamically resize cells
+@property (readonly, nonatomic) CGFloat cellHeight;
+
+/// share of the entire cell that is used to represent value in
+///
+/// - positive values describe the share relative to the entire cell width (=table view width)
+/// - negative values describe the share relative to the content view width (which might be indented, see contentIndent)
+@property (assign, nonatomic) CGFloat valueCellShare;
+
+/// content view indent (enlarged left margin) in pixels
+@property (assign, nonatomic) CGFloat contentIndent;
+
+/// content margins (free pixels to the left and right or top and bottom of actual cell content)
+@property (assign, nonatomic) CGSize contentMargins;
+
+/// margin between description and value labels
+@property (assign, nonatomic) CGFloat labelValueMargin;
+
+/// defines how the description view is placed and resized (if cusom layout is enabled by including ZDetailViewCellStyleFlagCustomLayout in the cellstyle when initializing the cell)
 @property (assign, nonatomic) ZDetailCellItemAdjust descriptionViewAdjustment; // for custom layout: how to adjust description view
+
+/// defines how the value view is placed and resized (if cusom layout is enabled by including ZDetailViewCellStyleFlagCustomLayout in the cellstyle when initializing the cell)
 @property (assign, nonatomic) ZDetailCellItemAdjust valueViewAdjustment; // for custom layout: how to adjust value view
 
-// handlers for customizing behaviour
+
+/// @name Description and value representation
+
+/// alias for the accessing the label which represents the value text.
+///
+/// defaults to either detailTextLabel or textLabel of standard UITableViewCell, but can be assigned any other (also custom) UILabel
+@property (strong, nonatomic) UILabel *valueLabel;
+/// alias for the accessing the label which represents the description text.
+///
+/// defaults to either textLabel or detailTextLabel of standard UITableViewCell, but can be assigned any other (also custom) UILabel
+@property (strong, nonatomic) UILabel *descriptionLabel;
+
+/// This is the view which represents the value
+///
+/// Usually, this is one of the standard UITableViewCell labels, but can be set to any other view
+/// (for example a UISwitch or UISlider).
+/// The custom layout mechanism of ZDetailViewCell (if enabled by including ZDetailViewCellStyleFlagCustomLayout in the cellstyle when initializing the cell)
+/// will place and resize the view assigned here according to valueViewAdjustment and chosen cell style
+@property (strong, nonatomic) UIView *valueView; // for custom layout: must contain the view that shows the value 
+/// This is the view which represents the description
+///
+/// Usually, this is one of the standard UITableViewCell labels
+/// The custom layout mechanism of ZDetailViewCell (if enabled by including ZDetailViewCellStyleFlagCustomLayout in the cellstyle when initializing the cell)
+/// will place and resize the view assigned here according to descriptionViewAdjustment and chosen cell style
+@property (strong, nonatomic) UIView *descriptionView; // for custom layout: must contain the view that shows the description
+
+
+/// @name Customizing behaviour using blocks
+
+/// block controlling visibility of the cell
+///
+/// This block, when assiged, is called to make a decision if the cell should be visible or not for the passed ZDetailDisplayMode.
+/// The block must return YES if the cell should be visible, NO otherwise
+/// If no block is assigned, the cell is visible when the current mode satisfies neededModes 
 @property (copy, nonatomic) ZDetailCellVisibleInModeHandler cellVisibleInModeHandler;
 - (void)setCellVisibleInModeHandler:(ZDetailCellVisibleInModeHandler)cellVisibleInModeHandler; // declaration needed only for XCode autocompletion of block
+
+/// block to respond to value changes (user edits)
+///
+/// This block, when assigned, is called after the value of the cell has changed (but not necessarily already written back to the connected model value).
+/// This is the place to implement showing/hiding other cells depending on this cell's value, e.g. by
+/// using [ZDetailTableViewController changeGroups:toVisible:]
+/// @note Do not use this method to save values into your model - use the cocoa-bindings like mechanisms
+/// provided by ZDetailValueConnector instead
 @property (copy, nonatomic) ZDetailCellConnectionHandler valueChangedHandler;
 - (void)setValueChangedHandler:(ZDetailCellConnectionHandler)valueChangedHandler; // declaration needed only for XCode autocompletion of block
+
+/// block to respond to the cell being tapped
+///
+/// This block, when assigned, is called when the cell is tapped. This is useful for implementing buttons
+/// or drill down submenus by pushing another ZDetailTableViewController onto the navigation stack.
+/// This block should return YES if it can fully handle the tap. If it returns NO, the cell might
+/// perform standard actions (like opening a separate editor view for the value, for example)
 @property (copy, nonatomic) ZDetailCellTapHandler tapHandler;
 - (void)setTapHandler:(ZDetailCellTapHandler)tapHandler; // declaration needed only for XCode autocompletion of block
+
+/// block to respond to a value editor (separate view that opened to edit the value) being closed.
+///
+/// This block, when assigned, is called when a cell's value editor (separate view on top of the navigation stack)
+/// has been closed.
+/// The aCancelled block parameter is set to YES to when the edits made in the value editor were discarded.
 @property (copy, nonatomic) ZDetailCellEditorFinishedHandler editorFinishedHandler;
 - (void)setEditorFinishedHandler:(ZDetailCellEditorFinishedHandler)editorFinishedHandler; // declaration needed only for XCode autocompletion of block
+
+/// block to respond to the end of a value being edited in-place
+///
+/// This block, when assigned, is called when editing of a cell's value in-place has ended (usually by moving the focus to another cell, or closing the entire detailView)  
 @property (copy, nonatomic) ZDetailCellEditingEndedHandler editingEndedHandler;
 - (void)setEditingEndedHandler:(ZDetailCellEditingEndedHandler)editingEndedHandler; // declaration needed only for XCode autocompletion of block
+
+/// block to respond to a change of the cell's value's validation status.
+///
+/// This block is called when the validation status for any values represented by the cell has changed
+/// from valid to invalid or vice versa.
+/// This block can return YES to indicated that the status change has been fully handled; if it
+/// returns NO, the standard validation status handling of the cell will be executed (standard
+/// behaviour of ZDetailViewBaseCell is setting the color of the description label text to red).
 @property (copy, nonatomic) ZDetailCellConnectionHandler validationStatusHandler;
 - (void)setValidationStatusHandler:(ZDetailCellConnectionHandler)validationStatusHandler; // declaration needed only for XCode autocompletion of block
 
-// customizing look and behaviour
-@property (strong, nonatomic) NSString *labelText; // text for description label - defaults to keyPath of first valueConnector
-@property (weak, readonly, nonatomic) NSString *specificLabelText; // returns text specifically set as labelText (is nil if label is autocalculated)
-@property (strong, nonatomic) NSString *detailTitleText; // text for detail editor - defaults to labelText
-@property (strong, nonatomic) NSString *placeholderText; // text for placeholder in editing fields - defaults to detailTitleText
-@property (assign, nonatomic) BOOL keepSelectedAfterTap; // keep selected after tapping cell
-@property (assign, nonatomic) BOOL autoSetDescriptionLabelText; // if not set, description label will not be touched
+/// @name Customizing look and behaviour
+
+/// text for description label - defaults to keyPath of first valueConnector
+@property (strong, nonatomic) NSString *labelText;
+
+/// returns text specifically set as labelText (is nil if label is autocalculated)
+@property (weak, readonly, nonatomic) NSString *specificLabelText;
+
+/// text for detail editor - defaults to labelText
+@property (strong, nonatomic) NSString *detailTitleText;
+
+/// text for placeholder in editing fields - defaults to detailTitleText
+@property (strong, nonatomic) NSString *placeholderText;
+
+/// if set to YES, cell selection remains set after tapping cell, otherwise releasing the touch will also remove the selection
+@property (assign, nonatomic) BOOL keepSelectedAfterTap;
+
+// if not set, description label will not be automatically calculate
+@property (assign, nonatomic) BOOL autoSetDescriptionLabelText;
+
+// if set, the cell's value is considered read-only, and cannot be edited. Depending on the actual cell, controls might get grayed out.
 @property (assign, nonatomic) BOOL readOnly;
-@property (assign, nonatomic) BOOL alwaysEditable;
-@property (assign, nonatomic) BOOL editorEnabled;
-@property (assign, nonatomic) BOOL showsValidationStatus; // if set, cell will show validation status as it changes
+
+// if set, cell will show validation status as it changes (unless overridden by validationStatusHandler)
+@property (assign, nonatomic) BOOL showsValidationStatus;
+
+
+/// @name Cell status
+
+/// the current display mode of the cell.
+///
+/// The mode determines if only viewing or editing values, and if detail properties are to be shown. Depending on
+/// neededModes, the cell might become invisible in some modes.
+/// @note the display mode is usually changed by ZDetailTableViewController calling setDisplayMode:animated:
+/// and should not normally be set directly.
 @property (readonly, nonatomic) ZDetailDisplayMode displayMode;
+
+/// returns YES if cell currently allows editing its value (derived from readOnly setting and displayMode/neededModes)
 @property (readonly, nonatomic) BOOL allowsEditing;
+
+/// returns YES if cell currently has editing focus (like active cursor in a text field)
 @property (readonly, nonatomic) BOOL focusedEditing;
 
-// Methods for owner
-// - UITableViewCell compatible, except that style has extended functionality (includes flags)
-- (id)initWithStyle:(ZDetailViewCellStyle)aStyle reuseIdentifier:(NSString *)aReuseIdentifier;
+/// set if cell is active (i.e. potentially connected to data and editing or displaying it)
+/// @note this property is usually controlled by ZDetailTableViewController and should
+/// normally not be modified directly
+@property (assign, nonatomic) BOOL active;
 
-// Interaction with value connectors
-// - standard callbacks from value connectors
-- (BOOL)valueChangedInConnector:(ZDetailValueConnector *)aConnector; // a value in a connector has changed
+
+/// @name Methods for receiving events from embedded ZDetailValueConnector instances
+
+/// the value of aConnector has changed
+- (BOOL)valueChangedInConnector:(ZDetailValueConnector *)aConnector;
+
+/// the validation status of aConnector has changed
 - (BOOL)validationStatusChangedInConnector:(ZDetailValueConnector *)aConnector error:(NSError *)aError; // validation status has changed
 
-// methods intended to be derived by subclasses
-- (void)updateForDisplay; // called when prepareForDisplay is called and needsUpdate is set
-- (void)updateValidationStatusError:(NSError *)aError; // called when validation status changes (so subclasses can show/hide in-cell notices)
-- (BOOL)presentingEmptyValue; // should return true when cell is presenting an empty value (such that empty cells can be hidden in some modes)
 
-// might be called to communicate that the editing rectangle has changed (such as for live resizing textView)
+/// @name Methods intended to be derived by subclasses
+
+/// called when prepareForDisplay is called and needsUpdate is set
+///
+/// This is the place to implement everything which needs to be done before the subviews of the cell and the cell itself are redisplayed
+- (void)updateForDisplay;
+
+/// called when validation status changes (so subclasses can show/hide in-cell notices)
+- (void)updateValidationStatusError:(NSError *)aError;
+
+/// should return true when cell is presenting an empty value (such that empty cells can be hidden in some modes)
+- (BOOL)presentingEmptyValue;
+
+/// might be called to communicate that the editing rectangle has changed (such as for live resizing textView)
 - (void)cellEditingRectChanged; 
-// might be called by subclasses to signal start/end of in-cell editing (like focusing/defocusing text field)
+
+/// might be called by subclasses to signal start of in-cell editing (like focusing a text field)
 - (BOOL)startedEditing;
+
+/// might be called by subclasses to signal end of in-cell editing (like defocusing text field)
+/// @param aGotoNext if set, the owner will try to move the focus to the next cell which can take a focus
 - (BOOL)endedEditingWithGotoNext:(BOOL)aGotoNext;
 
-// Services for subclasses (DO NOT DERIVE)
-// - flag need for updating visual representation (calling updateForDisplay)
+
+/// @name Services for subclasses (DO NOT DERIVE!)
+
+/// call when updating visual representation (calling updateForDisplay) is needed
 - (void)setNeedsUpdate;
-// - flag need for reloading the table of which this cell is part of (e.g. due to cell height changes)
+
+/// call when reloading the table of which this cell is part of (e.g. due to cell height changes) is needed
 - (void)setNeedsTableReload;
-// - flag need for reloading this cell
+
+/// call when reloading this cell (re-fetching data from connected model) is needed
 - (void)setNeedsReloadAnimated:(BOOL)aAnimated;
-// - register connectors (usually in the subclass' internalInit)
+
+/// call to register embedded ZDetailValueConnector objects (usually from the subclass' internalInit)
 - (ZDetailValueConnector *)registerConnector:(ZDetailValueConnector *)aConnector;
+
+/// Internal initialisation
+///
+/// This method is called by the public initXXX method(s).
+/// Subclasses which don't need their own initXXX method(s) but just need to initialize some internals
+/// can override this single method.
+- (void)internalInit;
 
 
 

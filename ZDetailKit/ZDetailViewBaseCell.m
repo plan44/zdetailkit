@@ -69,7 +69,6 @@
   // other params
   tableEditingStyle = UITableViewCellEditingStyleDelete; // table editing defaults to delete
   readOnly = NO;
-  alwaysEditable = NO;
   labelText = nil;
   keepSelectedAfterTap = NO;
   autoSetDescriptionLabelText = YES; // set descriptionlabel to labelText automatically
@@ -81,8 +80,6 @@
     self.descriptionView = self.descriptionLabel;
     self.valueView = self.valueLabel;
   }
-  // - init edit enabled/show-only
-  editorEnabled = NO;
   // UITableViewCell properties
   self.selectionStyle = UITableViewCellSelectionStyleBlue ; // standard blue selection
 }
@@ -707,10 +704,6 @@ static NSInteger numObjs = 0;
 @synthesize tableEditingStyle;
 
 
-@synthesize alwaysEditable;
-@synthesize editorEnabled;
-
-
 #pragma mark - Geometry and layout calculation
 
 @synthesize standardCellHeight;
@@ -825,7 +818,7 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
       // valueCellShare positive means relative to cellwidth, negative means relative to contentView width
       CGFloat valueStartXinContent;
       if (self.valueCellShare<0) {
-        // relative to cellwidth
+        // relative to content view with (which might be indented)
         valueStartXinContent = fabs(self.valueCellShare)*cv.bounds.size.width;
       }
       else {

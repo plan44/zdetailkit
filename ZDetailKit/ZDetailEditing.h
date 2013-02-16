@@ -30,7 +30,7 @@ typedef int ZDetailViewCellStyle;
   [[NSBundle mainBundle] localizedStringForKey:(key) value:default table:nil]
 
 
-// Visibility flags
+/// display modes (visibility flags)
 typedef enum {
   ZDetailDisplayModeNone = 0,
   ZDetailDisplayModeBasics = 0x01, // basic selection of properties
