@@ -27,15 +27,21 @@ typedef enum {
 } ZDetailNavigationMode;
 
 
+
+/// Base class for implementing detail view editors
+///
+/// @note for classic detail editors consisting of a table view with cells representing detail values,
+/// use the ZDetailTableViewController sublcass. This class can be used by non table based editors
+/// (see ZMapLocationEdit for an example).
 @interface ZDetailViewBaseController : UIViewController <ZDetailViewController, ZDetailViewParent>
 
 
-// operating
-- (void)internalInit;
+/// @name Initializing
+
 - (id)init;
 
-/// returns YES if controller has appeared (is visible)
-@property(assign,readonly) BOOL hasAppeared;
+
+/// @name data connection
 
 /// this property must be set to YES to activate the controller.
 ///
@@ -44,19 +50,28 @@ typedef enum {
 @property (assign, nonatomic) BOOL active;
 
 /// abort editing, prevent further saves (even if save is called)
+/// @note this also sets active = NO
 - (void)cancel;
 
 /// test if all editable content validates ok and collect NSErrors for validation failures.
 /// @param aErrorsP can be passed an existing mutable array, if errors are encountered these are appened to it.
 ///   If passed nil, a NSMutableArray is automatically created when the first error occurs.
 - (BOOL)validatesWithErrors:(NSMutableArray **)aErrorsP;
-- (void)save; // save edits from all cells
-- (void)revert; // revert all cells to saved data
+
+/// save all data represented by the controller and its contained objects (table cells, controls, etc.)
+- (void)save;
+
+/// revert controller, forget all edits and again show the data connected to by valueConnectors
+- (void)revert;
+
 
 /// @name Presentation and navigation
 
 /// returns the wrapper navigation controller if presented modally
 @property(readonly) UINavigationController *modalViewWrapper;
+
+/// returns YES if controller has appeared (is visible)
+@property(assign,readonly) BOOL hasAppeared;
 
 /// returns a popover controller for presenting this detail view
 ///
@@ -87,29 +102,57 @@ typedef enum {
 /// features of ZDetailKit work properly.
 - (void)pushViewControllerForDetail:(UIViewController *)aViewController animated:(BOOL)aAnimated;
 
-
+/// explicitly dismiss the current detail view with optionally saving edits
+/// @param aWithSave if YES, edits will be saved (by calling save on all valueConnectors) 
+/// @return YES if detail view could be dismissed
+/// NO if validation errors prevented detail view to be dismissed
+///
+/// This is usually automatically called from back, cancel and edit buttons as configured with
+/// navigationMode. When the detail view was presented modally or within a popover, these wrapper
+/// controllers are automatically removed and disposed of.
+/// @note value connectors that have autoSaveValue set will immediately save values during editing,
+/// so these values will propagate even if aWithSave is NO. So if you need save/cancel semantics for
+/// a detail editor, make sure to have autoSaveValue NO (the default) in all connectors.
+/// @note If the controller is dismissed using another method (like directly poping it from the
+/// navigation stack or by terminating the app, values will always be saved unless a previous
+/// call to cancel has been made.
 - (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave;
+
+/// dismiss all open details on top of and including this controller
 - (void)dismissDetailStack;
+
+/// set the navigation mode (what left and right buttons to show in the toolbar)
+/// @note See ZDetailNavigationMode enum for available options
 @property (assign, nonatomic) ZDetailNavigationMode navigationMode;
+
+/// title text for the "Details" button (when navigationMode includes ZDetailNavigationModeRightButtonDetailsBasics)
 @property (strong, nonatomic) NSString *detailsButtonTitle;
-// - convenience property - returns root of ZDetailViewController protocol conforming controller chain
+
+/// convenience property - returns root of ZDetailViewController protocol conforming controller chain
 @property (unsafe_unretained, readonly, nonatomic) id<ZDetailViewController> rootDetailViewController;
 
-
-// ZDetailViewController protocol
-@property(weak, nonatomic) id<ZDetailViewParent> parentDetailViewController;
 
 
 /// @name appearance and behaviour properties
 
-/// The display mode (basics, details, editing)
+/// The current display mode (basics, details, editing)
+/// @note use setDisplayMode:animated: to change the display mode
 @property (readonly, nonatomic) ZDetailDisplayMode displayMode;
 
-/// set displayMode with this method
+/// set the display mode (basics, details, editing)
+///
+/// ZDetailViewBaseController and ZDetailTableViewController support view-only and edit modes, as well
+/// as a standard and a detailed view. In the standard view, some less important information might be hidden
+/// or only shown when not empty.
+///
+/// @note see ZDetailDisplayMode enum for available options
 - (void)setDisplayMode:(ZDetailDisplayMode)aDisplayMode animated:(BOOL)aAnimated;
 
+
+
+
 /// update display mode
-- (void)updateDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated;
+//- (void)updateDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated;
 
 
 
@@ -118,26 +161,33 @@ typedef enum {
 - (void)setDetailDidCloseHandler:(ZDetailViewDidCloseHandler)detailDidCloseHandler; // declaration needed only for XCode autocompletion of block
 
 
+
+/// @name utilities
+
 /// register connectors (usually in the subclass' internalInit)
 - (ZDetailValueConnector *)registerConnector:(ZDetailValueConnector *)aConnector;
 
 /// update visibilities of UI elements
 - (void)updateVisibilitiesAnimated:(BOOL)aAnimated;
-/// prepare for possible termination of the app
-- (void)prepareForPossibleTermination;
 
 
-/// save valueConnectors on controller level
-- (void)save;
+/// If this controller has been opened as a detail editor for another detail editor, this points to the parent
+@property(weak, nonatomic) id<ZDetailViewParent> parentDetailViewController;
 
-/// revert valueConnectors on controller level
-- (void)revert;
 
 /// defocus editing fields, if any
 - (void)defocus;
 
 
 /// @name methods to override in subclasses
+
+
+/// this is called from any of the standard init method variations (withCoder, withNibName)
+///
+/// If a subclass needs to initialize some internals, but does not need
+/// a special init method signature, this is the method to override
+/// @note always call [super internalInit]
+- (void)internalInit;
 
 /// called when the detail view will open
 /// @note this is similar to viewWillAppear, but is only called when view appears first
@@ -157,6 +207,15 @@ typedef enum {
 /// onto the navigation stack
 - (void)detailViewDidClose:(BOOL)aAnimated;
 
+/// called to activate or deactivate the detail view, which includes activating/deactivation embedded
+/// value connectors.
+///
+/// This can be overridden in subclasses when additional action is needed before/after activating/deactivating
+/// data connections.
+/// @note always call [super setActive:]
+- (void)setActive:(BOOL)active;
 
+/// called to prepare for possible termination of the app
+- (void)prepareForPossibleTermination;
 
 @end

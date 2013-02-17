@@ -612,7 +612,7 @@
       }
     }
     @catch (NSException *exception) {
-      // swallow exceptions that may happen - readyForDismissal should handle validation and alert users beforehand!
+      // swallow exceptions that may happen - validatesWithErrors should have handled validation and alert users beforehand!
       NSLog(@"Exception dismissing %@ : %@",self.description, exception.description);
     }
   }

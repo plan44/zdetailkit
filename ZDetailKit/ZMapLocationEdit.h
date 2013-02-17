@@ -12,9 +12,11 @@
 
 #import "ZDetailKit.h"
 
-
 @class ZMapLocationAnnotation;
 
+/// MapKit based editor for a location text and a 2D map coordinate
+///
+/// Normally, this editor is used by ZLocationCell, but it can also be used independently
 @interface ZMapLocationEdit : ZDetailViewBaseController <UIGestureRecognizerDelegate>
 {
   // UI elements
@@ -23,12 +25,20 @@
   UIButton *pinButton;
   UITextField *locationTextField;
 }
-// connectors for the edited values
+
+/// value connector for the location text
 @property (weak, readonly,nonatomic) ZDetailValueConnector *textValueConnector;
+
+/// value connector for the geocoordinate
+/// @note the value connected must be a NSValue wrapping a CLLocationCoordinate2D
 @property (weak, readonly,nonatomic) ZDetailValueConnector *coordinateValueConnector;
 
-// other properties and methods
+/// This is the currently pinned location.
+///
+/// If no pin is set, it returns kCLLocationCoordinate2DInvalid
 @property (nonatomic, assign) CLLocationCoordinate2D locationCoordinate;
+
+/// If set, the user's current location is displayed on the map (blue dot)
 @property (assign) BOOL showUserLocation;
 
 @property (nonatomic, strong) IBOutlet UITextField *locationTextField;
@@ -41,11 +51,6 @@
 - (IBAction)searchLocationOnMap:(id)sender;
 - (IBAction)userPositionToggle:(id)sender;
 - (IBAction)pinToggle:(id)sender;
-
-
-// ZDetailViewController protocol
-@property(weak, nonatomic) id<ZDetailViewParent> parentDetailViewController;
-
 
 @end // ZMapLocationEdit
 
