@@ -14,12 +14,12 @@
 typedef enum {
   ZButtonCellStyleCenterText, // button with centered label
   ZButtonCellStyleDisclose, // disclosure (submenu) button
+  ZButtonCellStyleDestructive, // destructive button (e.g. delete)
 } ZButtonCellStyle;
 
 
 @interface ZButtonCell : ZDetailViewBaseCell
 
 @property (assign, nonatomic) ZButtonCellStyle buttonStyle;
-
 
 @end

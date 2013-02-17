@@ -219,7 +219,18 @@
     [t.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"controlsNumber"];
     t.valueConnector.autoSaveValue = YES;
   }
-  [c endSection];  
+  [c endSection];
+  [c startSection];
+  /* destructive button */ {
+    ZButtonCell *b = [c detailCell:[ZButtonCell class] neededGroups:GROUP_CONTROLS];
+    b.buttonStyle = ZButtonCellStyleDestructive;
+    b.labelText = @"Reset number to zero";
+    [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
+      [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"controlsNumber"];
+      return YES; // handled
+    }];
+  }
+  [c endSection];
 }
 
 
@@ -296,7 +307,7 @@
   [self startGroup:GROUP_CHOOSERS title:@"Choosers" withSwitch:aWithGroupSwitch inController:c];
   /* segment choice cell */ {
     ZSegmentChoicesCell *sg = [c detailCell:[ZSegmentChoicesCell class] neededGroups:GROUP_CHOOSERS];
-    sg.descriptionViewAdjustment = ZDetailCellItemAdjustHide; // only segmented control, no label
+    sg.labelText = @"Segmented";
     [sg.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"choicesNumber"];
     [sg.choicesManager addChoice:@"0" order:1 key:[NSNumber numberWithInt:0]];
     [sg.choicesManager addChoice:@"1" order:2 key:[NSNumber numberWithInt:1]];

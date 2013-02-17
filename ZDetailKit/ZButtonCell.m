@@ -22,7 +22,6 @@
   return self;
 }
 
-@synthesize buttonStyle;
 
 
 - (CGFloat)valueCellShare
@@ -34,6 +33,8 @@
   return [super valueCellShare];
 }
 
+
+@synthesize buttonStyle;
 
 - (void)setButtonStyle:(ZButtonCellStyle)aButtonStyle
 {
@@ -53,6 +54,20 @@
   else if (buttonStyle==ZButtonCellStyleDisclose) {
     self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     self.descriptionLabel.textAlignment = UITextAlignmentLeft;
+  }
+  else if (buttonStyle==ZButtonCellStyleDestructive) {
+    // like centered text
+    self.accessoryType = UITableViewCellAccessoryNone;
+    self.descriptionLabel.textAlignment = UITextAlignmentCenter;
+    // but with special background image
+    UIImage *img = [UIImage imageNamed:@"ZBC_delbtn.png"];
+    self.backgroundView = [[UIImageView alloc] initWithImage:[img stretchableImageWithLeftCapWidth:7 topCapHeight:0]];
+    // make sure content background is transparent
+    self.contentView.backgroundColor = [UIColor clearColor];
+    // value must have clear background to show button image through
+    self.textLabel.backgroundColor = [UIColor clearColor];
+    // label text is white
+    self.textLabel.textColor = [UIColor whiteColor];
   }
   [super updateForDisplay];
 }

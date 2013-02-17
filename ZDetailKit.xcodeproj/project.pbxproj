@@ -64,6 +64,7 @@
 		ED81B80516D10D7300ED1F3F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED81B80416D10D7300ED1F3F /* MapKit.framework */; };
 		ED81B80716D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h in Resources */ = {isa = PBXBuildFile; fileRef = ED81B80616D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h */; };
 		ED81B80916D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED81B80816D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m */; };
+		ED81B85416D182EF00ED1F3F /* ZBC_delbtn.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B85216D182EE00ED1F3F /* ZBC_delbtn.png */; };
 		EDA57D7216D040020044EB9C /* ZDetailViewBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED03B83616D037D800ADA844 /* ZDetailViewBaseController.m */; };
 /* End PBXBuildFile section */
 
@@ -162,6 +163,7 @@
 		ED81B80416D10D7300ED1F3F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/MapKit.framework; sourceTree = DEVELOPER_DIR; };
 		ED81B80616D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = file; path = ZStringToCoordinate2DTransformer.h; sourceTree = "<group>"; };
 		ED81B80816D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZStringToCoordinate2DTransformer.m; sourceTree = "<group>"; };
+		ED81B85216D182EE00ED1F3F /* ZBC_delbtn.png */ = {isa = PBXFileReference; lastKnownFileType = file; path = ZBC_delbtn.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +257,7 @@
 				ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */,
 				ED12E76A15824B8200DE3ED3 /* ZButtonCell.h */,
 				ED12E76B15824B8200DE3ED3 /* ZButtonCell.m */,
+				ED81B85316D182EE00ED1F3F /* ZButtonCell */,
 				ED12E77D15824B8200DE3ED3 /* ZSwitchCell.h */,
 				ED12E77E15824B8200DE3ED3 /* ZSwitchCell.m */,
 				ED5D933615BEDC35008A98FF /* ZSliderCell.h */,
@@ -345,6 +348,14 @@
 			path = ZMapLocationEdit;
 			sourceTree = "<group>";
 		};
+		ED81B85316D182EE00ED1F3F /* ZButtonCell */ = {
+			isa = PBXGroup;
+			children = (
+				ED81B85216D182EE00ED1F3F /* ZBC_delbtn.png */,
+			);
+			path = ZButtonCell;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
@@ -433,6 +444,7 @@
 				ED81B7FC16D0F48500ED1F3F /* ZMEpinBtnOn.png in Resources */,
 				ED81B7FD16D0F48500ED1F3F /* ZMEpinBtnOn@2x.png in Resources */,
 				ED81B80716D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h in Resources */,
+				ED81B85416D182EF00ED1F3F /* ZBC_delbtn.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
