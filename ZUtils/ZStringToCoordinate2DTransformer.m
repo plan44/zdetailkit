@@ -53,7 +53,9 @@
     if (strcmp([val objCType],@encode(CLLocationCoordinate2D))==0) {
       CLLocationCoordinate2D coord;
       [val getValue:&coord];
-      return [NSString stringWithFormat:@"%f,%f", coord.latitude, coord.longitude];
+      if (CLLocationCoordinate2DIsValid(coord)) {
+        return [NSString stringWithFormat:@"%f,%f", coord.latitude, coord.longitude];
+      }
     }
   }
   return nil;
