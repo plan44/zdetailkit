@@ -149,13 +149,6 @@ typedef enum {
 - (void)setDisplayMode:(ZDetailDisplayMode)aDisplayMode animated:(BOOL)aAnimated;
 
 
-
-
-/// update display mode
-//- (void)updateDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated;
-
-
-
 /// will be called after closing a detail editor
 @property (copy,nonatomic) ZDetailViewDidCloseHandler detailDidCloseHandler;
 - (void)setDetailDidCloseHandler:(ZDetailViewDidCloseHandler)detailDidCloseHandler; // declaration needed only for XCode autocompletion of block

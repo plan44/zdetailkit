@@ -57,7 +57,6 @@
   UIPopoverController *popoverWrapper;
 }
 @property(retain, nonatomic) id<ZDetailViewController> currentChildDetailViewController;
-- (void)updateDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated;
 - (void)updateNavigationButtonsAnimated:(BOOL)aAnimated;
 @end
 
@@ -160,8 +159,6 @@
     displayMode = aDisplayMode;
     // - changing mode needs checking which cells are now active
     [self updateVisibilitiesAnimated:aAnimated];
-    // - update cell modes
-    [self updateDisplayMode:displayMode animated:aAnimated];
     // - update the editing button (if any)
     [self updateNavigationButtonsAnimated:aAnimated];
   }
@@ -172,13 +169,6 @@
 {
   // nop in base class
 }
-
-
-- (void)updateDisplayMode:(ZDetailDisplayMode)aDisplayMode animated:(BOOL)aAnimated
-{
-  // nop in base class
-}
-
 
 
 #pragma mark - controller level value connectors

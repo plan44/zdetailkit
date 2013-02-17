@@ -1069,12 +1069,12 @@ static NSInteger numObjs = 0;
 }
 
 
-// update cell display modes
-- (void)updateDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated
+- (void)setDisplayMode:(ZDetailDisplayMode)aDisplayMode animated:(BOOL)aAnimated
 {
-  [super updateDisplayMode:aMode animated:aAnimated];
+  [super setDisplayMode:aDisplayMode animated:aAnimated];
+  // - update cell modes
   [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
-    [aCell setDisplayMode:aMode animated:aAnimated];
+    [aCell setDisplayMode:self.displayMode animated:aAnimated];
   }];
 }
 
