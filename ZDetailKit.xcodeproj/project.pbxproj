@@ -49,6 +49,21 @@
 		ED1F708C15BDA4100046CFBC /* ZColor_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708B15BDA4100046CFBC /* ZColor_utils.m */; };
 		ED49A99B1585F623007FEBF0 /* ZDateTimeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */; };
 		ED5D933815BEDC35008A98FF /* ZSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED5D933715BEDC35008A98FF /* ZSliderCell.m */; };
+		ED81B7EB16D0F46F00ED1F3F /* ZMapLocationEdit.m in Sources */ = {isa = PBXBuildFile; fileRef = ED81B7E816D0F46F00ED1F3F /* ZMapLocationEdit.m */; };
+		ED81B7EC16D0F46F00ED1F3F /* ZMapLocationEdit.xib in Resources */ = {isa = PBXBuildFile; fileRef = ED81B7E916D0F46F00ED1F3F /* ZMapLocationEdit.xib */; };
+		ED81B7F616D0F48500ED1F3F /* ZMEcompassBtnOff.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B7EE16D0F48500ED1F3F /* ZMEcompassBtnOff.png */; };
+		ED81B7F716D0F48500ED1F3F /* ZMEcompassBtnOff@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B7EF16D0F48500ED1F3F /* ZMEcompassBtnOff@2x.png */; };
+		ED81B7F816D0F48500ED1F3F /* ZMEcompassBtnOn.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B7F016D0F48500ED1F3F /* ZMEcompassBtnOn.png */; };
+		ED81B7F916D0F48500ED1F3F /* ZMEcompassBtnOn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B7F116D0F48500ED1F3F /* ZMEcompassBtnOn@2x.png */; };
+		ED81B7FA16D0F48500ED1F3F /* ZMEpinBtnOff.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B7F216D0F48500ED1F3F /* ZMEpinBtnOff.png */; };
+		ED81B7FB16D0F48500ED1F3F /* ZMEpinBtnOff@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B7F316D0F48500ED1F3F /* ZMEpinBtnOff@2x.png */; };
+		ED81B7FC16D0F48500ED1F3F /* ZMEpinBtnOn.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B7F416D0F48500ED1F3F /* ZMEpinBtnOn.png */; };
+		ED81B7FD16D0F48500ED1F3F /* ZMEpinBtnOn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B7F516D0F48500ED1F3F /* ZMEpinBtnOn@2x.png */; };
+		ED81B80016D0F69800ED1F3F /* ZLocationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED81B7FF16D0F69700ED1F3F /* ZLocationCell.m */; };
+		ED81B80316D10D6800ED1F3F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED81B80216D10D6800ED1F3F /* CoreLocation.framework */; };
+		ED81B80516D10D7300ED1F3F /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED81B80416D10D7300ED1F3F /* MapKit.framework */; };
+		ED81B80716D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h in Resources */ = {isa = PBXBuildFile; fileRef = ED81B80616D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h */; };
+		ED81B80916D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED81B80816D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m */; };
 		EDA57D7216D040020044EB9C /* ZDetailViewBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED03B83616D037D800ADA844 /* ZDetailViewBaseController.m */; };
 /* End PBXBuildFile section */
 
@@ -129,6 +144,24 @@
 		ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDateTimeCell.m; sourceTree = "<group>"; };
 		ED5D933615BEDC35008A98FF /* ZSliderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSliderCell.h; sourceTree = "<group>"; };
 		ED5D933715BEDC35008A98FF /* ZSliderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSliderCell.m; sourceTree = "<group>"; };
+		ED81B7E716D0F46F00ED1F3F /* ZMapLocationEdit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZMapLocationEdit.h; sourceTree = "<group>"; };
+		ED81B7E816D0F46F00ED1F3F /* ZMapLocationEdit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMapLocationEdit.m; sourceTree = "<group>"; };
+		ED81B7E916D0F46F00ED1F3F /* ZMapLocationEdit.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ZMapLocationEdit.xib; sourceTree = "<group>"; };
+		ED81B7EE16D0F48500ED1F3F /* ZMEcompassBtnOff.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZMEcompassBtnOff.png; sourceTree = "<group>"; };
+		ED81B7EF16D0F48500ED1F3F /* ZMEcompassBtnOff@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ZMEcompassBtnOff@2x.png"; sourceTree = "<group>"; };
+		ED81B7F016D0F48500ED1F3F /* ZMEcompassBtnOn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZMEcompassBtnOn.png; sourceTree = "<group>"; };
+		ED81B7F116D0F48500ED1F3F /* ZMEcompassBtnOn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ZMEcompassBtnOn@2x.png"; sourceTree = "<group>"; };
+		ED81B7F216D0F48500ED1F3F /* ZMEpinBtnOff.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZMEpinBtnOff.png; sourceTree = "<group>"; };
+		ED81B7F316D0F48500ED1F3F /* ZMEpinBtnOff@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ZMEpinBtnOff@2x.png"; sourceTree = "<group>"; };
+		ED81B7F416D0F48500ED1F3F /* ZMEpinBtnOn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZMEpinBtnOn.png; sourceTree = "<group>"; };
+		ED81B7F516D0F48500ED1F3F /* ZMEpinBtnOn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ZMEpinBtnOn@2x.png"; sourceTree = "<group>"; };
+		ED81B7FE16D0F69700ED1F3F /* ZLocationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZLocationCell.h; sourceTree = "<group>"; };
+		ED81B7FF16D0F69700ED1F3F /* ZLocationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZLocationCell.m; sourceTree = "<group>"; };
+		ED81B80116D10C5C00ED1F3F /* ZDetailKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailKit.h; sourceTree = "<group>"; };
+		ED81B80216D10D6800ED1F3F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
+		ED81B80416D10D7300ED1F3F /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/MapKit.framework; sourceTree = DEVELOPER_DIR; };
+		ED81B80616D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = file; path = ZStringToCoordinate2DTransformer.h; sourceTree = "<group>"; };
+		ED81B80816D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZStringToCoordinate2DTransformer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +169,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED81B80516D10D7300ED1F3F /* MapKit.framework in Frameworks */,
+				ED81B80316D10D6800ED1F3F /* CoreLocation.framework in Frameworks */,
 				ED12E76615824A3B00DE3ED3 /* CoreFoundation.framework in Frameworks */,
 				ED12E76715824A3B00DE3ED3 /* CoreGraphics.framework in Frameworks */,
 				ED12E76815824A3B00DE3ED3 /* UIKit.framework in Frameworks */,
@@ -149,6 +184,8 @@
 		ED12E72B1582491000DE3ED3 = {
 			isa = PBXGroup;
 			children = (
+				ED81B80416D10D7300ED1F3F /* MapKit.framework */,
+				ED81B80216D10D6800ED1F3F /* CoreLocation.framework */,
 				ED43CA3E16CFDAE600C28E48 /* README.markdown */,
 				ED1F707315BD951B0046CFBC /* ZUtils */,
 				ED12E76915824B8200DE3ED3 /* ZDetailKit */,
@@ -204,6 +241,7 @@
 		ED12E76915824B8200DE3ED3 /* ZDetailKit */ = {
 			isa = PBXGroup;
 			children = (
+				ED81B80116D10C5C00ED1F3F /* ZDetailKit.h */,
 				ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */,
 				ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */,
 				ED12E77415824B8200DE3ED3 /* ZDetailEditing.h */,
@@ -244,6 +282,12 @@
 				ED1F705415BD50C10046CFBC /* ZColorChooser.h */,
 				ED1F705515BD50C10046CFBC /* ZColorChooser.m */,
 				ED1F705815BD51D30046CFBC /* ZColorChooser */,
+				ED81B7FE16D0F69700ED1F3F /* ZLocationCell.h */,
+				ED81B7FF16D0F69700ED1F3F /* ZLocationCell.m */,
+				ED81B7E716D0F46F00ED1F3F /* ZMapLocationEdit.h */,
+				ED81B7E816D0F46F00ED1F3F /* ZMapLocationEdit.m */,
+				ED81B7E916D0F46F00ED1F3F /* ZMapLocationEdit.xib */,
+				ED81B7ED16D0F48500ED1F3F /* ZMapLocationEdit */,
 			);
 			path = ZDetailKit;
 			sourceTree = "<group>";
@@ -269,6 +313,8 @@
 				ED1F708515BD9EA20046CFBC /* ZIntToUIColorTransformer.m */,
 				ED1F707D15BD951B0046CFBC /* ZStringToUIColorTransformer.h */,
 				ED1F707E15BD951B0046CFBC /* ZStringToUIColorTransformer.m */,
+				ED81B80616D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h */,
+				ED81B80816D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m */,
 				ED1F707615BD951B0046CFBC /* ZDate_utils.h */,
 				ED1F707715BD951B0046CFBC /* ZDate_utils.m */,
 				ED1F707815BD951B0046CFBC /* ZDBGMacros.h */,
@@ -282,6 +328,21 @@
 				ED1F708B15BDA4100046CFBC /* ZColor_utils.m */,
 			);
 			path = ZUtils;
+			sourceTree = "<group>";
+		};
+		ED81B7ED16D0F48500ED1F3F /* ZMapLocationEdit */ = {
+			isa = PBXGroup;
+			children = (
+				ED81B7EE16D0F48500ED1F3F /* ZMEcompassBtnOff.png */,
+				ED81B7EF16D0F48500ED1F3F /* ZMEcompassBtnOff@2x.png */,
+				ED81B7F016D0F48500ED1F3F /* ZMEcompassBtnOn.png */,
+				ED81B7F116D0F48500ED1F3F /* ZMEcompassBtnOn@2x.png */,
+				ED81B7F216D0F48500ED1F3F /* ZMEpinBtnOff.png */,
+				ED81B7F316D0F48500ED1F3F /* ZMEpinBtnOff@2x.png */,
+				ED81B7F416D0F48500ED1F3F /* ZMEpinBtnOn.png */,
+				ED81B7F516D0F48500ED1F3F /* ZMEpinBtnOn@2x.png */,
+			);
+			path = ZMapLocationEdit;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -362,6 +423,16 @@
 				ED1F706215BD51D30046CFBC /* ZCCH_noColor@2x.png in Resources */,
 				ED03B83716D037D800ADA844 /* ZDetailViewBaseController.h in Resources */,
 				ED03B83816D037D800ADA844 /* ZDetailViewBaseController.m in Resources */,
+				ED81B7EC16D0F46F00ED1F3F /* ZMapLocationEdit.xib in Resources */,
+				ED81B7F616D0F48500ED1F3F /* ZMEcompassBtnOff.png in Resources */,
+				ED81B7F716D0F48500ED1F3F /* ZMEcompassBtnOff@2x.png in Resources */,
+				ED81B7F816D0F48500ED1F3F /* ZMEcompassBtnOn.png in Resources */,
+				ED81B7F916D0F48500ED1F3F /* ZMEcompassBtnOn@2x.png in Resources */,
+				ED81B7FA16D0F48500ED1F3F /* ZMEpinBtnOff.png in Resources */,
+				ED81B7FB16D0F48500ED1F3F /* ZMEpinBtnOff@2x.png in Resources */,
+				ED81B7FC16D0F48500ED1F3F /* ZMEpinBtnOn.png in Resources */,
+				ED81B7FD16D0F48500ED1F3F /* ZMEpinBtnOn@2x.png in Resources */,
+				ED81B80716D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,6 +473,9 @@
 				ED1F708915BDA37F0046CFBC /* ZGeometry_utils.m in Sources */,
 				ED1F708C15BDA4100046CFBC /* ZColor_utils.m in Sources */,
 				ED5D933815BEDC35008A98FF /* ZSliderCell.m in Sources */,
+				ED81B7EB16D0F46F00ED1F3F /* ZMapLocationEdit.m in Sources */,
+				ED81B80016D0F69800ED1F3F /* ZLocationCell.m in Sources */,
+				ED81B80916D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

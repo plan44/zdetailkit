@@ -24,4 +24,7 @@
 #import "ZColorChooserCell.h"
 #import "ZChoiceListCell.h"
 
+// Note: ZLocationCell requires MapKit and CoreLocation frameworks to be included in the app
+#import "ZLocationCell.h"
+
 // EOF
