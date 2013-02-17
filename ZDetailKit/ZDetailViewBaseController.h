@@ -59,6 +59,9 @@ typedef enum {
 - (BOOL)validatesWithErrors:(NSMutableArray **)aErrorsP;
 
 /// save all data represented by the controller and its contained objects (table cells, controls, etc.)
+/// to the model objects connected by the valueConnectors.
+/// @note this can be overridden in subclasses to perform additional actions after all edits are saved
+/// to the connected data objects/fields (such as dumping out the data to a DB etc.) 
 - (void)save;
 
 /// revert controller, forget all edits and again show the data connected to by valueConnectors

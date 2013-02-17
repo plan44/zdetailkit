@@ -315,7 +315,7 @@
     // So: we need notice when editing so we can set the value connector dirty
     #ifdef TEXTEXPANDER_SUPPORT
     textExpander = nil;
-    if ([SMTEDelegateController textExpanderEnabled]) {    
+    if ([TextExpanderSingleton textExpanderEnabled]) {
       // need my own instance, because I need my own delegate
       textExpander = [[SMTEDelegateController alloc] init];
       [textExpander setNextDelegate:self];

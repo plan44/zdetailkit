@@ -31,6 +31,11 @@ static SMTEDelegateController *_sharedTextExpander;
 
 + (BOOL)textExpanderEnabled
 {
+  // check if installed at all
+  if (![SMTEDelegateController isTextExpanderTouchInstalled]) {
+    return NO;
+  }
+  // is installed, check if enabled
   BOOL isEnabled = NO;
   id enabledFlag = nil;
   @try {

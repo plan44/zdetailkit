@@ -44,7 +44,7 @@
 - (NSString *)secret
 {
   if (_keyChainService && _keyChainAccount) {
-    return [[ZKeyChainWrapper sharedKeyChainWrapper] passwordForService:key account:object error:NULL];
+    return [[ZKeyChainWrapper sharedKeyChainWrapper] passwordForService:_keyChainService account:_keyChainAccount error:NULL];
   }
   return nil;
 }

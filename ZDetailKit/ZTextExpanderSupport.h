@@ -13,6 +13,7 @@
 @interface TextExpanderSingleton : NSObject
 + (void)initialize;
 + (SMTEDelegateController *)sharedTextExpander;
++ (BOOL)textExpanderEnabled;
 @end
 
 #endif // TEXTEXPANDER_SUPPORT
