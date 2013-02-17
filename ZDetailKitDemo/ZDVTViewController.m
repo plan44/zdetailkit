@@ -10,20 +10,14 @@
 
 #import "ZOrientation.h"
 
-#import "ZDetailTableViewController.h"
+#import "ZDetailKit.h"
 
-#import "ZButtonCell.h"
-#import "ZTextFieldCell.h"
-#import "ZTextViewCell.h"
-#import "ZSwitchCell.h"
-#import "ZSliderCell.h"
-#import "ZSegmentChoicesCell.h"
-#import "ZChoiceListCell.h"
-#import "ZDateTimeCell.h"
-#import "ZColorChooserCell.h"
-#import "ZIntToUIColorTransformer.h"
+#import <CoreLocation/CoreLocation.h>
 
 @interface ZDVTViewController ()
+{
+  CLLocationCoordinate2D locationCoordinate;
+}
 
 @end
 
@@ -423,6 +417,13 @@
     fmt.numberStyle = kCFNumberFormatterNoStyle;
     t.valueConnector.formatter = fmt;
     t.valueConnector.autoSaveValue = YES;
+  }
+  /* location editor */ {
+    ZLocationCell *l = [c detailCell:[ZLocationCell class] neededGroups:GROUP_SPECIAL];
+    l.labelText = @"Geolocation";
+    [l.textValueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"locationText"];
+    [l.coordinateValueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"latCommaLong"];
+    l.coordinateValueConnector.valueTransformer = [NSValueTransformer valueTransformerForName:@"ZStringToCoordinate2DTransformer"];
   }
   [c endSection];
 }

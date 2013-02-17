@@ -43,6 +43,12 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 - (void)endSection;
 - (void)sortSectionBy:(NSString *)aKey ascending:(BOOL)aAscending;
 - (void)endSectionAndSortBy:(NSString *)aKey ascending:(BOOL)aAscending;
+// - groups
+/// convenience method to generate group bitmasks
+///
+/// returns a new bit mask (starting with Bit 0) every time it is called. The generator is reset
+/// before buildDetailContent method or the buildDetailContentHandler block is called.
+- (NSUInteger)newGroupFlag;
 // - cells
 @property (assign, nonatomic) ZDetailViewCellStyle defaultCellStyle; // style to be used to create default cells
 @property (copy, nonatomic) ZDetailTableViewCellIterationHandler cellSetupHandler; // called on every cell added by detailCell:... method

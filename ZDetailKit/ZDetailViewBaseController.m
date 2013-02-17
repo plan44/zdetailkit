@@ -53,8 +53,6 @@
   BOOL dismissing; // dismissing in process, but save exception could block it
   // set if editor was dismissed with cancel
   BOOL cancelled;
-  // if set, updateData was called at least once already
-  BOOL contentLoaded;
   // for modally displaying the detail view (instead of pushing on existing navigation stack)
   UIPopoverController *popoverWrapper;
 }
@@ -91,7 +89,6 @@
   cancelled = NO;
   // internal flags
   active = NO;
-  contentLoaded = NO;
   // no handlers
   detailDidCloseHandler = nil;
   // default navigation
@@ -131,6 +128,9 @@
 
 - (void) dealloc
 {
+  // disable all connections to make sure no KVO remains active to
+  // embedded objects that might get destroyed before the embedded valueConnectors
+  // (as we don't have any control over ARCs order of deallocation)
   self.active = NO;
 }
 
@@ -197,31 +197,14 @@
 #pragma mark - detailview data connection control
 
 
-- (void)updateData
-{
-  // we're loading now, prevent later auto-loading again
-  contentLoaded = YES;
-  // activate controller-level value connectors
-  for (ZDetailValueConnector *connector in valueConnectors) {
-    connector.active = YES;
-  }
-}
-
-
-- (void)unloadData
-{
-  contentLoaded = NO;
-}
-
-
-
 @synthesize active;
 
 - (void)setActive:(BOOL)aActive
 {
-  if (aActive!=active) {
+  if (aActive!=self.active) {
+    // update status flag
     active = aActive;
-    // controller level value connectors
+    // propagate to controller level value connectors
     for (ZDetailValueConnector *connector in valueConnectors) {
       connector.active = active;
     }
@@ -246,11 +229,14 @@
 
 - (void)save
 {
-  for (ZDetailValueConnector *connector in valueConnectors) {
-    [connector saveValue];
+  // do not save if already inactive (e.g. because edits were cancelled)
+  if (self.active) {
+    for (ZDetailValueConnector *connector in valueConnectors) {
+      [connector saveValue];
+    }
+    // mark saved
+    cancelled = NO;
   }
-  // mark saved
-  cancelled = NO;
 }
 
 
@@ -394,11 +380,8 @@
 
 - (void)viewWillAppear:(BOOL)aAnimated
 {
-  // auto-load content if not already done so
-  if (!contentLoaded) {
-    // nothing has loaded the content so far, so let's do it automatically now
-    [self updateData];
-  }
+  // activate (load content) if not already active
+  self.active = YES;
   if (!disappearsUnderPushed) {
   	// was not only hidden under pushed detail
     // - let subclasses know
@@ -447,10 +430,9 @@
 	if (!disappearsUnderPushed || !hasAppeared) {
     // Note: if we see a disappear while not hasAppeared, this apparently means that the view stack is being
     //       emptied without re-showing views that are under pushed views, so we still need to do cleanup.
-    // Forget all cells (needed HERE because otherwise we'll get saved when detail view is re-opened with a new object, which
-    // can be the wrong thing, namely when the object is a TTEntry intentionally not-saved+not-dirty - then it would get deleted
-    // BEFORE the user actually sees it the first time)
-  	[self unloadData];
+    // Deactivate and forget all content (needed HERE because otherwise we'll get saved when detail view is
+    // re-opened with a new object, which can be the wrong thing)
+    self.active = NO;
   }
   if (!disappearsUnderPushed) {
     hasAppeared = NO;
@@ -466,7 +448,7 @@
     }
     // unload the table data such that cells are deallocated and release their possible hold on me
     // (mostly through handler blocks)
-    [self unloadData];
+    self.active = NO;
     // apparently, we got dismissed (might be set long before here, but if not, now it's certain)
     dismissed = YES;
     dismissing = NO;

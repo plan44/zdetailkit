@@ -8,10 +8,6 @@
 
 #import "ZDetailViewBaseCell.h"
 
-#import "ZDetailValueConnector.h"
-
-@class ZTextEditBaseCell;
-
 @interface ZTextEditBaseCell : ZDetailViewBaseCell
 
 @property (assign,nonatomic) BOOL multiline; // allow entering multiple text lines, may imply editInDetailView

@@ -34,34 +34,70 @@ typedef enum {
 - (void)internalInit;
 - (id)init;
 
-/// returns the wrapper navigation controller if presented modally
-@property(readonly) UINavigationController *modalViewWrapper;
-
 /// returns YES if controller has appeared (is visible)
 @property(assign,readonly) BOOL hasAppeared;
 
-/// detailview data connection active
-@property (assign, nonatomic) BOOL active; // data connection activation
+/// this property must be set to YES to activate the controller.
+///
+/// When activated, the controller connects it to its data by activating valueConnectors
+/// and builds up its content to present the data.
+@property (assign, nonatomic) BOOL active;
 
-// ZDetailViewController protocol
-@property(weak, nonatomic) id<ZDetailViewParent> parentDetailViewController;
+/// abort editing, prevent further saves (even if save is called)
+- (void)cancel;
 
-
-- (void)cancel; // abort editing, prevent further saves (even if save is called)
-- (BOOL)validatesWithErrors:(NSMutableArray **)aErrorsP; // test if all cells validate and collect NSErrors in array (if array exists, errors will be appended)
+/// test if all editable content validates ok and collect NSErrors for validation failures.
+/// @param aErrorsP can be passed an existing mutable array, if errors are encountered these are appened to it.
+///   If passed nil, a NSMutableArray is automatically created when the first error occurs.
+- (BOOL)validatesWithErrors:(NSMutableArray **)aErrorsP;
 - (void)save; // save edits from all cells
 - (void)revert; // revert all cells to saved data
 
-// Presentation and navigation
+/// @name Presentation and navigation
+
+/// returns the wrapper navigation controller if presented modally
+@property(readonly) UINavigationController *modalViewWrapper;
+
+/// returns a popover controller for presenting this detail view
+///
+/// The returned controller wraps a navigation controller which in turn contains this controller
+/// as its root controller. The wrapper controllers inherit the relevant modal presentation
+/// properties from this controller.
 - (UIPopoverController *)popoverControllerForPresentation;
+
+
+/// returns a controller for presenting this detail view modally
+///
+/// The returned controller is a navigation controller and inherits the relevant modal presentation
+/// properties from this controller.
 - (UIViewController *)viewControllerForModalPresentation;
+
+/// pushes a view controller as a detail editor
+///
+/// This method can be used to push ordinary UIViewControllers (in this case the functionality of
+/// this method is just defocusing of current edits, passing the content size for popovers
+/// followed by pushViewController:animated:)
+///
+/// However, when used with controllers conforming to the ZDetailViewController protocol,
+/// the pushed controller's parentDetailViewController and this controller's
+/// currentChildDetailViewController are automatically set. This allows this controller to get
+/// notified automatically when the detail editor is closed.
+///
+/// @note it is recommended to always use this method to push detail editors to make sure all
+/// features of ZDetailKit work properly.
 - (void)pushViewControllerForDetail:(UIViewController *)aViewController animated:(BOOL)aAnimated;
+
+
 - (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave;
 - (void)dismissDetailStack;
 @property (assign, nonatomic) ZDetailNavigationMode navigationMode;
 @property (strong, nonatomic) NSString *detailsButtonTitle;
 // - convenience property - returns root of ZDetailViewController protocol conforming controller chain
 @property (unsafe_unretained, readonly, nonatomic) id<ZDetailViewController> rootDetailViewController;
+
+
+// ZDetailViewController protocol
+@property(weak, nonatomic) id<ZDetailViewParent> parentDetailViewController;
 
 
 /// @name appearance and behaviour properties
@@ -85,10 +121,6 @@ typedef enum {
 /// register connectors (usually in the subclass' internalInit)
 - (ZDetailValueConnector *)registerConnector:(ZDetailValueConnector *)aConnector;
 
-/// update valueConnectors on controller level
-- (void)updateData;
-/// unload data on controller level 
-- (void)unloadData;
 /// update visibilities of UI elements
 - (void)updateVisibilitiesAnimated:(BOOL)aAnimated;
 /// prepare for possible termination of the app

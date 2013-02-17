@@ -129,8 +129,11 @@
   NSInteger customInputViewUsers;
   // temporary for constructing sections
   ZDetailViewSection *sectionToAdd;
+  // temporary for generating group bitmasks
+  NSUInteger nextGroupFlag;
 }
 @property (strong, nonatomic) UITableViewCell *cellThatOpenedChildDetail;
+@property(assign, nonatomic) BOOL cellsActive;
 // private methods
 - (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
 - (void)updateTableRepresentationWithAdjust:(BOOL)aWithTableAdjust animated:(BOOL)aAnimated;
@@ -166,6 +169,7 @@
   autoStartEditing = NO;
   // section construction
   sectionToAdd = nil;
+  nextGroupFlag = 0x1;
   defaultCellStyle = ZDetailViewCellStyleDefault;
   // no custom input view
   customInputView = nil;
@@ -287,6 +291,13 @@ static NSInteger numObjs = 0;
 
 #pragma mark - configuring sections and cells
 
+
+- (NSUInteger)newGroupFlag
+{
+  NSUInteger flag = nextGroupFlag;
+  nextGroupFlag <<= 1;
+  return flag;
+}
 
 
 - (void)startSectionWithText:(NSString *)aText asTitle:(BOOL)aAsTitle
@@ -499,11 +510,11 @@ static NSInteger numObjs = 0;
 
 #pragma mark - detailview data connection control
 
+@synthesize cellsActive;
 
-- (void)setActive:(BOOL)aActive
+- (void)setCellsActive:(BOOL)aActive
 {
-  if (self.active!=aActive) {
-    [super setActive:aActive];
+  if (self.cellsActive!=aActive) {
     // cells
     [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
       // set active/inactive state
@@ -536,6 +547,7 @@ static NSInteger numObjs = 0;
 - (void)save
 {
 	[self defocusAllBut:nil]; // defocus all cells
+  // do not save if already inactive (e.g. because edits were cancelled)
   if (self.active) {
     // let all cells save their data first (controller level values might depend)
     [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
@@ -654,20 +666,6 @@ static NSInteger numObjs = 0;
     }
   }  
 }
-
-
-/* %%% should no longer be needed. If cells need to do table level actions, this
-   should be done in handler blocks, in the table level source code.
-
-// entire table should be rebuilt (called from cells)
-- (void)tableNeedsRebuild
-{
-  // have the list of cells reconstructed
-  [self updateData];
-}
-
-*/
-
 
 
 #pragma mark - subclassable notification methods
@@ -967,13 +965,13 @@ static NSInteger numObjs = 0;
 	if (allSectionsAndCells) {
   	// first save to objects (unless already deactivated)
     [self save];
-    self.active = NO; // deactivate all cells already to make no undisplayed one remains active
+    self.cellsActive = NO; // deactivate all cells already to make no undisplayed one remains active
     // then remove
   	[allSectionsAndCells removeAllObjects];
     allSectionsAndCells = nil;
   }
   // - currently visible cells
-  self.active = NO; // deactivate all cells again (in case we had no allSectionsAndCells above)
+  self.cellsActive = NO; // deactivate all cells again (in case we had no allSectionsAndCells above)
 	if (currentSectionsAndCells) {
     // remove as well
   	[currentSectionsAndCells removeAllObjects];
@@ -983,43 +981,47 @@ static NSInteger numObjs = 0;
 
 
 
-- (void)unloadData
+#pragma mark - activation/deactivation
+
+- (void)setActive:(BOOL)aActive
 {
-	// forget the data
-	[self forgetTableData];
-  // important to prevent tableview to try fetching cells that don't exist any more
-  [detailTableView reloadData];
-  // mark data as unloaded, so next appearance will re-load it
-  [super unloadData];
+  if (aActive!=self.active) {
+    if (aActive) {
+      // set table options
+      detailTableView.sectionHeaderHeight = SECTION_HEADER_HEIGHT;
+      detailTableView.sectionFooterHeight = SECTION_FOOTER_HEIGHT;
+      // prepare arrays
+      // - clear if already existing
+      [self forgetTableData]; // Note: deactivates cells in the process
+      // - reset groups (do it before building content, as building content might already add/remove groups)
+      [self resetGroups];
+      autoTapCell = nil;
+      // - reset group bitmask generator
+      nextGroupFlag = 0x1; // start with Bit 0
+      // activate controller-level value connectors already here before building cells,
+      // as these might be needed during build (will be done again at cellsActive)
+      [super setActive:YES];
+      // Note: subclasses build the content here (by adding sections and cells)
+      BOOL built = [self buildDetailContent];
+      NSAssert(built, @"detail content was not built");
+      NSAssert(sectionToAdd==nil,@"unterminated section at end of build");
+      // activate the cells, so they can check their values (for detecting empty values that might not need to be shown)
+      self.cellsActive = YES; // activate them now
+      // create array of currently visible sections and cells
+      [self updateTableRepresentationWithAdjust:NO animated:NO];
+      // now reload data
+      [detailTableView reloadData]; // have table show them
+    }
+    else {
+      // deactivate controller level first
+      [super setActive:NO];
+      // forget the data
+      [self forgetTableData];
+      // important to prevent tableview to try fetching cells that don't exist any more
+      [detailTableView reloadData];
+    }
+  }
 }
-
-
-- (void)updateData
-{
-	// set table options
-  detailTableView.sectionHeaderHeight = SECTION_HEADER_HEIGHT;
-  detailTableView.sectionFooterHeight = SECTION_FOOTER_HEIGHT;
-	// prepare arrays
-  // - clear if already existing
-  [self forgetTableData]; // Note: deactivates cells in the process
-  // - reset groups (do it before building content, as building content might already add/remove groups)
-  [self resetGroups];
-  autoTapCell = nil;
-  // activate controller-level value connectors already here before building cells,
-  // as these might be needed during build (will be done again at cellsActive)
-  [super updateData];
-  // Note: subclasses build the content here (by adding sections and cells)
- 	BOOL built = [self buildDetailContent];
-  NSAssert(built, @"detail content was not built");
-  NSAssert(sectionToAdd==nil,@"unterminated section at end of build");
-  // activate the cells, so they can check their values (for detecting empty values that might not need to be shown)
-  self.active = YES; // activate them now
-  // create array of currently visible sections and cells
-  [self updateTableRepresentationWithAdjust:NO animated:NO];
-	// now reload data
-  [detailTableView reloadData]; // have table show them
-}
-
 
 
 #pragma mark - private methods and properties

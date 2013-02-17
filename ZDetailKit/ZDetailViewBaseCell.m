@@ -85,6 +85,13 @@
 }
 
 
+- (void)dealloc
+{
+  // disable all connections to make sure no KVO remains active to
+  // embedded objects that might get destroyed before the embedded valueConnectors
+  // (as we don't have any control over ARCs order of deallocation)
+  self.active = NO;
+}
 
 
 
