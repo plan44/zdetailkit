@@ -1,5 +1,6 @@
 //
 //  ZDetailValueConnector.h
+//  ZDetailKit
 //
 //  Created by Lukas Zeller on 17.05.12.
 //  Copyright (c) 2012 plan44.ch. All rights reserved.
@@ -47,6 +48,7 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 @property (assign, nonatomic) BOOL autoSaveValue; // if set, changes to value will be immediately saved to remote attribute
 @property (assign, nonatomic) BOOL readonly; // if set, no changes will ever be saved
 @property (assign, nonatomic) BOOL unsavedChanges; // if set, internal value has unsaved changes - calling save will store them to container/keyPath
+@property (assign, nonatomic) BOOL transformReversed; // if set, the value transformer (if any) will be used in reverse direction (i.e. forward transformation is from value to target and reverse is from target to value)
 - (void)connectTo:(id)aTarget keyPath:(NSString *)aKeyPath; // convenience one-line connect
 
 

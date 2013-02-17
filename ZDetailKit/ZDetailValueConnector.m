@@ -40,13 +40,14 @@
 {
   if ((self = [super init])) {
     NSAssert(aOwner!=nil,@"owner must be specified");
-    owner = aOwner; // not retained!
+    owner = aOwner; // weak, not retained!
     valuePath = nil;
     valueChangedHandler = nil;
     valueSavedHandler = nil;
     validationHandler = nil;
     validationChangedHandler = nil;
     valueTransformer = nil;
+    transformReversed = NO;
     formatter = nil;
     // establish KVO for object (in owner, or subobject of it) representing the cellValue
     self.valuePath = aValuePath;
@@ -105,6 +106,7 @@
 @synthesize valueSavedHandler;
 @synthesize validationHandler;
 @synthesize formatter, valueTransformer;
+@synthesize transformReversed;
 @synthesize nilNulValue;
 @synthesize saveEmptyAsNil, saveNilAsNull, nilAllowed;
 
@@ -352,7 +354,10 @@
   }
   if (validates) {
     if (valueTransformer) {
-      val = [valueTransformer reverseTransformedValue:val];
+      if (transformReversed)
+        val = [valueTransformer transformedValue:val];
+      else
+        val = [valueTransformer reverseTransformedValue:val];
     }
     // check for non-nil
     if (!nilAllowed && val==nil) {
@@ -557,7 +562,10 @@
     loading = YES;
     // basic transformation
     if (valueTransformer) {
-      aValue = [valueTransformer transformedValue:aValue];
+      if (transformReversed)
+        aValue = [valueTransformer reverseTransformedValue:aValue];
+      else
+        aValue = [valueTransformer transformedValue:aValue];
     }
     // possible nil/null -> default value transformation
     if (nilNulValue!=nil && (aValue==nil || aValue==[NSNull null])) {
