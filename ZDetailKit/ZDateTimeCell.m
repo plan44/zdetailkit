@@ -26,6 +26,7 @@
 @property (strong, nonatomic) NSDate *masterDate;
 @property (strong, nonatomic) NSDate *pickerDate;
 @property (readonly, nonatomic) UIDatePicker *datePicker;
+@property (readonly, nonatomic) NSString *calculatedStartDateLabelText;
 
 - (void)updateData;
 
@@ -92,7 +93,7 @@
 #pragma mark - cell configuration
 
 
-@synthesize startDateLabelText, endDateLabelText, dateOnlyLabelText;
+@synthesize startDateLabelText, endDateLabelText, dateOnlyLabelText, clearDateButtonText;
 
 
 - (NSString *)labelText
@@ -110,6 +111,14 @@
   return [super labelText];
 }
 
+
+- (NSString *)calculatedStartDateLabelText
+{
+  if (startDateLabelText)
+    return startDateLabelText;
+  else
+    return [super labelText];
+}
 
 
 
@@ -449,7 +458,7 @@ static id _sd_startDateConnector = nil;
       // Start date
       ZDateTimeCell *sd = [c detailCell:[ZDateTimeCell class]];
       _sd = sd; // %%%
-      sd.labelText = self.startDateLabelText;
+      sd.labelText = self.calculatedStartDateLabelText;
       sd.minuteInterval = self.minuteInterval;
       sd.descriptionLabel.numberOfLines = 1;
       sd.valueLabel.numberOfLines = 1;
@@ -504,7 +513,7 @@ static id _sd_startDateConnector = nil;
       if (self.startDateConnector.nilAllowed || self.endDateConnector.nilAllowed) {
         // start or end (or both) can be nil, add extra button to set nil
         ZButtonCell *b = [c detailCell:[ZButtonCell class]];
-        b.labelText = @"Clear date";
+        b.labelText = self.clearDateButtonText;
         b.buttonStyle = ZButtonCellStyleCenterText;
         [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
           if (self.startDateConnector.nilAllowed) sd.startDateConnector.internalValue = nil;

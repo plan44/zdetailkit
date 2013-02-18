@@ -18,6 +18,7 @@
 @property (strong,nonatomic) NSString *startDateLabelText;
 @property (strong,nonatomic) NSString *endDateLabelText;
 @property (strong,nonatomic) NSString *dateOnlyLabelText;
+@property (strong,nonatomic) NSString *clearDateButtonText;
 
 @property (assign, nonatomic) BOOL dateOnly;
 @property (strong, nonatomic) NSDate *suggestedDate;

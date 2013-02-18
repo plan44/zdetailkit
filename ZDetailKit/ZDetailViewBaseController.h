@@ -76,6 +76,9 @@ typedef enum {
 /// returns YES if controller has appeared (is visible)
 @property(assign,readonly) BOOL hasAppeared;
 
+/// returns YES if controller is dismissing now
+@property(assign,readonly) BOOL dismissing;
+
 /// returns a popover controller for presenting this detail view
 ///
 /// The returned controller wraps a navigation controller which in turn contains this controller

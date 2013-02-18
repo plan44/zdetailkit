@@ -129,6 +129,7 @@
   NSInteger customInputViewUsers;
   // temporary for constructing sections
   ZDetailViewSection *sectionToAdd;
+  BOOL buildingContent;
   // temporary for generating group bitmasks
   NSUInteger nextGroupFlag;
 }
@@ -171,6 +172,7 @@
   sectionToAdd = nil;
   nextGroupFlag = 0x1;
   defaultCellStyle = ZDetailViewCellStyleDefault;
+  buildingContent = NO;
   // no custom input view
   customInputView = nil;
   customInputViewUsers = 0;
@@ -764,7 +766,7 @@ static NSInteger numObjs = 0;
 - (void)applyGroupChangesAnimated:(BOOL)aAnimated
 {
   // prevent updating table when we are still building contents (i.e. maybe not all dependent cells are already loaded)
-  if (!sectionToAdd) {
+  if (!sectionToAdd && !buildingContent) {
 	  [self updateTableRepresentationWithAdjust:YES animated:aAnimated];
   }
 }
@@ -774,10 +776,12 @@ static NSInteger numObjs = 0;
 // can be called to force visibility update when based on empty/nonempty state
 - (void)updateVisibilitiesAnimated:(BOOL)aAnimated
 {
-  [super updateVisibilitiesAnimated:aAnimated];
-  currentSectionsAndCellsDirty = YES; // check cells, as empty status might have changed
-  [self updateTableRepresentationWithAdjust:aAnimated animated:aAnimated];
-  if (!aAnimated) [self.detailTableView reloadData];
+  if (!buildingContent) {
+    [super updateVisibilitiesAnimated:aAnimated];
+    currentSectionsAndCellsDirty = YES; // check cells, as empty status might have changed
+    [self updateTableRepresentationWithAdjust:aAnimated animated:aAnimated];
+    if (!aAnimated) [self.detailTableView reloadData];
+  }
 }
 
 
@@ -1002,7 +1006,9 @@ static NSInteger numObjs = 0;
       // as these might be needed during build (will be done again at cellsActive)
       [super setActive:YES];
       // Note: subclasses build the content here (by adding sections and cells)
+      buildingContent = YES;
       BOOL built = [self buildDetailContent];
+      buildingContent = NO;
       NSAssert(built, @"detail content was not built");
       NSAssert(sectionToAdd==nil,@"unterminated section at end of build");
       // activate the cells, so they can check their values (for detecting empty values that might not need to be shown)
@@ -1335,7 +1341,7 @@ static NSInteger numObjs = 0;
 - (void)removeCustomInputViewAnimated:(BOOL)aAnimated
 {
   if (customInputView) {
-    if (aAnimated) {
+    if (aAnimated && !self.dismissing) {
       // have table re-adjust to no input view shown
       [self releaseRoomForInputView];
       // slide out

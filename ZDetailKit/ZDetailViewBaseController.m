@@ -70,6 +70,7 @@
 @synthesize currentChildDetailViewController;
 @synthesize modalViewWrapper;
 @synthesize hasAppeared;
+@synthesize dismissing;
 
 - (void)internalInit
 {
