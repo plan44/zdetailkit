@@ -584,10 +584,10 @@
       }
       // save successful, dismissed, disconnect cells
       self.active = NO;
+      // data wise, we are dismissed, so block further attempts to do it again
+      dismissed = YES;
+      // ...but UI-wise, it's not yet complete, so leave dismissing untouched until end of the method
     }
-    // allowed, block further attempts to do it again
-    dismissing = NO; // dismissing done
-    dismissed = YES;    
     @try {
       if (popoverWrapper) {
         // dismiss popover
@@ -606,6 +606,8 @@
       // swallow exceptions that may happen - validatesWithErrors should have handled validation and alert users beforehand!
       NSLog(@"Exception dismissing %@ : %@",self.description, exception.description);
     }
+    // dismissing completely done, including UI
+    dismissing = NO;
   }
   // dismissed
   return YES;

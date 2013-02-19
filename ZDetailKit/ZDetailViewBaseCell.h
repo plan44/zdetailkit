@@ -210,14 +210,18 @@ typedef enum {
 /// if set to YES, cell selection remains set after tapping cell, otherwise releasing the touch will also remove the selection
 @property (assign, nonatomic) BOOL keepSelectedAfterTap;
 
-// if not set, description label will not be automatically calculate
+/// if not set, description label will not be automatically calculate
 @property (assign, nonatomic) BOOL autoSetDescriptionLabelText;
 
-// if set, the cell's value is considered read-only, and cannot be edited. Depending on the actual cell, controls might get grayed out.
+/// if set, the cell's value is considered read-only, and cannot be edited. Depending on the actual cell, controls might get grayed out.
 @property (assign, nonatomic) BOOL readOnly;
 
-// if set, cell will show validation status as it changes (unless overridden by validationStatusHandler)
+/// if set, cell will show validation status as it changes (unless overridden by validationStatusHandler)
 @property (assign, nonatomic) BOOL showsValidationStatus;
+
+/// if set (default), tapping cell will claim focus
+/// (i.e. defocus other cells, which will make input views like keyboard to disappear)
+@property (assign, nonatomic) BOOL tapClaimsFocus;
 
 
 /// @name Cell status

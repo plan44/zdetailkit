@@ -69,6 +69,7 @@
   // other params
   tableEditingStyle = UITableViewCellEditingStyleDelete; // table editing defaults to delete
   readOnly = NO;
+  tapClaimsFocus = YES;
   labelText = nil;
   keepSelectedAfterTap = NO;
   autoSetDescriptionLabelText = YES; // set descriptionlabel to labelText automatically
@@ -694,9 +695,6 @@ static NSInteger numObjs = 0;
 }
 
 
-
-
-
 @synthesize readOnly;
 
 - (void)setReadOnly:(BOOL)aReadOnly
@@ -706,6 +704,9 @@ static NSInteger numObjs = 0;
     [self setNeedsUpdate];    
   }
 }
+
+
+@synthesize tapClaimsFocus;
 
 
 @synthesize tableEditingStyle;

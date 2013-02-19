@@ -119,14 +119,11 @@
   // current view of the table
   BOOL currentSectionsAndCellsDirty;
   NSMutableArray *currentSectionsAndCells;
-  // input view management 
+  // input view management
   CGRect editRect; // navigation controller view coordinates of where next edit area is (needed to move it in view when input views show)
   CGSize inputViewSize;
   CGFloat topOfInputView; // if >=0, keyboard or custom input view is up and inputViewSize valid
-  // auto tap cell
-  id<ZDetailViewCell> autoTapCell;
-  // number of cells that have requested but not yet released the current input view
-  NSInteger customInputViewUsers;
+  NSInteger customInputViewUsers; // number of cells that have requested but not yet released the current input view
   // temporary for constructing sections
   ZDetailViewSection *sectionToAdd;
   BOOL buildingContent;
@@ -183,8 +180,6 @@
   // handlers
   cellSetupHandler = nil;
   buildDetailContentHandler = nil;
-  // cell that needs automatic tap on viewDidAppear
-  autoTapCell = nil;
   // popover display default size
   self.contentSizeForViewInPopover = CGSizeMake(320, 500);
 }
@@ -601,7 +596,10 @@ static NSInteger numObjs = 0;
         // ask cell to begin in-cell editing (and claim focus!)
         handled = [dvc beginEditing];
       }
-      [self defocusAllBut:aCell]; // defocus all other cells
+      if (dvc.tapClaimsFocus) {
+        // This will make input views to get removed.
+        [self defocusAllBut:aCell]; // defocus all other cells
+      }
     }
   }
 }
@@ -969,7 +967,7 @@ static NSInteger numObjs = 0;
 	if (allSectionsAndCells) {
   	// first save to objects (unless already deactivated)
     [self save];
-    self.cellsActive = NO; // deactivate all cells already to make no undisplayed one remains active
+    self.cellsActive = NO; // deactivate all cells already to make sure no undisplayed one remains active
     // then remove
   	[allSectionsAndCells removeAllObjects];
     allSectionsAndCells = nil;
@@ -999,7 +997,6 @@ static NSInteger numObjs = 0;
       [self forgetTableData]; // Note: deactivates cells in the process
       // - reset groups (do it before building content, as building content might already add/remove groups)
       [self resetGroups];
-      autoTapCell = nil;
       // - reset group bitmask generator
       nextGroupFlag = 0x1; // start with Bit 0
       // activate controller-level value connectors already here before building cells,
@@ -1021,10 +1018,13 @@ static NSInteger numObjs = 0;
     else {
       // deactivate controller level first
       [super setActive:NO];
-      // forget the data
-      [self forgetTableData];
-      // important to prevent tableview to try fetching cells that don't exist any more
-      [detailTableView reloadData];
+      // now deactivate my own cells
+      self.cellsActive = NO; // deactivate all cells
+      // Remove table date right now if not (any more) appeared...
+      // ...but not otherwise, as during disappearing animation, we still want to see the table
+      if (!self.hasAppeared) {
+        [self forgetTableData];
+      }
     }
   }
 }
@@ -1130,7 +1130,7 @@ static NSInteger numObjs = 0;
 	[super viewDidAppear:aAnimated];
   // bring up custom input view in case we have one already now
   if (customInputView) {
-    [self showCustomInputViewAnimated:NO];
+    [self showCustomInputViewAnimated:YES];
   }
 }
 
@@ -1147,6 +1147,16 @@ static NSInteger numObjs = 0;
 }
 
 
+- (void)viewDidDisappear:(BOOL)animated
+{
+  if (!self.active) {
+    // forget table cells now (we left them intact to avoid visual effects of them going away during disappearing phase)
+    [self forgetTableData];
+  }
+  [super viewDidDisappear:animated];
+}
+
+
 
 - (void)bringEditRectInView
 {
@@ -1154,11 +1164,11 @@ static NSInteger numObjs = 0;
     // edit rect is in coordinates of the navigation controller, which might have been moved already by
     // iOS keyboard appearance logic (e.g. form sheets or popovers are moved up)
     // - convert edit rect from tableview coordinates to now-current (possibly already moved) root view controller coordinates 
-    CGRect er = [self.detailTableView convertRect:editRect toView:self.view.window.rootViewController.view];
+    CGRect er = [self.detailTableView convertRect:editRect toView:self.currentRootViewController.view];
     // see if keyboard will obscure the rectangle being edited
     CGFloat minYthatMustBeVisible = er.origin.y+er.size.height+MIN_SPACE_ABOVE_KBD;
     // also check if possibly detailview itself has been moved/resized such that we need to scroll even further
-    CGRect nv = [self.view.superview convertRect:self.view.frame toView:self.view.window.rootViewController.view];
+    CGRect nv = [self.view.superview convertRect:self.view.frame toView:self.currentRootViewController.view];
     CGFloat bottomOfDetailView = nv.origin.y+nv.size.height;
     DBGNSLOG(@"Start: minYthatMustBeVisible=%f, bottomOfDetailView=%f, topOfInputView=%f", minYthatMustBeVisible, bottomOfDetailView, topOfInputView);
     // calculate how much to scroll to make sure we see the editRect above the input view
@@ -1184,7 +1194,7 @@ static NSInteger numObjs = 0;
       // check if upper end of edit rectangle is currently visible
       CGFloat ymin = er.origin.y-MIN_MARGIN_ABOVE_EDITRECT;
       // relative to content
-      CGFloat yrel = [self.detailTableView convertPoint:CGPointMake(0, ymin) fromView:self.detailTableView.window.rootViewController.view].y;
+      CGFloat yrel = [self.detailTableView convertPoint:CGPointMake(0, ymin) fromView:self.currentRootViewController.view].y;
       // relative to top of visible part
       CGPoint co = detailTableView.contentOffset;
       yrel -= co.y;
@@ -1215,7 +1225,7 @@ static NSInteger numObjs = 0;
 - (void)makeRoomForInputViewOfSize:(CGSize)aInputViewSize
 {
   // get root view controller's bounds, which should be fullscreen, but rotated to current orientation 
-  CGRect rvcb = detailTableView.window.rootViewController.view.bounds;
+  CGRect rvcb = self.currentRootViewController.view.bounds;
   topOfInputView = rvcb.size.height-aInputViewSize.height; // in root view coords
   // always add a table footer with the size of the input view plus min space - this makes the table scrollable up to show last cell above the input view
 	if (detailTableView.tableFooterView==nil) {
@@ -1293,11 +1303,24 @@ static NSInteger numObjs = 0;
 @synthesize customInputView;
 
 
+- (UIViewController *)currentRootViewController
+{
+  //%%% alternative:
+  //UIWindow *w = self.view.window;
+  UIWindow *w = detailTableView.window;
+  if (w==nil) {
+    return nil;
+  }
+  UIViewController *v = w.rootViewController;
+  return v;
+}
+
+
 - (void)showCustomInputViewAnimated:(BOOL)aAnimated
 {
   if (customInputView) {
     customInputView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin; // keep at bottom of view we place it in
-    UIView *viewToAddInputView = self.view.superview;
+    UIView *viewToAddInputView = self.view.superview; // self.view does not work here, but once animation is done, we need to re-anchor it in self.view (see below)
     CGRect appearanceRect = self.view.frame;
     CGRect vf = customInputView.frame; // viewToAddInputView coords
     // size input view to root view width
@@ -1308,8 +1331,8 @@ static NSInteger numObjs = 0;
 
     // have table adjust for showing input view
     // - relative to rootviewcontroller
-    CGRect gf = detailTableView.window.rootViewController.view.bounds; // rootViewController frame 
-    CGPoint lowerLeftCorner = [viewToAddInputView convertPoint:vf.origin toView:detailTableView.window.rootViewController.view];
+    CGRect gf = self.currentRootViewController.view.bounds; // rootViewController frame
+    CGPoint lowerLeftCorner = [viewToAddInputView convertPoint:vf.origin toView:self.currentRootViewController.view];
     CGSize sizeFromBottom = vf.size;
     sizeFromBottom.height += gf.origin.y+gf.size.height-lowerLeftCorner.y;
     [self makeRoomForInputViewOfSize:sizeFromBottom];
@@ -1322,18 +1345,36 @@ static NSInteger numObjs = 0;
       customInputView.frame = vf;
       [viewToAddInputView addSubview:customInputView];
       // animate in
-      [UIView animateWithDuration:0.25 animations:^{
-        CGRect avf = vf;
-        avf.origin.y -= avf.size.height;
-        customInputView.frame = avf;
-      }];
+      [UIView animateWithDuration:0.25
+        animations:^{
+          CGRect avf = vf;
+          avf.origin.y -= avf.size.height;
+          customInputView.frame = avf;
+        }
+        completion:^(BOOL finished) {
+          // re-anchor in my own view
+          [self reanchorInputView];
+        }
+      ];
     }
     else {
       // add in final position
       vf.origin.y -= vf.size.height; // calc final position
       customInputView.frame = vf;
       [viewToAddInputView addSubview:customInputView];
+      [self reanchorInputView];
     }
+  }
+}
+
+
+- (void)reanchorInputView
+{
+  if (customInputView) {
+    CGRect f = [self.view convertRect:customInputView.frame fromView:customInputView.superview];
+    [customInputView removeFromSuperview];
+    customInputView.frame = f;
+    [self.view addSubview:customInputView];
   }
 }
 
@@ -1341,7 +1382,11 @@ static NSInteger numObjs = 0;
 - (void)removeCustomInputViewAnimated:(BOOL)aAnimated
 {
   if (customInputView) {
-    if (aAnimated && !self.dismissing) {
+    customInputView.autoresizingMask = UIViewAutoresizingNone; // prevent autresizing magic for disappearing
+    // Note: animation behaviour is very strange (animation gets aborted and customInputView is
+    // animated to 0,0 origin without a reason I see) during dismissal, so we just suppress
+    // animation for that case.
+    if (aAnimated) {
       // have table re-adjust to no input view shown
       [self releaseRoomForInputView];
       // slide out

@@ -80,18 +80,31 @@ typedef enum {
 
 
 
-// this protocol is for UITableViewCells that want to be used fully featured in ZDetailTableViewControllers.
-// Note: regular UITableViewCells (like pure info cells or controls with directly wired targets) can be used
-//       as well, but don't get any editing support.
+/// this protocol is for UITableViewCells that want to be used fully featured in ZDetailTableViewControllers.
+/// @note regular UITableViewCells (like pure info cells or controls with directly wired targets) can be used
+/// as well, but don't get any editing support.
 @protocol ZDetailViewCell <NSObject>
-// specifies the object owning this cell (usually a ZDetailTableViewController)
+/// reference to the owning object.
+///
+/// Usually this is a ZDetailTableViewController, but
+/// any other object implemenbe ting the ZDetailCellOwner protocol can be the owner
+/// @note this property will automatically set when a cell is added using
+/// one of the [ZDetailTableViewController detailCell:] factory method variants
 @property (assign, nonatomic) id<ZDetailCellOwner> cellOwner;
-// data connection
+/// set if cell is active (i.e. potentially connected to data and editing or displaying it)
+/// @note this property is usually controlled by ZDetailTableViewController and should
+/// normally not be modified directly
 @property (assign, nonatomic) BOOL active; // cells should access data only when active
-// editing style for native UITableView edit mode (delete/add/none)
+/// if set (default), tapping cell will claim focus
+/// (i.e. defocus other cells, which will make input views like keyboard to disappear)
+@property (assign, nonatomic) BOOL tapClaimsFocus;
+
+/// editing style for native UITableView edit mode (delete/add/none)
 @property (assign, nonatomic) UITableViewCellEditingStyle tableEditingStyle;
-// visibility check (to determine if cell should be visible in a particulat mode)
+
+/// visibility check (to determine if cell should be visible in a particulat mode)
 - (BOOL)nowVisibleInMode:(ZDetailDisplayMode)aMode; // true if cell should be visible in the passed mode
+
 // appearance
 - (void)prepareForDisplay; // - prepare for (re)display
 - (void)defocusCell; // called to defocus cell (and contained controls)

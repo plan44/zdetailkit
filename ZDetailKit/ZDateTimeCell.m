@@ -33,6 +33,24 @@
 @end
 
 
+@interface ZDatePicker : UIDatePicker
+
+@end
+
+@implementation ZDatePicker
+
+- (void)setFrame:(CGRect)frame
+{
+  if (frame.origin.y==0) {
+    DBGNSLOG(@"date picker moved to y==0 !?");
+  }
+  [super setFrame:frame];
+}
+
+@end
+
+
+
 @implementation ZDateTimeCell
 
 @synthesize startDateConnector, endDateConnector, dateOnlyConnector;
@@ -175,7 +193,7 @@
     }
     if (datePicker==nil) {
       // we need a new one
-      datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 0, self.window.frame.size.width , 216)];
+      datePicker = [[ZDatePicker alloc] initWithFrame:CGRectMake(0, 1, self.window.frame.size.width , 216)];
       datePicker.tag = ZDATETIMECELL_INPUTVIEW_TAG; // mark it as one of mine
       datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
       datePicker.contentMode = UIViewContentModeBottom;
@@ -533,6 +551,8 @@ static id _sd_startDateConnector = nil;
         _sd_dateOnlyConnector = sd.dateOnlyConnector; // %%%
         [sd.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"valueForExternal"];
         if (ed) [ed.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"valueForExternal"];
+        // prevent tapping cells from defocusing other cells
+        adsw.tapClaimsFocus = NO;
       }
       // section done
       [c endSection];

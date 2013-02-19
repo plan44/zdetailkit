@@ -373,6 +373,7 @@
   /* inplace dateTime cell */ {
     ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class] neededGroups:GROUP_DATETIME];
     d.startDateLabelText = @"Start Date";
+    d.clearDateButtonText = @"No date";
     d.editInDetailView = NO;
     [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
     [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
@@ -384,6 +385,7 @@
     d.startDateLabelText = @"Start";
     d.endDateLabelText = @"End";
     d.dateOnlyLabelText = @"Allday";
+    d.clearDateButtonText = @"No date";
     d.minuteInterval = 5;
     d.descriptionLabel.numberOfLines = 2;
     d.valueLabel.numberOfLines = 2;
