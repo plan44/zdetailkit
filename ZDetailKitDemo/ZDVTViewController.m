@@ -375,6 +375,7 @@
     d.startDateLabelText = @"Start Date";
     d.clearDateButtonText = @"No date";
     d.editInDetailView = NO;
+    d.startDateConnector.nilAllowed = YES;
     [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
     [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
     d.startDateConnector.autoSaveValue = YES;
@@ -390,11 +391,11 @@
     d.descriptionLabel.numberOfLines = 2;
     d.valueLabel.numberOfLines = 2;
     d.editInDetailView = YES;
+    d.startDateConnector.nilAllowed = NO;
+    d.endDateConnector.nilAllowed = NO;
     [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
     [d.endDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"endDate"];
     [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
-    d.startDateConnector.nilAllowed = YES;
-    d.endDateConnector.nilAllowed = YES;
     d.startDateConnector.autoSaveValue = YES;
     d.endDateConnector.autoSaveValue = YES;
     d.dateOnlyConnector.autoSaveValue = YES;

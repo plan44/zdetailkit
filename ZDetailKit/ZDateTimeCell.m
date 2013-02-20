@@ -14,6 +14,8 @@
 #import "ZSwitchCell.h"
 #import "ZButtonCell.h"
 
+
+
 @interface ZDateTimeCell ( /* class extension */ )
 {
   NSDateFormatter *formatter;
@@ -29,23 +31,6 @@
 @property (readonly, nonatomic) NSString *calculatedStartDateLabelText;
 
 - (void)updateData;
-
-@end
-
-
-@interface ZDatePicker : UIDatePicker
-
-@end
-
-@implementation ZDatePicker
-
-- (void)setFrame:(CGRect)frame
-{
-  if (frame.origin.y==0) {
-    DBGNSLOG(@"date picker moved to y==0 !?");
-  }
-  [super setFrame:frame];
-}
 
 @end
 
@@ -161,7 +146,17 @@
   }
   else {
     // view only or inplace editing
-    self.accessoryType = UITableViewCellAccessoryNone;
+    if (self.startDateConnector.nilAllowed) {
+      // nil is allowed, show clear button instead
+      UIButton *b = [UIButton buttonWithType:UIButtonTypeCustom];
+      b.frame = CGRectMake(0, 0, 20, 20);
+      [b setImage:[UIImage imageNamed:@"ZDTC_delbtn.png"] forState:UIControlStateNormal];
+      [b addTarget:self action:@selector(deleteAccessoryButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+      self.accessoryView = b;
+    }
+    else {
+      self.accessoryType = UITableViewCellAccessoryNone;
+    }
   }  
   // readjust font if autostyling
   if (self.detailViewCellStyle & ZDetailViewCellStyleFlagAutoStyle) {
@@ -193,7 +188,7 @@
     }
     if (datePicker==nil) {
       // we need a new one
-      datePicker = [[ZDatePicker alloc] initWithFrame:CGRectMake(0, 1, self.window.frame.size.width , 216)];
+      datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 1, self.window.frame.size.width , 216)];
       datePicker.tag = ZDATETIMECELL_INPUTVIEW_TAG; // mark it as one of mine
       datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
       datePicker.contentMode = UIViewContentModeBottom;
@@ -203,6 +198,19 @@
   }
   return datePicker;
 }
+
+
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+  // there's a touch on the picker, apply data if still empty
+  if (self.startDate==nil) {
+    self.startDate = self.pickerDate;
+  }
+  // ...but always pretend we're not interested in the touch at all, so pickerView will work as normal
+  return NO;
+}
+
 
 
 // called to try to begin editing (e.g. getting kbd focus) in this cell. Returns YES if possible
@@ -217,16 +225,28 @@
       [dvc requireCustomInputView:self.datePicker];
     }
     // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
+    // - remove previous target and recognizers
     [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
+    for (UIGestureRecognizer *g in [datePicker.gestureRecognizers copy]) [datePicker removeGestureRecognizer:g];
+    // - add new target
     [self.datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
+    // - add gesture recognizer that will never fire, but allows to see when the mapview is touched
+    UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dummySelectorNeverUsed)];
+    tgr.cancelsTouchesInView = NO; // let touches get through
+    tgr.numberOfTapsRequired = 1;
+    tgr.delegate = self;
+    [datePicker addGestureRecognizer:tgr];
+    // adjust minute interval
     self.datePicker.minuteInterval = self.minuteInterval;
+    // now editing can start
     [self startedEditing];
     pickerInstalling = NO;
     // make sure picker has current data
     [self updateData];
     // in case we have a suggestion, and start date is empty, set it now
-    if (startDate==nil && suggestedDate!=nil) {
-      self.startDate = suggestedDate;
+    if (!self.startDateConnector.nilAllowed && startDate==nil) {
+      // we MUST have a value, apply default
+      self.startDate = self.defaultDate;
     }
     return YES;
   }
@@ -271,24 +291,6 @@
 }
 
 
-
-- (NSDate *)pickerDateWithPrevious:(NSDate *)aPreviousDate
-{
-	NSDate *picked = self.pickerDate;
-  NSTimeInterval step = [aPreviousDate timeIntervalSinceDate:picked];
-  if (secondsSinceMidnight(picked)<=SecondsPerHour && (step==11*SecondsPerHour || step==10*SecondsPerHour)) {
-  	// exactly 11 or 10 hours backwards and landing at 0AM or 1AM in one step:
-    // this is very likely caused by the UIDatePicker bug that
-    // does switch from AM to PM too late when moving the hours wheel by single tap.
-    // Really moving 10 or 11 hours back in a single sweep is highly improbable
-    picked = [picked dateByAddingTimeInterval:12*SecondsPerHour];
-    self.pickerDate = picked;
-  }
-  return picked;
-}
-
-
-
 - (void)setPickerDate:(NSDate *)aPickerDate
 {
   if (datePicker) {
@@ -320,6 +322,12 @@
   self.startDate = self.pickerDate;
 	[self updateData]; // update  
   pickerIsUpdating = NO;
+}
+
+
+- (void)deleteAccessoryButtonPressed
+{
+  self.startDate = nil; // remove date
 }
 
 
@@ -490,7 +498,7 @@ static id _sd_startDateConnector = nil;
       sd.valueLabel.textAlignment = UITextAlignmentRight;
       sd.editInDetailView = NO;
       [sd.startDateConnector connectTo:self.startDateConnector keyPath:@"internalValue"];
-      sd.startDateConnector.nilAllowed = YES;
+      sd.startDateConnector.nilAllowed = self.startDateConnector.nilAllowed;
       [sd.suggestedDateConnector connectTo:self keyPath:@"defaultDate"];
       sd.startDateConnector.autoSaveValue = NO;
       sd.autoEnterDefaultDate = !self.startDateConnector.nilAllowed;
@@ -505,7 +513,7 @@ static id _sd_startDateConnector = nil;
         ed.valueLabel.textAlignment = UITextAlignmentRight;
         ed.editInDetailView = NO;
         [ed.startDateConnector connectTo:self.endDateConnector keyPath:@"internalValue"];
-        ed.startDateConnector.nilAllowed = YES;
+        ed.startDateConnector.nilAllowed = self.endDateConnector.nilAllowed;
         [ed.suggestedDateConnector connectTo:self keyPath:@"defaultEndDate"];
         ed.startDateConnector.autoSaveValue = NO;
         ed.autoEnterDefaultDate = !self.endDateConnector.nilAllowed;
@@ -535,17 +543,17 @@ static id _sd_startDateConnector = nil;
           return YES; // ok
         }];
       }
-      if (self.startDateConnector.nilAllowed || self.endDateConnector.nilAllowed) {
-        // start or end (or both) can be nil, add extra button to set nil
-        ZButtonCell *b = [c detailCell:[ZButtonCell class]];
-        b.labelText = self.clearDateButtonText;
-        b.buttonStyle = ZButtonCellStyleCenterText;
-        [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
-          if (self.startDateConnector.nilAllowed) sd.startDateConnector.internalValue = nil;
-          if (self.endDateConnector.nilAllowed) ed.startDateConnector.internalValue = nil;
-          return YES; // fully handled
-        }];
-      }
+//      if (self.startDateConnector.nilAllowed || self.endDateConnector.nilAllowed) {
+//        // start or end (or both) can be nil, add extra button to set nil
+//        ZButtonCell *b = [c detailCell:[ZButtonCell class]];
+//        b.labelText = self.clearDateButtonText;
+//        b.buttonStyle = ZButtonCellStyleCenterText;
+//        [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
+//          if (self.startDateConnector.nilAllowed) sd.startDateConnector.internalValue = nil;
+//          if (self.endDateConnector.nilAllowed) ed.startDateConnector.internalValue = nil;
+//          return YES; // fully handled
+//        }];
+//      }
       if (self.dateOnlyConnector.connected) {
         // Optional allday switch
         ZSwitchCell *adsw = [c detailCell:[ZSwitchCell class]];
