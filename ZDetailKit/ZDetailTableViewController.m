@@ -593,7 +593,7 @@ static NSInteger numObjs = 0;
         [self pushViewControllerForDetail:editController animated:YES];
       }
       else {
-        // ask cell to begin in-cell editing (and claim focus!)
+        // ask cell to begin (or continue) in-cell editing and claim focus
         handled = [dvc beginEditing];
       }
       if (dvc.tapClaimsFocus) {
@@ -1316,19 +1316,35 @@ static NSInteger numObjs = 0;
 }
 
 
+- (UIView *)parentViewForInputView
+{
+  // find the first non-scrollview superview of my own view
+  // Note: - without special setup, my view is the UITableView, and its superView is a wrapper
+  //       - but my view might be a regular view that holds the table plus some other stuff
+  UIView *v = self.view;
+  while (v && [v isKindOfClass:[UIScrollView class]]) {
+    v = v.superview;
+  }
+  if (v) {
+    // Now v is a non-scrolling view. The target for the input view is its superview
+    v = v.superview;
+  }
+  return v;
+}
+
+
 - (void)showCustomInputViewAnimated:(BOOL)aAnimated
 {
   if (customInputView) {
-    customInputView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin; // keep at bottom of view we place it in
-    UIView *viewToAddInputView = self.view.superview; // self.view does not work here, but once animation is done, we need to re-anchor it in self.view (see below)
-    CGRect appearanceRect = self.view.frame;
+    customInputView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth; // keep at bottom of view we place it in, and full width
+    UIView *viewToAddInputView = self.parentViewForInputView; // input view needs to be anchored in non-scrolling superview of the table
+    CGRect appearanceRect = viewToAddInputView.frame;
     CGRect vf = customInputView.frame; // viewToAddInputView coords
     // size input view to root view width
     vf.size.width = appearanceRect.size.width;
     vf.origin.x = appearanceRect.origin.x;
     // starts off-screen at bottom
     vf.origin.y = appearanceRect.origin.y+appearanceRect.size.height;
-
     // have table adjust for showing input view
     // - relative to rootviewcontroller
     CGRect gf = self.currentRootViewController.view.bounds; // rootViewController frame
@@ -1351,10 +1367,6 @@ static NSInteger numObjs = 0;
           avf.origin.y -= avf.size.height;
           customInputView.frame = avf;
         }
-        completion:^(BOOL finished) {
-          // re-anchor in my own view
-          [self reanchorInputView];
-        }
       ];
     }
     else {
@@ -1362,7 +1374,6 @@ static NSInteger numObjs = 0;
       vf.origin.y -= vf.size.height; // calc final position
       customInputView.frame = vf;
       [viewToAddInputView addSubview:customInputView];
-      [self reanchorInputView];
     }
   }
 }
@@ -1382,6 +1393,7 @@ static NSInteger numObjs = 0;
 - (void)removeCustomInputViewAnimated:(BOOL)aAnimated
 {
   if (customInputView) {
+    [self reanchorInputView];
     customInputView.autoresizingMask = UIViewAutoresizingNone; // prevent autresizing magic for disappearing
     // Note: animation behaviour is very strange (animation gets aborted and customInputView is
     // animated to 0,0 origin without a reason I see) during dismissal, so we just suppress
@@ -1441,6 +1453,7 @@ static NSInteger numObjs = 0;
       [self showCustomInputViewAnimated:YES];
     }    
   }
+  DBGNSLOG(@"Requested custom input view, current users now = %d",customInputViewUsers);
 }
 
 
@@ -1452,6 +1465,7 @@ static NSInteger numObjs = 0;
   // one user less
   if (customInputViewUsers>0)
     customInputViewUsers--;
+  DBGNSLOG(@"Released custom input view, remaining users = %d",customInputViewUsers);
   if (customInputViewUsers==0) {
     // last user gone - remove it
     [self removeCustomInputViewAnimated:YES];

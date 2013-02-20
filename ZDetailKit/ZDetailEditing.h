@@ -98,9 +98,9 @@ typedef enum {
 /// if set (default), tapping cell will claim focus
 /// (i.e. defocus other cells, which will make input views like keyboard to disappear)
 @property (assign, nonatomic) BOOL tapClaimsFocus;
-
 /// editing style for native UITableView edit mode (delete/add/none)
 @property (assign, nonatomic) UITableViewCellEditingStyle tableEditingStyle;
+
 
 /// visibility check (to determine if cell should be visible in a particulat mode)
 - (BOOL)nowVisibleInMode:(ZDetailDisplayMode)aMode; // true if cell should be visible in the passed mode
@@ -108,7 +108,7 @@ typedef enum {
 // appearance
 - (void)prepareForDisplay; // - prepare for (re)display
 - (void)defocusCell; // called to defocus cell (and contained controls)
-- (BOOL)beginEditing; // called to try to begin editing (e.g. getting kbd focus) in this cell. Returns YES if possible
+- (BOOL)beginEditing; // called to try to begin editing (e.g. getting kbd focus) in this cell. Returns YES if possible (or already editing)
 - (void)setDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated; // set cell presentation mode
 // user interaction
 - (BOOL)handleTapInAccessory:(BOOL)aInAccessory; // called to handle a tap in the cell (instead of in the cellOwner), return YES if handled
