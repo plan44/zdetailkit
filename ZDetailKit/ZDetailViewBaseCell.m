@@ -488,7 +488,7 @@ static NSInteger numObjs = 0;
   BOOL handled = NO;
   // prevent ending focused editing multiple times
   if (focusedEditing) {
-    focusedEditing = NO; // not twice!
+    focusedEditing = NO; // not ending twice!
     // call handler if any
     if (self.editingEndedHandler) {
       handled = self.editingEndedHandler(self);

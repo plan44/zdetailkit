@@ -211,12 +211,15 @@
   if (!self.editInDetailView && self.allowsEditing && [self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
     ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
     pickerInstalling = YES;
+    // present it (if not already presented)
+    if (!datePicker) {
+      // note: it is important to require the picker only once, to prevent usage count from this cell >1
+      [dvc requireCustomInputView:self.datePicker];
+    }
     // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
     [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
     [self.datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
     self.datePicker.minuteInterval = self.minuteInterval;
-    // present it (if not already presented)
-    [dvc requireCustomInputView:self.datePicker];
     [self startedEditing];
     pickerInstalling = NO;
     // make sure picker has current data
