@@ -15,14 +15,14 @@ typedef int ZDetailViewCellStyle;
 // option flags
 #define ZDetailViewCellStyleFlagCustomLayout 0x1000 // use ZDetailViewBaseCells custom layout mechanism for description and value views
 #define ZDetailViewCellStyleFlagAutoStyle 0x2000 // allow cells to decide about matching style (most don't but some might)
-
+#define ZDetailViewCellStyleFlagInherit 0x4000 // (only for defaultCellStyle in ZDetailTableViewController) inherit style from parent controller, if any
 
 // predefined styles
 #define ZDetailViewCellStyleEntryDetail (UITableViewCellStyleValue2+ZDetailViewCellStyleFlagCustomLayout+ZDetailViewCellStyleFlagAutoStyle)
 #define ZDetailViewCellStylePrefs (UITableViewCellStyleValue1+ZDetailViewCellStyleFlagCustomLayout+ZDetailViewCellStyleFlagAutoStyle)
 
 // the default style to be used in ZDetailTableViewControllers
-#define ZDetailViewCellStyleDefault ZDetailViewCellStylePrefs+ZDetailViewCellStyleFlagAutoStyle; // allow some cells to decide about their style
+#define ZDetailViewCellStyleDefault ZDetailViewCellStylePrefs+ZDetailViewCellStyleFlagAutoStyle // allow some cells to decide about their style
 
 
 // localisation with hard-coded default value

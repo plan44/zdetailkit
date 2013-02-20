@@ -172,7 +172,7 @@
   // section construction
   sectionToAdd = nil;
   nextGroupFlag = 0x1;
-  defaultCellStyle = ZDetailViewCellStyleDefault;
+  defaultCellStyle = ZDetailViewCellStyleDefault|ZDetailViewCellStyleFlagInherit;
   buildingContent = NO;
   // no custom input view
   customInputView = nil;
@@ -409,6 +409,20 @@ static NSInteger numObjs = 0;
 
 
 @synthesize defaultCellStyle;
+
+- (ZDetailViewCellStyle)defaultCellStyle
+{
+  if (defaultCellStyle & ZDetailViewCellStyleFlagInherit) {
+    // try to inherit from parent
+    if (self.parentDetailViewController && [self.parentDetailViewController isKindOfClass:[ZDetailTableViewController class]]) {
+      // update the style
+      defaultCellStyle = ((ZDetailTableViewController *)self.parentDetailViewController).defaultCellStyle;
+    }
+  }
+  return defaultCellStyle;
+}
+
+
 @synthesize cellSetupHandler;
 
 

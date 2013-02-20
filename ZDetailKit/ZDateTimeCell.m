@@ -474,7 +474,7 @@ static id _sd_startDateConnector = nil;
   ZDetailTableViewController *dtvc = nil;
   if (self.editInDetailView && self.allowsEditing) {
     dtvc = [ZDetailTableViewController controllerWithTitle:self.detailTitleText];
-    dtvc.defaultCellStyle = ZDetailViewCellStyleEntryDetail;
+    dtvc.defaultCellStyle = ZDetailViewCellStyleEntryDetail|ZDetailViewCellStyleFlagInherit;
     dtvc.navigationMode = ZDetailNavigationModeLeftButtonCancel+ZDetailNavigationModeRightButtonSave;
     [dtvc setBuildDetailContentHandler:^(ZDetailTableViewController *c) {
       c.autoStartEditing = YES; // auto-start editing in the first field
