@@ -121,6 +121,7 @@
   NSMutableArray *currentSectionsAndCells;
   // input view management
   CGRect editRect; // navigation controller view coordinates of where next edit area is (needed to move it in view when input views show)
+  BOOL focusedEditing; // set during focused editing
   CGSize inputViewSize;
   CGFloat topOfInputView; // if >=0, keyboard or custom input view is up and inputViewSize valid
   NSInteger customInputViewUsers; // number of cells that have requested but not yet released the current input view
@@ -129,6 +130,8 @@
   BOOL buildingContent;
   // temporary for generating group bitmasks
   NSUInteger nextGroupFlag;
+  // flag for table reload
+  BOOL needsReloadTable;
 }
 @property (strong, nonatomic) UITableViewCell *cellThatOpenedChildDetail;
 @property(assign, nonatomic) BOOL cellsActive;
@@ -164,6 +167,7 @@
   currentSectionsAndCells = nil;
   currentSectionsAndCellsDirty = YES;
   scrollEnabled = YES;
+  needsReloadTable = NO;
   autoStartEditing = NO;
   // section construction
   sectionToAdd = nil;
@@ -177,6 +181,7 @@
   topOfInputView = -1;
   inputViewSize = CGSizeZero;
   editRect = CGRectNull;
+  focusedEditing = NO;
   // handlers
   cellSetupHandler = nil;
   buildDetailContentHandler = nil;
@@ -617,17 +622,34 @@ static NSInteger numObjs = 0;
 
 
 
+- (void)checkReloadTable
+{
+  // only reload when not editing, because reload causes loosing focus
+  if (needsReloadTable && !focusedEditing) {
+    needsReloadTable = NO;
+    [self.detailTableView reloadData];
+  }
+}
+
+
+
 // ask for owner refresh (e.g. for dynamic cell heights)
 - (void)setNeedsReloadingCell:(UITableViewCell *)aCell animated:(BOOL)aAnimated
 {
   if (aCell==nil || !aAnimated) {
-    // refresh entire table
-    [self.detailTableView reloadData];	
+    // schedule refresh for entire table
+    needsReloadTable = YES;
+    [self checkReloadTable];
   }
   else {
-    // refresh single cell, possibly animated
-    [self.detailTableView beginUpdates];
-    [self.detailTableView endUpdates];
+    @try {
+      // refresh single cell, possibly animated
+      [self.detailTableView beginUpdates];
+      [self.detailTableView endUpdates];
+    }
+    @catch (NSException *exception) {
+      DBGNSLOG(@"setNeedsReloadingCell: calling begin/endUpdates threw exception: %@",exception);
+    }
   }
 }
 
@@ -1213,11 +1235,22 @@ static NSInteger numObjs = 0;
 - (void)editingInRect:(NSNotification *)aNotification
 {
 	// save the rectangle where we are editing
-  editRect = [[aNotification object] CGRectValue]; // in table view coordinates
-  DBGSHOWRECT(@"editingInRect (tableView coords)",editRect);
-  if (topOfInputView>0) {
-    // input view is already determined
-    [self bringEditRectInView];
+  id obj = [aNotification object];
+  if (obj) {
+    editRect = [obj CGRectValue]; // in table view coordinates
+    focusedEditing = YES;
+    DBGSHOWRECT(@"editingInRect (tableView coords)",editRect);
+    if (topOfInputView>0) {
+      // input view is already determined
+      [self bringEditRectInView];
+    }
+  }
+  else {
+    // editing done
+    editRect = CGRectNull; // note: usually this was already reset before by bringEditRectInView
+    focusedEditing = NO; // but receiving this notification means that focused editing is over now
+    // now execute pending reloads
+    [self checkReloadTable];
   }
 }
 

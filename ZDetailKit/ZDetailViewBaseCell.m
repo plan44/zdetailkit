@@ -489,6 +489,11 @@ static NSInteger numObjs = 0;
   // prevent ending focused editing multiple times
   if (focusedEditing) {
     focusedEditing = NO; // not ending twice!
+    // let app know editing has ended
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:@"EditingInRect"
+      object:nil
+    ];
     // call handler if any
     if (self.editingEndedHandler) {
       handled = self.editingEndedHandler(self);
