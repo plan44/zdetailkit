@@ -414,13 +414,24 @@ static NSInteger numObjs = 0;
 {
   if (defaultCellStyle & ZDetailViewCellStyleFlagInherit) {
     // try to inherit from parent
-    if (self.parentDetailViewController && [self.parentDetailViewController isKindOfClass:[ZDetailTableViewController class]]) {
+    if (self.parentDetailTableViewController) {
       // update the style
-      defaultCellStyle = ((ZDetailTableViewController *)self.parentDetailViewController).defaultCellStyle;
+      defaultCellStyle = (self.parentDetailTableViewController).defaultCellStyle;
     }
   }
   return defaultCellStyle;
 }
+
+
+- (ZDetailTableViewController *)parentDetailTableViewController
+{
+  if (self.parentDetailViewController && [self.parentDetailViewController isKindOfClass:[ZDetailTableViewController class]])
+    return (ZDetailTableViewController *)(self.parentDetailViewController);
+  return nil;
+}
+
+
+
 
 
 @synthesize cellSetupHandler;
@@ -434,6 +445,9 @@ static NSInteger numObjs = 0;
   // apply the default configurator
   if (cellSetupHandler) {
     cellSetupHandler(self,newCell,sectionToAdd.overallSectionIndex);
+  }
+  else if ((defaultCellStyle & ZDetailViewCellStyleFlagInherit)!=0 && self.parentDetailTableViewController) {
+    self.parentDetailTableViewController.cellSetupHandler(self,newCell,sectionToAdd.overallSectionIndex);
   }
   // return the cell for further configuration
   return newCell;
