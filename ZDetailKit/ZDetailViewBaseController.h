@@ -122,7 +122,7 @@ typedef enum {
 /// @note If the controller is dismissed using another method (like directly poping it from the
 /// navigation stack or by terminating the app, values will always be saved unless a previous
 /// call to cancel has been made.
-- (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave;
+- (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave animated:(BOOL)aAnimated;
 
 /// dismiss all open details on top of and including this controller
 - (void)dismissDetailStack;

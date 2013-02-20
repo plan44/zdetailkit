@@ -151,7 +151,7 @@
       tb.autocorrectionType = self.autocorrectionType;
       tb.secureTextEntry = self.secureTextEntry;
       [tb setEditingEndedHandler:^(ZDetailViewBaseCell *t2) {
-        [c dismissDetailViewWithSave:YES];
+        [c dismissDetailViewWithSave:YES animated:YES];
         return YES;
       }];
       [tb.valueConnector connectTo:self.valueConnector keyPath:@"internalValue"];

@@ -257,13 +257,13 @@
 
 - (void)cancelButtonAction
 {
-  [self dismissDetailViewWithSave:NO]; // dismiss view without save
+  [self dismissDetailViewWithSave:NO animated:YES]; // dismiss view without save
 }
 
 
 - (void)saveButtonAction
 {
-  [self dismissDetailViewWithSave:YES]; // (try to) dismiss view with save
+  [self dismissDetailViewWithSave:YES animated:YES]; // (try to) dismiss view with save
 }
 
 
@@ -512,7 +512,6 @@
 {
 	// need to wrap in a navigation controller of my own
   modalViewWrapper = [[ZModalViewWrapper alloc] initWithRootViewController:self];
-  modalViewWrapper.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
   // inherit styles
   modalViewWrapper.modalTransitionStyle = self.modalTransitionStyle;
   modalViewWrapper.modalPresentationStyle = self.modalPresentationStyle;
@@ -544,7 +543,7 @@
 
 
 // dismiss myself - save if selected. Returns NO if dismissal is not possible (save throws exception, validation error usually)
-- (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave
+- (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave animated:(BOOL)aAnimated
 {
   // Protect against dismissing more than once
   if (!dismissed && !dismissing) {
@@ -591,15 +590,15 @@
     @try {
       if (popoverWrapper) {
         // dismiss popover
-        [popoverWrapper dismissPopoverAnimated:YES];
+        [popoverWrapper dismissPopoverAnimated:aAnimated];
       }
       else if (modalViewWrapper) {
         // was modally presented, dismiss it
-        [self.parentViewController dismissModalViewControllerAnimated:YES];
+        [self.parentViewController dismissModalViewControllerAnimated:aAnimated];
       }
       else {
         // assume part of a navigation stack, pop it
-        [self.navigationController popViewControllerAnimated:YES];
+        [self.navigationController popViewControllerAnimated:aAnimated];
       }
     }
     @catch (NSException *exception) {
@@ -622,7 +621,7 @@
   // close stack on top of me
   [self.navigationController popToViewController:self animated:NO];
   // ...and myself
-  [self dismissDetailViewWithSave:NO];
+  [self dismissDetailViewWithSave:NO animated:NO];
 }
 
 
