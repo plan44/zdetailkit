@@ -224,6 +224,10 @@
     pickerInstalling = NO;
     // make sure picker has current data
     [self updateData];
+    // in case we have a suggestion, and start date is empty, set it now
+    if (startDate==nil && suggestedDate!=nil) {
+      self.startDate = suggestedDate;
+    }
     return YES;
   }
   return NO; 
