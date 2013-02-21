@@ -1028,7 +1028,7 @@ static NSInteger numObjs = 0;
       detailTableView.sectionFooterHeight = SECTION_FOOTER_HEIGHT;
       // prepare arrays
       // - clear if already existing
-      [self forgetTableData]; // Note: deactivates cells in the process
+      [self forgetTableData]; // Note: deactivates cells in the process, as they might 
       // - reset groups (do it before building content, as building content might already add/remove groups)
       [self resetGroups];
       // - reset group bitmask generator

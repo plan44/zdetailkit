@@ -269,7 +269,7 @@
 - (void)detailsStartButtonAction
 {
   // switch to basic mode
-  [self setDisplayMode:(self.displayMode & ~ZDetailDisplayModeDetails) | ZDetailDisplayModeBasics animated:YES];
+  [self setDisplayMode:(self.displayMode & ~ZDetailDisplayModeBasics) | ZDetailDisplayModeDetails animated:YES];
 }
 
 
@@ -342,7 +342,7 @@
       }
       else {
         // is showing basics, show "details"
-        rightButton = [[UIBarButtonItem alloc] initWithTitle:detailsButtonTitle style:UIBarButtonItemStyleBordered target:self action:@selector(detailsStartButtonAction)];
+        rightButton = [[UIBarButtonItem alloc] initWithTitle:self.detailsButtonTitle style:UIBarButtonItemStyleBordered target:self action:@selector(detailsStartButtonAction)];
       }
     }
   }
