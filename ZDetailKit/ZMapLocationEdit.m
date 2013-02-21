@@ -42,12 +42,12 @@
     locationAnnotation = nil; // none so far
     // valueConnector for the location text field (directly connect the textField's text property)
     textValueConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"locationTextField.text" owner:self]
+      [ZValueConnector connectorWithValuePath:@"locationTextField.text" owner:self]
     ];
     textValueConnector.nilNulValue = @""; // default to show external nil/null as empty string
     // valueConnector for the location coordinate (connected to my own property)
     coordinateValueConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"locationCoordinate" owner:self]
+      [ZValueConnector connectorWithValuePath:@"locationCoordinate" owner:self]
     ];
     coordinateValueConnector.nilNulValue = [NSValue valueWithBytes:&kCLLocationCoordinate2DInvalid objCType:@encode(CLLocationCoordinate2D)] ; // default to show external nil/null as no coordinate
   }

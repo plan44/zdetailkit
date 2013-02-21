@@ -41,7 +41,7 @@
     checkMark = NO; // use switch control, not checkmark
     // valueConnector
     valueConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"switchVal" owner:self]
+      [ZValueConnector connectorWithValuePath:@"switchVal" owner:self]
     ];
     valueConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to show external nil/null as NO
     valueConnector.autoRevertOnValidationError = YES; // just don't allow non-validating state of the switch

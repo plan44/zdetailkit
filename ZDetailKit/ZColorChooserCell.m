@@ -38,7 +38,7 @@
     }
     // valueConnector
     valueConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"colorChooser.color" owner:self]
+      [ZValueConnector connectorWithValuePath:@"colorChooser.color" owner:self]
     ];
   }
   return self;

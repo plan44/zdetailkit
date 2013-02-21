@@ -11,8 +11,8 @@
 
 @interface ZChoicesBaseCell : ZDetailViewBaseCell <ZChoicesManagerDelegate>
 
-@property (weak, readonly,nonatomic) ZDetailValueConnector *valueConnector;
-@property (weak, readonly,nonatomic) ZDetailValueConnector *choicesConnector;
+@property (weak, readonly,nonatomic) ZValueConnector *valueConnector;
+@property (weak, readonly,nonatomic) ZValueConnector *choicesConnector;
 @property (readonly,nonatomic) ZChoicesManager *choicesManager;
 
 @end

@@ -95,7 +95,7 @@
     sl.descriptionViewAdjustment = ZDetailCellItemAdjustHide; // hide
     sl.sliderControl.value = 1-sl.valueCellShare; // init with current default label/value ratio
     sl.valueCellShare = 1; // but myself, set full width slider, no label
-    [sl.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+    [sl.valueConnector setValueChangedHandler:^BOOL(ZValueConnector *aConnector) {
       [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell, NSInteger aSectionNo) {
         // layout section itself is not changed
         if (aSectionNo>0) {
@@ -112,7 +112,7 @@
     sl.labelText = @"Indent";
     sl.sliderControl.maximumValue = 150; // label/value ratio
     sl.sliderControl.value = sl.contentIndent; // init with current default content indent
-    [sl.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+    [sl.valueConnector setValueChangedHandler:^BOOL(ZValueConnector *aConnector) {
       [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell, NSInteger aSectionNo) {
         // layout section itself is not changed
         if (aSectionNo>0) {
@@ -127,7 +127,7 @@
     ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
     sw.labelText = @"Show more...";
     sw.valueConnector.autoSaveValue = YES;
-    [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+    [sw.valueConnector setValueChangedHandler:^BOOL(ZValueConnector *aConnector) {
       if ([aConnector.value boolValue])
         [c setDisplayMode:c.displayMode | (ZDetailDisplayModeDetails+ZDetailDisplayModeBasics) animated:YES];
       else
@@ -148,7 +148,7 @@
       sw.labelText = aTitle;
       sw.valueConnector.autoSaveValue = YES;
       [sw.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:[@"show" stringByAppendingString:aTitle]];
-      [sw.valueConnector setValueChangedHandler:^BOOL(ZDetailValueConnector *aConnector) {
+      [sw.valueConnector setValueChangedHandler:^BOOL(ZValueConnector *aConnector) {
         [c changeDisplayedGroups:aGroup toVisible:[aConnector.value boolValue] animated:YES];
         return NO; // don't abort handling process
       }];

@@ -8,8 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ZDetailValueConnector.h"
+#import "ZValueConnector.h"
 
+
+/// Category which implements ZValueConnectorContainer protocol for any NSObject
 @interface NSObject (ZValueConnectorContainerImpl) <ZValueConnectorContainer>
 
 @property (retain, nonatomic) NSMutableArray *valueConnectors;
@@ -32,10 +34,7 @@
 - (BOOL)connectorsValidateWithErrors:(NSMutableArray **)aErrorsP;
 
 /// coonvenience method to register a value connector with the object
-- (ZDetailValueConnector *)registerValueConnector:(ZDetailValueConnector *)aConnector;
-
-
-
+- (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector;
 
 
 @end

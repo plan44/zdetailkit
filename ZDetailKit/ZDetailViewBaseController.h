@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ZDetailEditing.h"
-#import "ZDetailValueConnector.h"
+#import "ZValueConnector.h"
 
 @class ZDetailViewBaseController;
 

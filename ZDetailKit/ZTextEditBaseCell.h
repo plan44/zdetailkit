@@ -13,7 +13,7 @@
 @property (assign,nonatomic) BOOL multiline; // allow entering multiple text lines, may imply editInDetailView
 @property (assign,nonatomic) BOOL editInDetailView; // just show the value, edit it in detail view
 
-@property (weak, readonly,nonatomic) ZDetailValueConnector *valueConnector;
+@property (weak, readonly,nonatomic) ZValueConnector *valueConnector;
 @property (readonly,nonatomic) BOOL useTextViewEditor;
 @property (strong,nonatomic) NSString *editedText;
 

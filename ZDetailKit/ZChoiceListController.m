@@ -30,7 +30,7 @@
   selectionCloses = YES; // non-multiple-choice lists close when selection is made
   // connector for current choice(s)
   valueConnector = [self registerValueConnector:
-    [ZDetailValueConnector connectorWithValuePath:@"currentChoice" owner:choicesManager]
+    [ZValueConnector connectorWithValuePath:@"currentChoice" owner:choicesManager]
   ];
 }
 

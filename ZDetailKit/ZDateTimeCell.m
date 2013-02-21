@@ -62,22 +62,22 @@
     // valueConnectors
     // - first those that values might depend
     suggestedDateConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"suggestedDate" owner:self]
+      [ZValueConnector connectorWithValuePath:@"suggestedDate" owner:self]
     ];
     masterDateConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"masterDate" owner:self]
+      [ZValueConnector connectorWithValuePath:@"masterDate" owner:self]
     ];
     // - now the values
     startDateConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"startDate" owner:self]
+      [ZValueConnector connectorWithValuePath:@"startDate" owner:self]
     ];
     startDateConnector.nilAllowed = NO; // by default, don't allow no date
     endDateConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"endDate" owner:self]
+      [ZValueConnector connectorWithValuePath:@"endDate" owner:self]
     ];
     endDateConnector.nilAllowed = NO; // by default, don't allow no date
     dateOnlyConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"dateOnly" owner:self]
+      [ZValueConnector connectorWithValuePath:@"dateOnly" owner:self]
     ];
     dateOnlyConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to date+time mode
     if (aStyle & ZDetailViewCellStyleFlagAutoStyle) {
@@ -529,7 +529,7 @@ static id _sd_startDateConnector = nil;
         }
         // preventing end before start
         ed.startDateConnector.autoValidate = YES; // immediately validate to update valueForExternal
-        [ed.startDateConnector setValidationHandler:^(ZDetailValueConnector *aConnector, id aValue, NSError **aErrorP) {
+        [ed.startDateConnector setValidationHandler:^(ZValueConnector *aConnector, id aValue, NSError **aErrorP) {
           if (sd.startDateConnector.internalValue && aValue && [sd.startDateConnector.internalValue compare:aValue]==NSOrderedDescending) {
             // error - end before start
             *aErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:

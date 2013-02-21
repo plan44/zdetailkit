@@ -8,7 +8,7 @@
 
 #import "ZTextEditBaseCell.h"
 
-#import "ZDetailValueConnector.h"
+#import "ZValueConnector.h"
 
 @class ZTextFieldCell;
 

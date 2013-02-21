@@ -40,7 +40,7 @@ static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of
 
 - (void)setValueConnectorsActive:(BOOL)aActive
 {
-  for (ZDetailValueConnector *connector in self.valueConnectors) {
+  for (ZValueConnector *connector in self.valueConnectors) {
     connector.active = aActive;
   }
 }
@@ -48,7 +48,7 @@ static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of
 - (void)saveValueConnectors
 {
   // save in all connectors
-  for (ZDetailValueConnector *connector in self.valueConnectors) {
+  for (ZValueConnector *connector in self.valueConnectors) {
     [connector saveValue];
   }
 }
@@ -57,7 +57,7 @@ static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of
 - (void)loadValueConnectors
 {
   // load in all connectors
-  for (ZDetailValueConnector *connector in self.valueConnectors) {
+  for (ZValueConnector *connector in self.valueConnectors) {
     [connector loadValue];
   }
 }
@@ -67,7 +67,7 @@ static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of
 {
   BOOL validates = YES;
   // collect validation from all connectors
-  for (ZDetailValueConnector *connector in self.valueConnectors) {
+  for (ZValueConnector *connector in self.valueConnectors) {
     if (connector.connected)
       validates = validates && [connector validatesWithErrors:aErrorsP];
   }
@@ -75,7 +75,7 @@ static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of
 }
 
 
-- (ZDetailValueConnector *)registerValueConnector:(ZDetailValueConnector *)aConnector
+- (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector
 {
   [self.valueConnectors addObject:aConnector];
   return aConnector;

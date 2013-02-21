@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 plan44.ch. All rights reserved.
 //
 
-#import "ZDetailValueConnector.h"
+#import "ZValueConnector.h"
 
 typedef enum {
   ZChoicesManagerModeSingleKey, // single key object (only in single-choice mode)

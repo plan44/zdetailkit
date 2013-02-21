@@ -32,7 +32,7 @@
     self.valueViewAdjustment = ZDetailCellItemAdjustFillWidth+ZDetailCellItemAdjustMiddle; // use all horizontal space, vertically centered
     // valueConnector
     _valueConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"sliderControl.value" owner:self]
+      [ZValueConnector connectorWithValuePath:@"sliderControl.value" owner:self]
     ];
     _valueConnector.nilNulValue = [NSNumber numberWithInt:0]; // default to show external nil/null as zero
     _valueConnector.autoRevertOnValidationError = YES; // just don't allow non-validating state of the switch

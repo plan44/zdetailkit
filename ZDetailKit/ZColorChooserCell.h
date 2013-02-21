@@ -13,6 +13,6 @@
 
 @property (readonly, nonatomic) ZColorChooser *colorChooser;
 
-@property (weak, readonly,nonatomic) ZDetailValueConnector *valueConnector;
+@property (weak, readonly,nonatomic) ZValueConnector *valueConnector;
 
 @end

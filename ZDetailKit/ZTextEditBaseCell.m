@@ -32,7 +32,7 @@
     secureTextEntry = NO;
     // valueConnector
     valueConnector = [self registerValueConnector:
-      [ZDetailValueConnector connectorWithValuePath:@"editedText" owner:self]
+      [ZValueConnector connectorWithValuePath:@"editedText" owner:self]
     ];
     valueConnector.nilNulValue = @""; // default to show external nil/null as empty string
   }

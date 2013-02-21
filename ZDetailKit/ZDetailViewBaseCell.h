@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ZDetailValueConnector.h"
+#import "ZValueConnector.h"
 #import "ZDetailEditing.h"
 
 #import "ZTextExpanderSupport.h"
@@ -21,7 +21,7 @@
 // handler for changed value
 // - can return YES to signal situation fully handled (suppresses default action, if any)
 // - if no handler is set, processing continues as if the handler had returned NO
-typedef BOOL (^ZDetailCellConnectionHandler)(ZDetailViewBaseCell *aCell, ZDetailValueConnector *aConnector);
+typedef BOOL (^ZDetailCellConnectionHandler)(ZDetailViewBaseCell *aCell, ZValueConnector *aConnector);
 // handler for when detail editor for this cell has finished (was closed)
 typedef BOOL (^ZDetailCellEditorFinishedHandler)(ZDetailViewBaseCell *aCell, BOOL aCancelled);
 // handler for tap in cell or cell accessory
@@ -49,7 +49,7 @@ typedef enum {
 
 
 /// Base cell for use in ZDetailTableViewController
-@interface ZDetailViewBaseCell : UITableViewCell <ZDetailViewCell, ZDetailValueConnectorOwner, ZValueConnectorContainer>
+@interface ZDetailViewBaseCell : UITableViewCell <ZDetailViewCell, ZValueConnectorOwner, ZValueConnectorContainer>
 
 /// @name ZDetailViewCell basics
 
@@ -156,7 +156,7 @@ typedef enum {
 /// This is the place to implement showing/hiding other cells depending on this cell's value, e.g. by
 /// using [ZDetailTableViewController changeGroups:toVisible:]
 /// @note Do not use this method to save values into your model - use the cocoa-bindings like mechanisms
-/// provided by ZDetailValueConnector instead
+/// provided by ZValueConnector instead
 @property (copy, nonatomic) ZDetailCellConnectionHandler valueChangedHandler;
 - (void)setValueChangedHandler:(ZDetailCellConnectionHandler)valueChangedHandler; // declaration needed only for XCode autocompletion of block
 
@@ -246,13 +246,13 @@ typedef enum {
 @property (assign, nonatomic) BOOL active;
 
 
-/// @name Methods for receiving events from embedded ZDetailValueConnector instances
+/// @name Methods for receiving events from embedded ZValueConnector instances
 
 /// the value of aConnector has changed
-- (BOOL)valueChangedInConnector:(ZDetailValueConnector *)aConnector;
+- (BOOL)valueChangedInConnector:(ZValueConnector *)aConnector;
 
 /// the validation status of aConnector has changed
-- (BOOL)validationStatusChangedInConnector:(ZDetailValueConnector *)aConnector error:(NSError *)aError; // validation status has changed
+- (BOOL)validationStatusChangedInConnector:(ZValueConnector *)aConnector error:(NSError *)aError; // validation status has changed
 
 
 /// @name Methods intended to be derived by subclasses

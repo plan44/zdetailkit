@@ -27,11 +27,11 @@
 }
 
 /// value connector for the location text
-@property (weak, readonly,nonatomic) ZDetailValueConnector *textValueConnector;
+@property (weak, readonly,nonatomic) ZValueConnector *textValueConnector;
 
 /// value connector for the geocoordinate
 /// @note the value connected must be a NSValue wrapping a CLLocationCoordinate2D
-@property (weak, readonly,nonatomic) ZDetailValueConnector *coordinateValueConnector;
+@property (weak, readonly,nonatomic) ZValueConnector *coordinateValueConnector;
 
 /// This is the currently pinned location.
 ///

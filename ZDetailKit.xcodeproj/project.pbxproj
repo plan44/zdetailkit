@@ -23,7 +23,7 @@
 		ED12E78715824B8200DE3ED3 /* ZChoicesBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77115824B8200DE3ED3 /* ZChoicesBaseCell.m */; };
 		ED12E78815824B8200DE3ED3 /* ZChoicesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77315824B8200DE3ED3 /* ZChoicesManager.m */; };
 		ED12E78915824B8200DE3ED3 /* ZDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */; };
-		ED12E78A15824B8200DE3ED3 /* ZDetailValueConnector.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77815824B8200DE3ED3 /* ZDetailValueConnector.m */; };
+		ED12E78A15824B8200DE3ED3 /* ZValueConnector.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77815824B8200DE3ED3 /* ZValueConnector.m */; };
 		ED12E78B15824B8200DE3ED3 /* ZDetailViewBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */; };
 		ED12E78C15824B8200DE3ED3 /* ZSegmentChoicesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77C15824B8200DE3ED3 /* ZSegmentChoicesCell.m */; };
 		ED12E78D15824B8200DE3ED3 /* ZSwitchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77E15824B8200DE3ED3 /* ZSwitchCell.m */; };
@@ -100,8 +100,8 @@
 		ED12E77415824B8200DE3ED3 /* ZDetailEditing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailEditing.h; sourceTree = "<group>"; };
 		ED12E77515824B8200DE3ED3 /* ZDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailTableViewController.h; sourceTree = "<group>"; };
 		ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDetailTableViewController.m; sourceTree = "<group>"; };
-		ED12E77715824B8200DE3ED3 /* ZDetailValueConnector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailValueConnector.h; sourceTree = "<group>"; };
-		ED12E77815824B8200DE3ED3 /* ZDetailValueConnector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDetailValueConnector.m; sourceTree = "<group>"; };
+		ED12E77715824B8200DE3ED3 /* ZValueConnector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZValueConnector.h; sourceTree = "<group>"; };
+		ED12E77815824B8200DE3ED3 /* ZValueConnector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZValueConnector.m; sourceTree = "<group>"; };
 		ED12E77915824B8200DE3ED3 /* ZDetailViewBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDetailViewBaseCell.h; sourceTree = "<group>"; };
 		ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDetailViewBaseCell.m; sourceTree = "<group>"; };
 		ED12E77B15824B8200DE3ED3 /* ZSegmentChoicesCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSegmentChoicesCell.h; sourceTree = "<group>"; };
@@ -252,8 +252,8 @@
 			children = (
 				ED81B80116D10C5C00ED1F3F /* ZDetailKit.h */,
 				ED12E77415824B8200DE3ED3 /* ZDetailEditing.h */,
-				ED12E77715824B8200DE3ED3 /* ZDetailValueConnector.h */,
-				ED12E77815824B8200DE3ED3 /* ZDetailValueConnector.m */,
+				ED12E77715824B8200DE3ED3 /* ZValueConnector.h */,
+				ED12E77815824B8200DE3ED3 /* ZValueConnector.m */,
 				ED81B87A16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.m */,
 				ED81B87B16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.h */,
 				ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */,
@@ -486,7 +486,7 @@
 				ED12E78715824B8200DE3ED3 /* ZChoicesBaseCell.m in Sources */,
 				ED12E78815824B8200DE3ED3 /* ZChoicesManager.m in Sources */,
 				ED12E78915824B8200DE3ED3 /* ZDetailTableViewController.m in Sources */,
-				ED12E78A15824B8200DE3ED3 /* ZDetailValueConnector.m in Sources */,
+				ED12E78A15824B8200DE3ED3 /* ZValueConnector.m in Sources */,
 				ED12E78B15824B8200DE3ED3 /* ZDetailViewBaseCell.m in Sources */,
 				ED12E78C15824B8200DE3ED3 /* ZSegmentChoicesCell.m in Sources */,
 				ED12E78D15824B8200DE3ED3 /* ZSwitchCell.m in Sources */,

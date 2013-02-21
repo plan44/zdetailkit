@@ -1,5 +1,5 @@
 //
-//  ZDetailValueConnector.h
+//  ZValueConnector.h
 //  ZDetailKit
 //
 //  Created by Lukas Zeller on 17.05.12.
@@ -9,25 +9,25 @@
 #import <Foundation/Foundation.h>
 
 
-@class ZDetailValueConnector;
+@class ZValueConnector;
 
 // handler for changed value
 // - can return YES to signal situation fully handled (suppresses default action, if any)
 // - if no handler is set, processing continues as if the handler had returned NO
-typedef BOOL (^ZDetailValueConnectorHandler)(ZDetailValueConnector *aConnector);
+typedef BOOL (^ZValueConnectorHandler)(ZValueConnector *aConnector);
 // - custom validation
-typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aConnector, id aValue, NSError **aErrorP);
+typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id aValue, NSError **aErrorP);
 
 
-/// protocol for objects that own ZDetailValueConnector objects. If owner implements the optional methods,
+/// protocol for objects that own ZValueConnector objects. If owner implements the optional methods,
 /// it will be notified about value and validation state changes
-@protocol ZDetailValueConnectorOwner <NSObject>
+@protocol ZValueConnectorOwner <NSObject>
 @optional
 /// called when the internal value changes
 /// @note if autoSaveValue is not set, the external (connected) value has not yet changed when this method is called
-- (BOOL)valueChangedInConnector:(ZDetailValueConnector *)aConnector;
+- (BOOL)valueChangedInConnector:(ZValueConnector *)aConnector;
 /// called when the validation status of the value has changed
-- (BOOL)validationStatusChangedInConnector:(ZDetailValueConnector *)aConnector error:(NSError *)aError;
+- (BOOL)validationStatusChangedInConnector:(ZValueConnector *)aConnector error:(NSError *)aError;
 @end
 
 
@@ -59,14 +59,14 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 - (BOOL)connectorsValidateWithErrors:(NSMutableArray **)aErrorsP;
 
 /// register a value connector with this object
-- (ZDetailValueConnector *)registerValueConnector:(ZDetailValueConnector *)aConnector;
+- (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector;
 
 @end
 
 
 
 
-@interface ZDetailValueConnector : NSObject
+@interface ZValueConnector : NSObject
 
 /// @name initialisation
 
@@ -183,17 +183,17 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 ///
 /// If callChangedHandlerOnLoad is set, loading of the value from the connected target (model) attribute also triggers this handler
 /// The handler should return YES if the value change is fully handled. Otherwise default processing will occur.
-@property (copy, nonatomic) ZDetailValueConnectorHandler valueChangedHandler;
-- (void)setValueChangedHandler:(ZDetailValueConnectorHandler)valueChangedHandler;
+@property (copy, nonatomic) ZValueConnectorHandler valueChangedHandler;
+- (void)setValueChangedHandler:(ZValueConnectorHandler)valueChangedHandler;
 /// called after the value has been saved to the target (model) 
-@property (copy, nonatomic) ZDetailValueConnectorHandler valueSavedHandler;
-- (void)setValueSavedHandler:(ZDetailValueConnectorHandler)valueSavedHandler;
+@property (copy, nonatomic) ZValueConnectorHandler valueSavedHandler;
+- (void)setValueSavedHandler:(ZValueConnectorHandler)valueSavedHandler;
 /// called as a first step of internal value validation. This handler can be set to implement custom validation.
-@property (copy, nonatomic) ZDetailValueConnectorValidationHandler validationHandler;
-- (void)setValidationHandler:(ZDetailValueConnectorValidationHandler)validationHandler; // declaration needed only for XCode autocompletion of block
+@property (copy, nonatomic) ZValueConnectorValidationHandler validationHandler;
+- (void)setValidationHandler:(ZValueConnectorValidationHandler)validationHandler; // declaration needed only for XCode autocompletion of block
 /// called when validation status changes (i.e. validation becomes invalid or valid)
-@property (copy, nonatomic) ZDetailValueConnectorHandler validationChangedHandler;
-- (void)setValidationChangedHandler:(ZDetailValueConnectorHandler)validationChangedHandler; // declaration needed only for XCode autocompletion of block
+@property (copy, nonatomic) ZValueConnectorHandler validationChangedHandler;
+- (void)setValidationChangedHandler:(ZValueConnectorHandler)validationChangedHandler; // declaration needed only for XCode autocompletion of block
 
 
 

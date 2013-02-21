@@ -1,17 +1,17 @@
 //
-//  ZDetailValueConnector.m
+//  ZValueConnector.m
 //  ZDetailKit
 //
 //  Created by Lukas Zeller on 17.05.12.
 //  Copyright (c) 2012 plan44.ch. All rights reserved.
 //
 
-#import "ZDetailValueConnector.h"
+#import "ZValueConnector.h"
 
 #import "ZString_utils.h"
 
 
-@interface ZDetailValueConnector ( /* class extension */ )
+@interface ZValueConnector ( /* class extension */ )
 {
   // non-public instance vars
   BOOL loadedValue; // set after cell value has been loaded for the first time
@@ -27,7 +27,7 @@
 
 
 
-@implementation ZDetailValueConnector
+@implementation ZValueConnector
 
 
 + (id)connectorWithValuePath:(NSString *)aValuePath owner:(id)aOwner;
@@ -91,7 +91,7 @@
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<ZDetailValueConnector '%@.%@' <-> '%@.%@' in owner:%@", [target class], self.keyPath, [owner class], self.valuePath, [owner description]];
+  return [NSString stringWithFormat:@"<ZValueConnector '%@.%@' <-> '%@.%@' in owner:%@", [target class], self.keyPath, [owner class], self.valuePath, [owner description]];
 }
 
 

@@ -292,7 +292,7 @@ static NSInteger numObjs = 0;
 @synthesize showsValidationStatus;
 
 // standard callback from value connectors when the managed internal value (NOT the connected model/key) has changed
-- (BOOL)valueChangedInConnector:(ZDetailValueConnector *)aConnector
+- (BOOL)valueChangedInConnector:(ZValueConnector *)aConnector
 {
   BOOL handled = NO;
   if (active && valueChangedHandler) {
@@ -303,7 +303,7 @@ static NSInteger numObjs = 0;
 
 
 // standard callback from value connectors when the managed value's validation status changes
-- (BOOL)validationStatusChangedInConnector:(ZDetailValueConnector *)aConnector error:(NSError *)aError
+- (BOOL)validationStatusChangedInConnector:(ZValueConnector *)aConnector error:(NSError *)aError
 {
   BOOL handled = NO;
   if (active && validationStatusHandler) {
@@ -619,7 +619,7 @@ static NSInteger numObjs = 0;
   // return specific text if any
   if (labelText) return labelText;
   // default to first non-empty keyPath in valueConnectors
-  for (ZDetailValueConnector *vc in self.valueConnectors) {
+  for (ZValueConnector *vc in self.valueConnectors) {
     if (vc.keyPath && vc.keyPath.length>0)
       return vc.keyPath;
   }

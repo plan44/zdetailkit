@@ -9,7 +9,7 @@
 #import "ZDetailTableViewController.h"
 
 #import "ZChoicesManager.h"
-#import "ZDetailValueConnector.h"
+#import "ZValueConnector.h"
 
 @class ZChoiceListController;
 
@@ -23,7 +23,7 @@ typedef ZDetailViewBaseCell *(^ZChoicesManagerBuildCellHandler)(ZChoiceListContr
 - (void)setBuildCellHandler:(ZChoicesManagerBuildCellHandler)buildCellHandler; // declaration needed only for XCode autocompletion of block
 
 @property (readonly, nonatomic) ZChoicesManager *choicesManager;
-@property (weak, readonly, nonatomic) ZDetailValueConnector *valueConnector;
+@property (weak, readonly, nonatomic) ZValueConnector *valueConnector;
 
 
 @end
