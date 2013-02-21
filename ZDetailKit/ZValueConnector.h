@@ -133,9 +133,9 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 @property (assign, nonatomic) BOOL callChangedHandlerOnLoad;
 /// if set, failing validation will revert internalValue to previous value
 @property (assign, nonatomic) BOOL autoRevertOnValidationError;
-/// if set, every change to value will actively trigger re-validation (and handler/validationStatusChangedInConnector)
+/// if set, every change to value will actively trigger re-validation (and handler/validationStatusChangedInConnector). Default is NO.
 @property (assign, nonatomic) BOOL autoValidate;
-/// if set, changes to value will be immediately saved to connected target (model) attribute
+/// if set, changes to value will be immediately saved to connected target (model) attribute. Default is NO.
 @property (assign, nonatomic) BOOL autoSaveValue;
 /// if set, no changes will ever be saved
 @property (assign, nonatomic) BOOL readonly;
@@ -162,10 +162,23 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 @property (strong, nonatomic) NSString *valuePath;
 
 /// internal (transformed, formatted) representation of the value
-/// @note this is the value pointed to by valuePath, and usually is the value of a UIControl which shows/edits the value
+///
+/// This is the value pointed to by valuePath, and usually is the value of a UIControl which shows/edits the value
+///
+/// This property is not KVO compliant, but other value connectors can be connected here
+/// as long as automatic updates are not needed.
+/// @note As an example, the separate editor for ZTextFieldCell/ZTextViewCell (used when not editing in-place)
+/// is connected to internalValue. Once the separate editor gets active, it reads internalValue, and when
+/// the editor is closed, internalValue is updated.
 @property (strong, nonatomic) id internalValue;
 
 /// The internal value, parsed, validated and transformed into representation suitable for being stored in target (model).
+///
+/// This property is KVO compliant, and is updated at save or whenever the value changes when autoValidate is YES.
+/// @note This is the property to connect to with secondary representations (not editors) of a value, which
+/// need to be updated while editing (for continuous updating, set autoValidate to YES). Such representations
+/// cannot be connected to the model value directly, as (unless autoSave is on) this is not updated until
+/// editing ends.
 @property (readonly, nonatomic) id valueForExternal; // representation of the value for external storage (validated)
 
 /// if YES, current internal value validates ok
@@ -174,9 +187,15 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 /// nil if validation ok, error otherwise
 @property (readonly, nonatomic) NSError *validationError;
 
-/// This directly accesses the connected target (model) value. It should not normally be changed.
+/// This can be used to set the value from external sources. Reading is equivalent to reading valueForExternal
 /// @warning ONLY CHANGE FROM EXTERNAL! (internal edits should access internalValue or the KVO observed object at owner/valuePath).
 @property (strong, nonatomic) id value;
+
+
+/// Enables extra console logging for debugging a single value connector (as output from multiple connectors is often confusing)
+/// @note only works in debug builds
+@property (assign, nonatomic) BOOL trace;
+
 
 /// @name handlers to modify standard behaviour
 

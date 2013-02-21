@@ -26,6 +26,16 @@
 @end
 
 
+#ifdef DEBUG
+#define TRACELOG(...) { if (_trace) NSLog(__VA_ARGS__); }
+#define IFTRACE if (_trace) {
+#define ENDIFTRACE }
+#else
+#define TRACELOG(...)
+#define IFTRACE if (NO) {
+#define ENDIFTRACE }
+#endif
+
 
 @implementation ZValueConnector
 
@@ -71,6 +81,7 @@
     unsavedChanges = NO; // not dirty;
     validated = NO; // currently not validated
     needsValidation = YES; // needs re-validation
+    _trace = NO; // no trace by default
   }
   return self;
 }
@@ -144,6 +155,9 @@
 // when everything is in place.
 - (void)setActive:(BOOL)aActive
 {
+  IFTRACE
+  NSLog(@"valueConnector active=%d: %@", aActive, self);
+  ENDIFTRACE
   if (aActive!=active) {
     if (active) {
       // first disconnect externally
@@ -491,7 +505,7 @@
 }
 
 
-// KVC calls this to validate the internalValue attribute, so if
+// KVO calls this to validate the internalValue attribute, so if
 // we connect secondary editors here we get a end-to-end validation result,
 // without actually touching the internalValue itself
 - (BOOL)validateInternalValue:(id *)aInternalValueP error:(NSError **)aErrorP
