@@ -55,6 +55,7 @@
   BOOL cancelled;
   // for modally displaying the detail view (instead of pushing on existing navigation stack)
   UIPopoverController *popoverWrapper;
+  __weak id<ZDetailViewParent> parentDetailViewController;
 }
 @property(retain, nonatomic) id<ZDetailViewController> currentChildDetailViewController;
 - (void)updateNavigationButtonsAnimated:(BOOL)aAnimated;
@@ -66,7 +67,6 @@
 
 #pragma mark - initialisation and cleanup
 
-@synthesize parentDetailViewController;
 @synthesize currentChildDetailViewController;
 @synthesize modalViewWrapper;
 @synthesize hasAppeared;
@@ -295,13 +295,22 @@
 }
 
 
+- (UIBarButtonItem *)customLeftNavigationButton
+{
+  return nil; // no custom button in base class
+}
+
+
+- (UIBarButtonItem *)customRightNavigationButton
+{
+  return nil; // no custom button in base class
+}
+
 
 - (void)updateNavigationButtonsAnimated:(BOOL)aAnimated
 {
-  // Left button
-  UIBarButtonItem *leftButton = nil;
-  ZDetailNavigationMode navMode = navigationMode;
   // check if we need automatic adjustments
+  ZDetailNavigationMode navMode = navigationMode;
   if (navMode & ZDetailNavigationModeLeftButtonAuto) {
     // make sure we can leave the modal (or popover) presentation
     if (modalViewWrapper && (modalViewWrapper.modalInPopover || !popoverWrapper)) {
@@ -309,49 +318,57 @@
       navMode = navMode | ZDetailNavigationModeLeftButtonDone;
     }
   }
-  // now apply
-  if (navMode & ZDetailNavigationModeLeftButtonCancel) {
-    // left side must be a cancel button
-    leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonAction)];
+  // Left button
+  UIBarButtonItem *leftButton = [self customLeftNavigationButton];
+  if (leftButton==nil) {
+    // now apply
+    if (navMode & ZDetailNavigationModeLeftButtonCancel) {
+      // left side must be a cancel button
+      leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonAction)];
+    }
+    else if (navMode & ZDetailNavigationModeLeftButtonDone) {
+      // done button for root view controllers, saves content
+      leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveButtonAction)];
+    }
+    else {
+      // if it's a back button, intercept its action
+      #warning "%%% tbd - intercept back button press"
+    }
   }
-  else if (navMode & ZDetailNavigationModeLeftButtonDone) {
-    // done button for root view controllers, saves content
-    leftButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveButtonAction)];
-  }
-  else {
-    // if it's a back button, intercept its action
-    #warning "%%% tbd - intercept back button press"
-  }
+  // if no standard button, check for custom buttons
   [self.navigationItem setLeftBarButtonItem:leftButton animated:aAnimated];
   // Right button
-  UIBarButtonItem *rightButton = nil;
-  if (navMode & ZDetailNavigationModeRightButtonSave) {
-    rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveButtonAction)];
-  }
-  else if (navMode & ZDetailNavigationModeRightButtonEditViewing) {
-    if (self.displayMode & ZDetailDisplayModeEditing) {
-      // is editing, show "done"
-      rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(editDoneButtonAction)];
+  UIBarButtonItem *rightButton = [self customRightNavigationButton];
+  if (rightButton==nil) {
+    if (navMode & ZDetailNavigationModeRightButtonSave) {
+      rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveButtonAction)];
     }
-    else {
-      // is viewing, show "edit"
-      rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editStartButtonAction)];
+    else if (navMode & ZDetailNavigationModeRightButtonEditViewing) {
+      if (self.displayMode & ZDetailDisplayModeEditing) {
+        // is editing, show "done"
+        rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(editDoneButtonAction)];
+      }
+      else {
+        // is viewing, show "edit"
+        rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editStartButtonAction)];
+      }
+    }
+    else if (navMode & ZDetailNavigationModeRightButtonTableEditDone) {
+      // use the standard editing button from UIViewController which is auto connected to the editing property
+      rightButton = self.editButtonItem; // will be autoreleased below
+    }
+    else if (navMode & ZDetailNavigationModeRightButtonDetailsBasics) {
+      if (self.displayMode & ZDetailDisplayModeDetails) {
+        // is showing details, show "done"
+        rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(detailsDoneButtonAction)];
+      }
+      else {
+        // is showing basics, show "details"
+        rightButton = [[UIBarButtonItem alloc] initWithTitle:detailsButtonTitle style:UIBarButtonItemStyleBordered target:self action:@selector(detailsStartButtonAction)];
+      }
     }
   }
-  else if (navMode & ZDetailNavigationModeRightButtonTableEditDone) {
-    // use the standard editing button from UIViewController which is auto connected to the editing property
-    rightButton = self.editButtonItem; // will be autoreleased below
-  }
-  else if (navMode & ZDetailNavigationModeRightButtonDetailsBasics) {
-    if (self.displayMode & ZDetailDisplayModeDetails) {
-      // is showing details, show "done"
-      rightButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(detailsDoneButtonAction)];
-    }
-    else {
-      // is showing basics, show "details"
-      rightButton = [[UIBarButtonItem alloc] initWithTitle:detailsButtonTitle style:UIBarButtonItemStyleBordered target:self action:@selector(detailsStartButtonAction)];
-    }
-  }
+  // if no standard button, check for custom buttons
   [self.navigationItem setRightBarButtonItem:rightButton animated:aAnimated];
 }
 
@@ -521,7 +538,15 @@
 }
 
 
-- (void)pushViewControllerForDetail:(UIViewController *)aViewController animated:(BOOL)aAnimated
+
+- (id<ZDetailViewParent>)parentDetailViewController
+{
+  return parentDetailViewController;
+}
+
+
+
+- (void)pushViewControllerForDetail:(UIViewController *)aViewController fromCell:(id<ZDetailViewCell>)aCell animated:(BOOL)aAnimated
 {
   disappearsUnderPushed = YES;
   // defocus edit fields
@@ -533,7 +558,7 @@
   // extras for ZDetailViewControllers
   if ([aViewController conformsToProtocol:@protocol(ZDetailViewController)]) {
     // make myself the parent of this controller
-    ((id<ZDetailViewController>)aViewController).parentDetailViewController = self; // weak
+    [((id<ZDetailViewController>)aViewController) becomesDetailViewOfCell:aCell inController:self];
     // remember opened child
     self.currentChildDetailViewController = (id<ZDetailViewController>)aViewController; // strong
   }
@@ -658,6 +683,14 @@
 }
 
 
+#pragma mark - ZDetailViewController protocol
+
+// will be called to establish link between master and detail
+- (void)becomesDetailViewOfCell:(id<ZDetailViewCell>)aCell inController:(id<ZDetailViewParent>)aController
+{
+  // just save the parent
+  parentDetailViewController = aController;
+}
 
 
 

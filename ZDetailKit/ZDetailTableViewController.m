@@ -410,18 +410,6 @@ static NSInteger numObjs = 0;
 
 @synthesize defaultCellStyle;
 
-- (ZDetailViewCellStyle)defaultCellStyle
-{
-  if (defaultCellStyle & ZDetailViewCellStyleFlagInherit) {
-    // try to inherit from parent
-    if (self.parentDetailTableViewController) {
-      // update the style
-      defaultCellStyle = (self.parentDetailTableViewController).defaultCellStyle;
-    }
-  }
-  return defaultCellStyle;
-}
-
 
 - (ZDetailTableViewController *)parentDetailTableViewController
 {
@@ -445,9 +433,6 @@ static NSInteger numObjs = 0;
   // apply the default configurator
   if (cellSetupHandler) {
     cellSetupHandler(self,newCell,sectionToAdd.overallSectionIndex);
-  }
-  else if ((defaultCellStyle & ZDetailViewCellStyleFlagInherit)!=0 && self.parentDetailTableViewController) {
-    self.parentDetailTableViewController.cellSetupHandler(self,newCell,sectionToAdd.overallSectionIndex);
   }
   // return the cell for further configuration
   return newCell;
@@ -623,7 +608,7 @@ static NSInteger numObjs = 0;
         // remember cell that caused opening a detail editor
         self.cellThatOpenedChildDetail = aCell;
         // open the detail
-        [self pushViewControllerForDetail:editController animated:YES];
+        [self pushViewControllerForDetail:editController fromCell:dvc animated:YES];
       }
       else {
         // ask cell to begin (or continue) in-cell editing and claim focus
@@ -1708,6 +1693,31 @@ static NSInteger numObjs = 0;
   // let superclass handle it as well
   [super childDetailEditingDoneWithCancel:aCancelled];
 }
+
+
+#pragma mark - ZDetailViewController
+
+
+// will be called to establish link between master and detail
+- (void)becomesDetailViewOfCell:(id<ZDetailViewCell>)aCell inController:(id<ZDetailViewParent>)aController
+{
+  // check if we should inherit styling from parent
+  if ((self.defaultCellStyle & ZDetailViewCellStyleFlagInherit) && [aController isKindOfClass:[ZDetailTableViewController class]]) {
+    ZDetailTableViewController *dtvc = (ZDetailTableViewController *)aController;
+    // inherit style
+    self.defaultCellStyle = dtvc.defaultCellStyle | ZDetailViewCellStyleFlagInherit; // keep inherit flag, even if parent did not have it
+    // inherit cell setup block (for additional table-wide styling) if I don't have one myself already
+    if (self.cellSetupHandler==nil) {
+      // I don't have a setup handler, take my parent's
+      self.cellSetupHandler = dtvc.cellSetupHandler;
+    }
+  }
+  // table specifics done
+  [super becomesDetailViewOfCell:aCell inController:aController];
+}
+
+
+
 
 
 @end

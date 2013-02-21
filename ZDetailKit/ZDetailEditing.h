@@ -5,7 +5,6 @@
 //  Copyright (c) 2012 plan44.ch. All rights reserved.
 //
 
-
 // Cell Style (UITableViewCell styles enhanced with some flags)
 typedef int ZDetailViewCellStyle;
 
@@ -46,7 +45,7 @@ typedef enum {
 
 @class ZDetailTableViewController;
 @class ZDetailViewBaseCell;
-
+@protocol ZDetailViewCell;
 
 // an object than can act as the parent of a detail view controller
 @protocol ZDetailViewParent <NSObject>
@@ -56,24 +55,26 @@ typedef enum {
 
 // an object than can act as a detail view controller
 @protocol ZDetailViewController <NSObject>
-// must be able to store a (weak) link to the parent that opened this editor
-@property(weak, nonatomic) id<ZDetailViewParent> parentDetailViewController;
+/// will be called to establish link between master and detail
+- (void)becomesDetailViewOfCell:(id<ZDetailViewCell>)aCell inController:(id<ZDetailViewParent>)aController;
+/// returns parent (master) detail view controller
+- (id<ZDetailViewParent>)parentDetailViewController;
 @end
 
 
-// this protocol is for owners of ZDetailViewCell conformant table cells
+/// this protocol is for owners of ZDetailViewCell conformant table cells
 @protocol ZDetailCellOwner <NSObject>
 @optional
-// returns the tableview which displays the cell
+/// returns the tableview which displays the cell
 - (UITableView *)detailTableView;
-// Called by cells when they themselves detect being tapped
+/// Called by cells when they themselves detect being tapped
 - (void)cellTapped:(UITableViewCell *)aCell inAccessory:(BOOL)aInAccessory;
-// needed by some editor cells to block scrolling during certain periods as otherwise
-// touch tracking does not work
+/// needed by some editor cells to block scrolling during certain periods as otherwise
+/// touch tracking does not work
 - (void)tempBlockScrolling:(BOOL)aBlockScrolling;
-// ask owner to refresh single cell (can be animated) or entire table (aCell=nil, not animated)
+/// ask owner to refresh single cell (can be animated) or entire table (aCell=nil, not animated)
 - (void)setNeedsReloadingCell:(UITableViewCell *)aCell animated:(BOOL)aAnimated;
-// start editing in next cell (pass nil to start editing in first cell that can edit)
+/// start editing in next cell (pass nil to start editing in first cell that can edit)
 - (void)beginEditingInNextCellAfter:(UITableViewCell *)aCell;
 @end
 

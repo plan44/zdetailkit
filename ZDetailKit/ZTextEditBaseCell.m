@@ -140,9 +140,10 @@
         }
       }
       // common properties
+      tb.valueLabel.font = self.valueLabel.font; // inherit font
       tb.valueCellShare = 1; // use entire cell
       tb.editInDetailView = NO; // in-place edit
-      tb.detailTitleText = self.detailTitleText; // inherit detailtitle 
+      tb.detailTitleText = self.detailTitleText; // inherit detailtitle
       tb.placeholderText = self.placeholderText; // inherit placeholder 
       tb.keyboardType = self.keyboardType;
       tb.returnKeyType = UIReturnKeyDone; // done by default, becomes return for multilines automatically

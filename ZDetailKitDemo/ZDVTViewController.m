@@ -457,7 +457,7 @@
         aSectionBuilder(c2);
         return YES; // built
       }];
-      [c pushViewControllerForDetail:dtvc2 animated:YES];
+      [c pushViewControllerForDetail:dtvc2 fromCell:aCell animated:YES];
       return YES; // handled
     }]; // tapHandler
   } // button

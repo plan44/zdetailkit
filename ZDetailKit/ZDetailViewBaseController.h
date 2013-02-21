@@ -100,13 +100,16 @@ typedef enum {
 /// followed by pushViewController:animated:)
 ///
 /// However, when used with controllers conforming to the ZDetailViewController protocol,
-/// the pushed controller's parentDetailViewController and this controller's
+/// the pushed controller's becomesDetailViewOfCell will be called and this controller's
 /// currentChildDetailViewController are automatically set. This allows this controller to get
 /// notified automatically when the detail editor is closed.
 ///
+/// @param aCell can be nil, but when ZDetailTableViewController calls this method, it will pass
+///   the originating cell here.
+///
 /// @note it is recommended to always use this method to push detail editors to make sure all
 /// features of ZDetailKit work properly.
-- (void)pushViewControllerForDetail:(UIViewController *)aViewController animated:(BOOL)aAnimated;
+- (void)pushViewControllerForDetail:(UIViewController *)aViewController fromCell:(id<ZDetailViewCell>)aCell animated:(BOOL)aAnimated;
 
 /// explicitly dismiss the current detail view with optionally saving edits
 /// @param aWithSave if YES, edits will be saved (by calling save on all valueConnectors) 
@@ -133,6 +136,14 @@ typedef enum {
 
 /// title text for the "Details" button (when navigationMode includes ZDetailNavigationModeRightButtonDetailsBasics)
 @property (strong, nonatomic) NSString *detailsButtonTitle;
+
+/// can be overridden by subclasses to set a custom left navigation button
+/// @note setting this disabled left button configuration set with navigationMode
+- (UIBarButtonItem *)customLeftNavigationButton;
+/// can be overridden by subclasses to set a custom right navigation button
+/// @note setting this disabled right button configuration set with navigationMode
+- (UIBarButtonItem *)customRightNavigationButton;
+
 
 /// convenience property - returns root of ZDetailViewController protocol conforming controller chain
 @property (unsafe_unretained, readonly, nonatomic) id<ZDetailViewController> rootDetailViewController;
@@ -168,11 +179,6 @@ typedef enum {
 
 /// update visibilities of UI elements
 - (void)updateVisibilitiesAnimated:(BOOL)aAnimated;
-
-
-/// If this controller has been opened as a detail editor for another detail editor, this points to the parent
-@property(weak, nonatomic) id<ZDetailViewParent> parentDetailViewController;
-
 
 /// defocus editing fields, if any
 - (void)defocus;
