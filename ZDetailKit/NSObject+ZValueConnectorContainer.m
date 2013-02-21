@@ -20,6 +20,7 @@
 
 
 static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of that variable (unique per process!)
+static char VALEUCONNECTORCONTAINERS_IDENTIFER; // Note: the identifier is the address of that variable (unique per process!)
 
 - (void)setValueConnectors:(NSMutableArray *)aValueConnectors
 {
@@ -37,19 +38,54 @@ static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of
   return v;
 }
 
+- (void)setValueConnectorContainers:(NSMutableArray *)aValueConnectorContainers
+{
+  objc_setAssociatedObject(self, &VALEUCONNECTORCONTAINERS_IDENTIFER, aValueConnectorContainers, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSMutableArray *)valueConnectorContainers
+{
+  NSMutableArray *v = objc_getAssociatedObject(self, &VALEUCONNECTORCONTAINERS_IDENTIFER);
+  if (v==nil) {
+    // create on first use
+    v = [NSMutableArray array];
+    self.valueConnectorContainers = v;
+  }
+  return v;
+}
+
+- (NSMutableArray *)valueConnectorContainersNoCreate
+{
+  return objc_getAssociatedObject(self, &VALEUCONNECTORCONTAINERS_IDENTIFER);
+}
+
+
 
 - (void)setValueConnectorsActive:(BOOL)aActive
 {
   for (ZValueConnector *connector in self.valueConnectors) {
     connector.active = aActive;
   }
+  NSArray *a = [self valueConnectorContainersNoCreate];
+  if (a) {
+    for (id<ZValueConnectorContainer> vcc in a) {
+      [vcc setValueConnectorsActive:aActive];
+    }
+  }
 }
+
 
 - (void)saveValueConnectors
 {
   // save in all connectors
   for (ZValueConnector *connector in self.valueConnectors) {
     [connector saveValue];
+  }
+  NSArray *a = [self valueConnectorContainersNoCreate];
+  if (a) {
+    for (id<ZValueConnectorContainer> vcc in a) {
+      [vcc saveValueConnectors];
+    }
   }
 }
 
@@ -59,6 +95,12 @@ static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of
   // load in all connectors
   for (ZValueConnector *connector in self.valueConnectors) {
     [connector loadValue];
+  }
+  NSArray *a = [self valueConnectorContainersNoCreate];
+  if (a) {
+    for (id<ZValueConnectorContainer> vcc in a) {
+      [vcc loadValueConnectors];
+    }
   }
 }
 
@@ -71,6 +113,12 @@ static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of
     if (connector.connected)
       validates = validates && [connector validatesWithErrors:aErrorsP];
   }
+  NSArray *a = [self valueConnectorContainersNoCreate];
+  if (a) {
+    for (id<ZValueConnectorContainer> vcc in a) {
+      validates = validates && [vcc connectorsValidateWithErrors:aErrorsP];
+    }
+  }
   return validates;
 }
 
@@ -80,6 +128,14 @@ static char VALEUCONNECTORS_IDENTIFER; // Note: the identifier is the address of
   [self.valueConnectors addObject:aConnector];
   return aConnector;
 }
+
+
+- (ZValueConnector *)registerValueConnectorContainer:(id<ZValueConnectorContainer>)aContainer
+{
+  [self.valueConnectorContainers addObject:aContainer];
+  return aContainer;
+}
+
 
 
 

@@ -61,6 +61,9 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 /// register a value connector with this object
 - (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector;
 
+/// convenience method to register another contained value connector container with the object
+- (ZValueConnector *)registerValueConnectorContainer:(id<ZValueConnectorContainer>)aContainer;
+
 @end
 
 
