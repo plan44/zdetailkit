@@ -38,7 +38,7 @@
 - (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector;
 
 /// convenience method to register another contained value connector container with the object
-- (ZValueConnector *)registerValueConnectorContainer:(id<ZValueConnectorContainer>)aContainer;
+- (void)registerValueConnectorContainer:(id<ZValueConnectorContainer>)aContainer;
 
 
 @end

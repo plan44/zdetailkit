@@ -14,7 +14,7 @@
 @implementation NSObject (ZValueConnectorContainerImpl)
 
 @dynamic valueConnectors;
-
+@dynamic valueConnectorContainers;
 
 #pragma mark - associated object for valueconnectors array
 
@@ -63,11 +63,19 @@ static char VALEUCONNECTORCONTAINERS_IDENTIFER; // Note: the identifier is the a
 
 - (void)setValueConnectorsActive:(BOOL)aActive
 {
+  NSArray *a = [self valueConnectorContainersNoCreate];
+  if (a && aActive) {
+    // activate containers first (allowing their contents to get connected by my own connectors)
+    for (id<ZValueConnectorContainer> vcc in a) {
+      [vcc setValueConnectorsActive:aActive];
+    }
+  }
+  // now activate/deactivate my own connectors
   for (ZValueConnector *connector in self.valueConnectors) {
     connector.active = aActive;
   }
-  NSArray *a = [self valueConnectorContainersNoCreate];
-  if (a) {
+  if (a && !aActive) {
+    // deactivate containers after my own connectors
     for (id<ZValueConnectorContainer> vcc in a) {
       [vcc setValueConnectorsActive:aActive];
     }
@@ -77,25 +85,27 @@ static char VALEUCONNECTORCONTAINERS_IDENTIFER; // Note: the identifier is the a
 
 - (void)saveValueConnectors
 {
-  // save in all connectors
-  for (ZValueConnector *connector in self.valueConnectors) {
-    [connector saveValue];
-  }
+  // save in containers first
   NSArray *a = [self valueConnectorContainersNoCreate];
   if (a) {
     for (id<ZValueConnectorContainer> vcc in a) {
       [vcc saveValueConnectors];
     }
   }
+  // then save in all connectors
+  for (ZValueConnector *connector in self.valueConnectors) {
+    [connector saveValue];
+  }
 }
 
 
 - (void)loadValueConnectors
 {
-  // load in all connectors
+  // load in all connectors first
   for (ZValueConnector *connector in self.valueConnectors) {
     [connector loadValue];
   }
+  // then load in containers
   NSArray *a = [self valueConnectorContainersNoCreate];
   if (a) {
     for (id<ZValueConnectorContainer> vcc in a) {
@@ -108,16 +118,17 @@ static char VALEUCONNECTORCONTAINERS_IDENTIFER; // Note: the identifier is the a
 - (BOOL)connectorsValidateWithErrors:(NSMutableArray **)aErrorsP
 {
   BOOL validates = YES;
-  // collect validation from all connectors
-  for (ZValueConnector *connector in self.valueConnectors) {
-    if (connector.connected)
-      validates = validates && [connector validatesWithErrors:aErrorsP];
-  }
+  // collect validation from containers first
   NSArray *a = [self valueConnectorContainersNoCreate];
   if (a) {
     for (id<ZValueConnectorContainer> vcc in a) {
       validates = validates && [vcc connectorsValidateWithErrors:aErrorsP];
     }
+  }
+  // then collect validation from all connectors
+  for (ZValueConnector *connector in self.valueConnectors) {
+    if (connector.connected)
+      validates = validates && [connector validatesWithErrors:aErrorsP];
   }
   return validates;
 }
@@ -130,10 +141,9 @@ static char VALEUCONNECTORCONTAINERS_IDENTIFER; // Note: the identifier is the a
 }
 
 
-- (ZValueConnector *)registerValueConnectorContainer:(id<ZValueConnectorContainer>)aContainer
+- (void)registerValueConnectorContainer:(id<ZValueConnectorContainer>)aContainer
 {
   [self.valueConnectorContainers addObject:aContainer];
-  return aContainer;
 }
 
 
