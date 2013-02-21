@@ -15,7 +15,6 @@
 @interface NSObject (ZValueConnectorContainerImpl) <ZValueConnectorContainer>
 
 @property (retain, nonatomic) NSMutableArray *valueConnectors;
-@property (retain, nonatomic) NSMutableArray *valueConnectorContainers;
 
 
 /// activate / deactivate all registered connectors
@@ -36,9 +35,5 @@
 
 /// convenience method to register a value connector with the object
 - (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector;
-
-/// convenience method to register another contained value connector container with the object
-- (void)registerValueConnectorContainer:(id<ZValueConnectorContainer>)aContainer;
-
 
 @end

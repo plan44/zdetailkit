@@ -42,12 +42,6 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 //    the valueConnectors mutable array as an attached object
 @property (strong, nonatomic, getter = valueConnectors, setter = setValueConnectors:) NSMutableArray *valueConnectors;
 
-/// Mutable array containing all value connector containers of the object
-/// @note in the ZValueConnectorContainerImpl category, first access to this property creates
-//    the valueConnectorContainers mutable array as an attached object
-@property (strong, nonatomic, getter = valueConnectorContainers, setter = setValueConnectorContainers:) NSMutableArray *valueConnectorContainers;
-
-
 
 /// activate / deactivate all registered connectors
 - (void)setValueConnectorsActive:(BOOL)aActive;
@@ -67,9 +61,6 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 
 /// register a value connector with this object
 - (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector;
-
-/// convenience method to register another contained value connector container with the object
-- (void)registerValueConnectorContainer:(id<ZValueConnectorContainer>)aContainer;
 
 @end
 
