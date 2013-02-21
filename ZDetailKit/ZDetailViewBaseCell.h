@@ -49,7 +49,7 @@ typedef enum {
 
 
 /// Base cell for use in ZDetailTableViewController
-@interface ZDetailViewBaseCell : UITableViewCell <ZDetailViewCell, ZDetailValueConnectorOwner>
+@interface ZDetailViewBaseCell : UITableViewCell <ZDetailViewCell, ZDetailValueConnectorOwner, ZValueConnectorContainer>
 
 /// @name ZDetailViewCell basics
 
@@ -289,9 +289,6 @@ typedef enum {
 
 /// call when reloading this cell (re-fetching data from connected model) is needed
 - (void)setNeedsReloadAnimated:(BOOL)aAnimated;
-
-/// call to register embedded ZDetailValueConnector objects (usually from the subclass' internalInit)
-- (ZDetailValueConnector *)registerConnector:(ZDetailValueConnector *)aConnector;
 
 /// Internal initialisation
 ///

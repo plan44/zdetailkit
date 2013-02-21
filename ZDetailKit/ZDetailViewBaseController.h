@@ -33,7 +33,7 @@ typedef enum {
 /// @note for classic detail editors consisting of a table view with cells representing detail values,
 /// use the ZDetailTableViewController sublcass. This class can be used by non table based editors
 /// (see ZMapLocationEdit for an example).
-@interface ZDetailViewBaseController : UIViewController <ZDetailViewController, ZDetailViewParent>
+@interface ZDetailViewBaseController : UIViewController <ZDetailViewController, ZDetailViewParent, ZValueConnectorContainer>
 
 
 /// @name Initializing
@@ -173,9 +173,6 @@ typedef enum {
 
 
 /// @name utilities
-
-/// register connectors (usually in the subclass' internalInit)
-- (ZDetailValueConnector *)registerConnector:(ZDetailValueConnector *)aConnector;
 
 /// update visibilities of UI elements
 - (void)updateVisibilitiesAnimated:(BOOL)aAnimated;

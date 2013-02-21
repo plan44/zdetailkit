@@ -46,6 +46,7 @@ typedef enum {
 @class ZDetailTableViewController;
 @class ZDetailViewBaseCell;
 @protocol ZDetailViewCell;
+@protocol ZValueConnectorContainer;
 
 // an object than can act as the parent of a detail view controller
 @protocol ZDetailViewParent <NSObject>
@@ -84,7 +85,7 @@ typedef enum {
 /// this protocol is for UITableViewCells that want to be used fully featured in ZDetailTableViewControllers.
 /// @note regular UITableViewCells (like pure info cells or controls with directly wired targets) can be used
 /// as well, but don't get any editing support.
-@protocol ZDetailViewCell <NSObject>
+@protocol ZDetailViewCell <NSObject, ZValueConnectorContainer>
 /// reference to the owning object.
 ///
 /// Usually this is a ZDetailTableViewController, but
@@ -116,8 +117,5 @@ typedef enum {
 - (UIViewController *)editorForTapInAccessory:(BOOL)aInAccessory;
 - (void)editorFinishedWithCancel:(BOOL)aCancelled; // called when detail editor for a cell (as obtained by editorForTapInAccessory:) has finished (i.e. closed)
 - (BOOL)keepSelected; // if cell is selected (tapped) and this returns YES, the selection is kept after touch is released
-// save and revert
-- (void)saveCell; // save values of all connectors to their targets
-- (void)loadCell; // revert cell by re-reading values in all connectors from their targets
-- (BOOL)validatesWithErrors:(NSMutableArray **)aErrorsP; // test if all cells validate and collect NSErrors in array (if array exists, errors will be appended)
+
 @end

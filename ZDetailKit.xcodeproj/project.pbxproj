@@ -65,6 +65,7 @@
 		ED81B80716D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h in Resources */ = {isa = PBXBuildFile; fileRef = ED81B80616D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h */; };
 		ED81B80916D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED81B80816D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m */; };
 		ED81B85416D182EF00ED1F3F /* ZBC_delbtn.png in Resources */ = {isa = PBXBuildFile; fileRef = ED81B85216D182EE00ED1F3F /* ZBC_delbtn.png */; };
+		ED81B87C16D65F8200ED1F3F /* NSObject+ZValueConnectorContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED81B87A16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.m */; };
 		EDA57D7216D040020044EB9C /* ZDetailViewBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED03B83616D037D800ADA844 /* ZDetailViewBaseController.m */; };
 		EDB2F49016D57CD600C6EAD6 /* ZDTC_delbtn.png in Resources */ = {isa = PBXBuildFile; fileRef = EDB2F48E16D57CD600C6EAD6 /* ZDTC_delbtn.png */; };
 		EDB2F49116D57CD600C6EAD6 /* ZDTC_delbtn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EDB2F48F16D57CD600C6EAD6 /* ZDTC_delbtn@2x.png */; };
@@ -166,6 +167,8 @@
 		ED81B80616D1403400ED1F3F /* ZStringToCoordinate2DTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZStringToCoordinate2DTransformer.h; sourceTree = "<group>"; };
 		ED81B80816D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZStringToCoordinate2DTransformer.m; sourceTree = "<group>"; };
 		ED81B85216D182EE00ED1F3F /* ZBC_delbtn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZBC_delbtn.png; sourceTree = "<group>"; };
+		ED81B87A16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+ZValueConnectorContainer.m"; sourceTree = "<group>"; };
+		ED81B87B16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+ZValueConnectorContainer.h"; sourceTree = "<group>"; };
 		EDB2F48E16D57CD600C6EAD6 /* ZDTC_delbtn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZDTC_delbtn.png; sourceTree = "<group>"; };
 		EDB2F48F16D57CD600C6EAD6 /* ZDTC_delbtn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ZDTC_delbtn@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -248,11 +251,13 @@
 			isa = PBXGroup;
 			children = (
 				ED81B80116D10C5C00ED1F3F /* ZDetailKit.h */,
-				ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */,
-				ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */,
 				ED12E77415824B8200DE3ED3 /* ZDetailEditing.h */,
 				ED12E77715824B8200DE3ED3 /* ZDetailValueConnector.h */,
 				ED12E77815824B8200DE3ED3 /* ZDetailValueConnector.m */,
+				ED81B87A16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.m */,
+				ED81B87B16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.h */,
+				ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */,
+				ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */,
 				ED12E77915824B8200DE3ED3 /* ZDetailViewBaseCell.h */,
 				ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */,
 				ED03B83516D037D800ADA844 /* ZDetailViewBaseController.h */,
@@ -504,6 +509,7 @@
 				ED81B7EB16D0F46F00ED1F3F /* ZMapLocationEdit.m in Sources */,
 				ED81B80016D0F69800ED1F3F /* ZLocationCell.m in Sources */,
 				ED81B80916D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m in Sources */,
+				ED81B87C16D65F8200ED1F3F /* NSObject+ZValueConnectorContainer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

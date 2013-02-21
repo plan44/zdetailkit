@@ -37,7 +37,7 @@
       self.autoSetDescriptionLabelText = NO; // don't set
     }
     // valueConnector
-    valueConnector = [self registerConnector:
+    valueConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"colorChooser.color" owner:self]
     ];
   }

@@ -31,6 +31,41 @@ typedef BOOL (^ZDetailValueConnectorValidationHandler)(ZDetailValueConnector *aC
 @end
 
 
+
+/// Protocol for objects that have value connectors
+/// @note this protocol is implemented in the ZValueConnectorContainerImpl category on NSObject
+///   which makes every object a potential container for value connectors.
+@protocol ZValueConnectorContainer <NSObject>
+
+/// Mutable array containing all value connectors of the object
+/// @note in the ZValueConnectorContainerImpl category, first access to this property creates
+//    the valueConnectors mutable array as an attached object
+@property (strong, nonatomic, getter = valueConnectors, setter = setValueConnectors:) NSMutableArray *valueConnectors;
+
+/// activate / deactivate all registered connectors
+- (void)setValueConnectorsActive:(BOOL)aActive;
+
+/// save data in all connectors
+- (void)saveValueConnectors;
+
+/// load data in all connectors
+- (void)loadValueConnectors;
+
+/// check for validation in all connectors and collect errors
+/// @return YES if all connectors validate ok, NO otherwise
+/// @param aErrorsP can be passed NULL if no errors should be collected.
+/// If *aErrorsP points to a nil value, a NSMutableArray is created when at least one error is encountered.
+/// If an existing array is passed, encountered errors will be appended.
+- (BOOL)connectorsValidateWithErrors:(NSMutableArray **)aErrorsP;
+
+/// register a value connector with this object
+- (ZDetailValueConnector *)registerValueConnector:(ZDetailValueConnector *)aConnector;
+
+@end
+
+
+
+
 @interface ZDetailValueConnector : NSObject
 
 /// @name initialisation

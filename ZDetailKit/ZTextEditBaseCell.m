@@ -31,7 +31,7 @@
     spellCheckingType = UITextSpellCheckingTypeDefault;
     secureTextEntry = NO;
     // valueConnector
-    valueConnector = [self registerConnector:
+    valueConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"editedText" owner:self]
     ];
     valueConnector.nilNulValue = @""; // default to show external nil/null as empty string

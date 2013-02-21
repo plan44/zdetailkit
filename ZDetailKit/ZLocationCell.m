@@ -21,12 +21,12 @@
 {
   if ((self = [super initWithStyle:aStyle reuseIdentifier:aReuseIdentifier])) {
     // valueConnector for text
-    textValueConnector = [self registerConnector:
+    textValueConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"editedText" owner:self]
     ];
     textValueConnector.nilNulValue = @""; // default to show external nil/null as empty string
     // valueConnector for coordinate
-    coordinateValueConnector = [self registerConnector:
+    coordinateValueConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"editedCoordinate" owner:self]
     ];
     coordinateValueConnector.nilNulValue = [NSValue valueWithBytes:&kCLLocationCoordinate2DInvalid objCType:@encode(CLLocationCoordinate2D)];

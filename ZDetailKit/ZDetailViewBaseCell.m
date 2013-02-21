@@ -8,11 +8,11 @@
 
 #import "ZDetailViewBaseCell.h"
 
+#import "NSObject+ZValueConnectorContainer.h"
 
 @interface ZDetailViewBaseCell ( /* class extension */ )
 {
   // non-public instance vars
-  NSMutableArray *valueConnectors;
   BOOL needsDisplayUpdate;
   // normal description label color (used to remember during validation errors)
   UIColor *nonErrorTextColor;
@@ -38,7 +38,6 @@
   neededModes = ZDetailDisplayModeNone; // no particular mode needed for being visible (is always visible by default)
   showsValidationStatus = YES; // show validation problems
   active = NO;
-  valueConnectors = [[NSMutableArray alloc] initWithCapacity:3];
   cellOwner = nil;
   needsDisplayUpdate = YES; // certainy we need a data update at least once after init
   focusedEditing = NO; // focused editing (in-cell editors that can get/loose focus) not in progress
@@ -163,9 +162,7 @@ static NSInteger numObjs = 0;
       [self prepareForDisplay];
     }
     // now activate connectors
-    for (ZDetailValueConnector *connector in valueConnectors) {
-      connector.active = active;
-    }
+    [self setValueConnectorsActive:aActive];
     // make sure we are prepared for display
     [self prepareForDisplay];
   }
@@ -279,40 +276,6 @@ static NSInteger numObjs = 0;
 }
 
 
-- (void)saveCell
-{
-  // save in all connectors
-  for (ZDetailValueConnector *connector in valueConnectors) {
-    [connector saveValue];
-  }
-}
-
-
-- (void)loadCell
-{
-  // load in all connectors
-  for (ZDetailValueConnector *connector in valueConnectors) {
-    [connector loadValue];
-  }
-}
-
-
-- (BOOL)validatesWithErrors:(NSMutableArray **)aErrorsP
-{
-  BOOL validates = YES;
-  // collect validation from all connectors
-  for (ZDetailValueConnector *connector in valueConnectors) {
-    if (connector.connected)
-      validates = validates && [connector validatesWithErrors:aErrorsP];
-  }  
-  return validates;
-}
-
-
-
-
-
-
 
 #pragma mark - services for cell owners
 
@@ -382,14 +345,6 @@ static NSInteger numObjs = 0;
 }
 
 
-// for subclasses to register connectors (usually in the subclass' internalInit)
-- (ZDetailValueConnector *)registerConnector:(ZDetailValueConnector *)aConnector
-{
-  [valueConnectors addObject:aConnector];
-  return aConnector;
-}
-
-
 
 // must be called when cell detects itself that it was tapped
 // Note: UITableViewCell/UITableView native setup is such that cell should not
@@ -405,6 +360,7 @@ static NSInteger numObjs = 0;
     }
   }	
 }
+
 
 
 #pragma mark - subclass hooks (methods that can be overridden by subclasses)
@@ -663,7 +619,7 @@ static NSInteger numObjs = 0;
   // return specific text if any
   if (labelText) return labelText;
   // default to first non-empty keyPath in valueConnectors
-  for (ZDetailValueConnector *vc in valueConnectors) {
+  for (ZDetailValueConnector *vc in self.valueConnectors) {
     if (vc.keyPath && vc.keyPath.length>0)
       return vc.keyPath;
   }

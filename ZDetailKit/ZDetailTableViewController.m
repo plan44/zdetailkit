@@ -8,7 +8,6 @@
 
 #import "ZDetailTableViewController.h"
 
-
 #pragma mark - internal Helper classes declarations
 
 
@@ -548,7 +547,7 @@ static NSInteger numObjs = 0;
     for (ZDetailViewSection *section in allSectionsAndCells) {
       for (ZDetailViewCellHolder *dvch in section.cells) {
         if ([dvch.cell conformsToProtocol:@protocol(ZDetailViewCell)]) {
-          validates = validates && [(id<ZDetailViewCell>)dvch.cell validatesWithErrors:aErrorsP];
+          validates = validates && [(id<ZDetailViewCell>)dvch.cell connectorsValidateWithErrors:aErrorsP];
         }
       }
     }
@@ -566,7 +565,7 @@ static NSInteger numObjs = 0;
   if (self.active) {
     // let all cells save their data first (controller level values might depend)
     [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
-      [aCell saveCell];
+      [aCell saveValueConnectors];
     }];
     // let controller level value connectors save now (might depend on cells)
     [super save];
@@ -583,7 +582,7 @@ static NSInteger numObjs = 0;
   if (self.active) {
     // let all cells reload their data
     [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
-      [aCell loadCell];
+      [aCell loadValueConnectors];
     }];
     // let controller level value connectors revert
     [super revert];

@@ -40,7 +40,7 @@
     updating = NO; // to break recursions
     checkMark = NO; // use switch control, not checkmark
     // valueConnector
-    valueConnector = [self registerConnector:
+    valueConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"switchVal" owner:self]
     ];
     valueConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to show external nil/null as NO

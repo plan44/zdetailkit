@@ -61,22 +61,22 @@
     formatter = [[NSDateFormatter alloc] init];
     // valueConnectors
     // - first those that values might depend
-    suggestedDateConnector = [self registerConnector:
+    suggestedDateConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"suggestedDate" owner:self]
     ];
-    masterDateConnector = [self registerConnector:
+    masterDateConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"masterDate" owner:self]
     ];
     // - now the values
-    startDateConnector = [self registerConnector:
+    startDateConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"startDate" owner:self]
     ];
     startDateConnector.nilAllowed = NO; // by default, don't allow no date
-    endDateConnector = [self registerConnector:
+    endDateConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"endDate" owner:self]
     ];
     endDateConnector.nilAllowed = NO; // by default, don't allow no date
-    dateOnlyConnector = [self registerConnector:
+    dateOnlyConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"dateOnly" owner:self]
     ];
     dateOnlyConnector.nilNulValue = [NSNumber numberWithBool:NO]; // default to date+time mode

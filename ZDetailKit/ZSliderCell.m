@@ -31,7 +31,7 @@
     self.valueLabel.hidden = YES; // don't show value label
     self.valueViewAdjustment = ZDetailCellItemAdjustFillWidth+ZDetailCellItemAdjustMiddle; // use all horizontal space, vertically centered
     // valueConnector
-    _valueConnector = [self registerConnector:
+    _valueConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"sliderControl.value" owner:self]
     ];
     _valueConnector.nilNulValue = [NSNumber numberWithInt:0]; // default to show external nil/null as zero

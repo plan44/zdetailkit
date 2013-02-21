@@ -10,6 +10,7 @@
 #import "ZOrientation.h"
 #import "ZString_utils.h"
 
+#import "NSObject+ZValueConnectorContainer.h"
 
 #pragma mark - internal Helper classes declarations
 
@@ -44,8 +45,6 @@
 
 
 @interface ZDetailViewBaseController () {
-  // controller level value connectors
-  NSMutableArray *valueConnectors;
   // cause for view to disappear
   BOOL disappearsUnderPushed;
   // protection flag agains dismissing more than once
@@ -77,7 +76,6 @@
   // no referenced objects
   parentDetailViewController = nil;
   currentChildDetailViewController = nil;
-  valueConnectors = [[NSMutableArray alloc] initWithCapacity:3];
   // not modally displayed
   modalViewWrapper = nil;
   popoverWrapper = nil;
@@ -172,18 +170,6 @@
 }
 
 
-#pragma mark - controller level value connectors
-
-
-// for subclasses to register connectors
-- (ZDetailValueConnector *)registerConnector:(ZDetailValueConnector *)aConnector
-{
-  [valueConnectors addObject:aConnector];
-  return aConnector;
-}
-
-
-
 
 #pragma mark - detailview data connection control
 
@@ -196,9 +182,7 @@
     // update status flag
     active = aActive;
     // propagate to controller level value connectors
-    for (ZDetailValueConnector *connector in valueConnectors) {
-      connector.active = active;
-    }
+    [self setValueConnectorsActive:aActive];
   }
 }
 
@@ -209,9 +193,7 @@
   BOOL validates = YES;
   if (self.active) {
     // controller level value connectors
-    for (ZDetailValueConnector *connector in valueConnectors) {
-      validates = validates && [connector validatesWithErrors:aErrorsP];
-    }
+    validates = [self connectorsValidateWithErrors:aErrorsP];
   }
   return validates;
 }
@@ -222,9 +204,7 @@
 {
   // do not save if already inactive (e.g. because edits were cancelled)
   if (self.active) {
-    for (ZDetailValueConnector *connector in valueConnectors) {
-      [connector saveValue];
-    }
+    [self saveValueConnectors];
     // mark saved
     cancelled = NO;
   }
@@ -233,9 +213,7 @@
 
 - (void)revert
 {
-  for (ZDetailValueConnector *connector in valueConnectors) {
-    [connector loadValue];
-  }
+  [self loadValueConnectors];
 }
 
 

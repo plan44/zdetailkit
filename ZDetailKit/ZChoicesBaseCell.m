@@ -24,11 +24,11 @@
     choicesManager = [[ZChoicesManager alloc] init];
     choicesManager.delegate = self;
     // connector for current choice(s)
-    valueConnector = [self registerConnector:
+    valueConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"choicesManager.currentChoice" owner:self]
     ];
     // connector for choices array (array with a dictionary for each choice)
-    choicesConnector = [self registerConnector:
+    choicesConnector = [self registerValueConnector:
       [ZDetailValueConnector connectorWithValuePath:@"choicesManager.choicesArray" owner:self]
     ];
   }
