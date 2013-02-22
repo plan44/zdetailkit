@@ -144,6 +144,7 @@
 		ED1F708815BDA37F0046CFBC /* ZGeometry_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZGeometry_utils.m; sourceTree = "<group>"; };
 		ED1F708A15BDA4100046CFBC /* ZColor_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZColor_utils.h; sourceTree = "<group>"; };
 		ED1F708B15BDA4100046CFBC /* ZColor_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZColor_utils.m; sourceTree = "<group>"; };
+		ED321ED616D82AF200CB76B1 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		ED43CA3E16CFDAE600C28E48 /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
 		ED49A9991585F623007FEBF0 /* ZDateTimeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDateTimeCell.h; sourceTree = "<group>"; };
 		ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDateTimeCell.m; sourceTree = "<group>"; };
@@ -199,6 +200,7 @@
 				ED81B80416D10D7300ED1F3F /* MapKit.framework */,
 				ED81B80216D10D6800ED1F3F /* CoreLocation.framework */,
 				ED43CA3E16CFDAE600C28E48 /* README.markdown */,
+				ED321ED616D82AF200CB76B1 /* LICENSE.txt */,
 				ED1F707315BD951B0046CFBC /* ZUtils */,
 				ED12E76915824B8200DE3ED3 /* ZDetailKit */,
 				ED12E7421582494C00DE3ED3 /* ZDetailKitDemo */,

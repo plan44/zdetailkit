@@ -1,0 +1,4 @@
+%%% tbd
+
+- OS with attribution in about box and docs
+- commercial possible to remove obligation for attribution

@@ -8,3 +8,4 @@ Features to mention
 - ZDateTimeCell with all the extended options (suggestion, start/end, masterdate etc.)
 - choice manager as mostly generic component
 - switch cell can address bits in integer flagwords
+- custom input views (like datepicker)
