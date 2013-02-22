@@ -8,6 +8,7 @@
 
 #import "ZChoicesManager.h"
 
+#import "ZCustomI8n.h"
 
 @implementation ZChoiceInfo
 
@@ -129,26 +130,35 @@
 // add simple ordered text choice
 - (void)addChoice:(NSString *)aText order:(NSInteger)aOrder key:(id)aKey
 {
-  [self addChoice:[NSDictionary dictionaryWithObjectsAndKeys:
-    aKey, @"key",
-    aText, @"text",
-    [NSNumber numberWithInteger:aOrder], @"order",
-    nil
-  ]];
+  [self addChoice:@{
+    @"key" : aKey,
+    @"text" : aText,
+    @"order" : @(aOrder),
+   }];
 }
 
 
 // add simple ordered text choice with separate summary text
 - (void)addChoice:(NSString *)aText summary:(NSString *)aSummary order:(NSInteger)aOrder key:(id)aKey
 {
-  [self addChoice:[NSDictionary dictionaryWithObjectsAndKeys:
-    aKey, @"key",
-    aText, @"text",
-    aSummary, @"summary",
-    [NSNumber numberWithInteger:aOrder], @"order",
-    nil
-  ]];
+  [self addChoice:@{
+    @"key" : aKey,
+    @"text" : aText,
+    @"summary" : aSummary,
+    @"order" : @(aOrder)
+  }];
 }
+
+
+- (void)addImageChoice:(id)aImageOrName order:(NSInteger)aOrder key:(id)aKey
+{
+  [self addChoice:@{
+    @"key" : aKey,
+    ([aImageOrName isKindOfClass:[UIImage class]] ? @"image" : @"imageName")   : aImageOrName,
+    @"order" : @(aOrder)
+  }];
+}
+
 
 
 
@@ -192,10 +202,9 @@
   // need to rebuild/adapt the choice infos
   // - create a sorted list of choices
   NSArray *sortedChoices = [choicesArray
-    sortedArrayUsingDescriptors:[NSArray arrayWithObjects:
+    sortedArrayUsingDescriptors:@[
       [NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES],
-      [NSSortDescriptor sortDescriptorWithKey:@"text" ascending:YES],
-      nil
+      [NSSortDescriptor sortDescriptorWithKey:@"text" ascending:YES]
     ]
   ];
   // In all modes: remove choiceInfos that don't exist in the new choices any more
@@ -331,13 +340,10 @@
     // return array of dicts containing "key" and "sel"
     NSMutableArray *dictArray = [NSMutableArray arrayWithCapacity:[self.choiceInfos count]];
     for (ZChoiceInfo *info in self.choiceInfos) {
-      [dictArray addObject:
-        [NSDictionary dictionaryWithObjectsAndKeys:
-          info.key, @"key",
-          [NSNumber numberWithBool:info.selected], @"sel",
-          nil
-        ]
-      ];
+      [dictArray addObject:@{
+        @"key" : info.key,
+        @"sel" : @(info.selected)
+      }];
     }
     return dictArray;
   }
@@ -519,12 +525,9 @@
       }
       // all other choices are off already, this one is the last, must remain selected
       if (aOutErrorP) {
-        *aOutErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:
-          [NSDictionary dictionaryWithObjectsAndKeys:
-            @"At least one choice must remain selected", NSLocalizedDescriptionKey,
-            nil
-          ]
-        ];
+        *aOutErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:@{
+          NSLocalizedDescriptionKey: ZLocalizedStringWithDefault(@"ZDTK_ValErr_NeedOneChoice",@"At least one choice must remain selected"),
+        }];
       }
       return NO;
     }
