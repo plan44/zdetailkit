@@ -8,6 +8,8 @@
 
 #import "ZChoicesBaseCell.h"
 
+
+
 @interface ZSegmentChoicesCell : ZChoicesBaseCell
 
 @property (readonly, nonatomic) UISegmentedControl *segmentedControl;

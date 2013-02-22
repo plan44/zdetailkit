@@ -146,7 +146,7 @@
   }
   else {
     // view only or inplace editing
-    if (self.startDateConnector.nilAllowed) {
+    if (self.startDateConnector.nilAllowed && clearDateButtonText==nil) {
       // nil is allowed, show clear button instead
       UIButton *b = [UIButton buttonWithType:UIButtonTypeCustom];
       b.frame = CGRectMake(0, 0, 20, 20);
@@ -492,6 +492,7 @@ static id _sd_startDateConnector = nil;
       ZDateTimeCell *sd = [c detailCell:[ZDateTimeCell class]];
       _sd = sd; // %%%
       sd.labelText = self.calculatedStartDateLabelText;
+      sd.clearDateButtonText = self.clearDateButtonText; // inherit as it switches off clear button accessory if we have a common clear button
       sd.minuteInterval = self.minuteInterval;
       sd.descriptionLabel.numberOfLines = 1;
       sd.valueLabel.numberOfLines = 1;
@@ -507,6 +508,7 @@ static id _sd_startDateConnector = nil;
         // Optional end date
         ed = [c detailCell:[ZDateTimeCell class]];
         ed.labelText = self.endDateLabelText;
+        ed.clearDateButtonText = self.clearDateButtonText; // inherit as it switches off clear button accessory if we have a common clear button
         ed.minuteInterval = self.minuteInterval;
         ed.descriptionLabel.numberOfLines = 1;
         ed.valueLabel.numberOfLines = 1;
@@ -543,17 +545,17 @@ static id _sd_startDateConnector = nil;
           return YES; // ok
         }];
       }
-//      if (self.startDateConnector.nilAllowed || self.endDateConnector.nilAllowed) {
-//        // start or end (or both) can be nil, add extra button to set nil
-//        ZButtonCell *b = [c detailCell:[ZButtonCell class]];
-//        b.labelText = self.clearDateButtonText;
-//        b.buttonStyle = ZButtonCellStyleCenterText;
-//        [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
-//          if (self.startDateConnector.nilAllowed) sd.startDateConnector.internalValue = nil;
-//          if (self.endDateConnector.nilAllowed) ed.startDateConnector.internalValue = nil;
-//          return YES; // fully handled
-//        }];
-//      }
+      if (clearDateButtonText && (self.startDateConnector.nilAllowed || self.endDateConnector.nilAllowed)) {
+        // start or end (or both) can be nil, add extra button to set nil
+        ZButtonCell *b = [c detailCell:[ZButtonCell class]];
+        b.labelText = self.clearDateButtonText;
+        b.buttonStyle = ZButtonCellStyleCenterText;
+        [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
+          if (self.startDateConnector.nilAllowed) sd.startDateConnector.internalValue = nil;
+          if (self.endDateConnector.nilAllowed) ed.startDateConnector.internalValue = nil;
+          return YES; // fully handled
+        }];
+      }
       if (self.dateOnlyConnector.connected) {
         // Optional allday switch
         ZSwitchCell *adsw = [c detailCell:[ZSwitchCell class]];
