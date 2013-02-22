@@ -23,12 +23,6 @@ typedef int ZDetailViewCellStyle;
 // the default style to be used in ZDetailTableViewControllers
 #define ZDetailViewCellStyleDefault ZDetailViewCellStylePrefs+ZDetailViewCellStyleFlagAutoStyle // allow some cells to decide about their style
 
-
-// localisation with hard-coded default value
-#define ZLocalizedStringWithDefault(key, default) \
-  [[NSBundle mainBundle] localizedStringForKey:(key) value:default table:nil]
-
-
 /// display modes (visibility flags)
 typedef enum {
   ZDetailDisplayModeNone = 0,

@@ -10,6 +10,9 @@
 #import "ZDetailEditing.h"
 #import "ZTextExpanderSupport.h"
 
+// ZUtils
+#import "ZCustomI8n.h"
+
 // controllers
 #import "ZDetailTableViewController.h"
 

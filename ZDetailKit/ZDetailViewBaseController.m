@@ -9,6 +9,7 @@
 
 #import "ZOrientation.h"
 #import "ZString_utils.h"
+#import "ZCustomI8n.h"
 
 #import "NSObject+ZValueConnectorContainer.h"
 
@@ -481,7 +482,7 @@
   // return specific text if any
   if (detailsButtonTitle) return detailsButtonTitle;
   // return sensible default instead
-  return ZLocalizedStringWithDefault(@"ZDetailButtonTitle", @"Details");
+  return ZLocalizedStringWithDefault(@"ZDTK_DetailsButtonTitle", @"Details");
 }
 
 - (void)setDetailsButtonTitle:(NSString *)aDetailsButtonTitle
