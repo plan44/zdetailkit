@@ -338,6 +338,16 @@
 @synthesize startDate, endDate, dateOnly, suggestedDate, masterDate, defaultDate;
 
 
+// should return true when cell is presenting an "empty" value (such that empty cells can be hidden in some modes)
+- (BOOL)presentingEmptyValue
+{
+  // for switches, we consider switches in off position as "empty"
+  return startDate==nil && endDate==nil;
+}
+
+
+
+
 // default date when no date is set (for picker, or new editor)
 - (NSDate *)defaultDate
 {  
