@@ -9,6 +9,7 @@
 #import "ZDateTimeCell.h"
 
 #import "ZDate_utils.h"
+#import "ZCustomI8n.h"
 
 #import "ZDetailTableViewController.h"
 #import "ZSwitchCell.h"
@@ -534,12 +535,9 @@ static id _sd_startDateConnector = nil;
         [ed.startDateConnector setValidationHandler:^(ZValueConnector *aConnector, id aValue, NSError **aErrorP) {
           if (sd.startDateConnector.internalValue && aValue && [sd.startDateConnector.internalValue compare:aValue]==NSOrderedDescending) {
             // error - end before start
-            *aErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:
-              [NSDictionary dictionaryWithObjectsAndKeys:
-                @"End date must be later than or same as start date", NSLocalizedDescriptionKey,
-                nil
-              ]
-            ];
+            *aErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:@{
+              NSLocalizedDescriptionKey: ZLocalizedStringWithDefault(@"ZDTK_ValErr_EndBeforeStart",@"End date must be later than or same as start date")
+            }];
             return NO;
           }
           return YES; // ok
@@ -556,8 +554,8 @@ static id _sd_startDateConnector = nil;
           return YES; // fully handled
         }];
       }
-      if (self.dateOnlyConnector.connected) {
-        // Optional allday switch
+      if (self.dateOnlyConnector.connected && self.dateOnlyConnector.readonly==NO) {
+        // Optional allday switch if allday status is not readonly
         ZSwitchCell *adsw = [c detailCell:[ZSwitchCell class]];
         _adsw_valueConnector = adsw.valueConnector; // %%%
         adsw.labelText = self.dateOnlyLabelText;

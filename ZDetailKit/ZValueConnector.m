@@ -9,7 +9,7 @@
 #import "ZValueConnector.h"
 
 #import "ZString_utils.h"
-
+#import "ZCustomI8n.h"
 
 @interface ZValueConnector ( /* class extension */ )
 {
@@ -416,12 +416,9 @@
     if (!nilAllowed && val==nil) {
       // non-empty not allowed
       if (aErrorP) {
-        *aErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:
-          [NSDictionary dictionaryWithObjectsAndKeys:
-            @"Empty value not allowed", NSLocalizedDescriptionKey,
-            nil
-          ]
-        ];
+        *aErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:@{
+          NSLocalizedDescriptionKey: ZLocalizedStringWithDefault(@"ZDTK_ValErr_NotEmpty",@"Empty value not allowed")
+        }];
       }
       validates = NO;
     }
