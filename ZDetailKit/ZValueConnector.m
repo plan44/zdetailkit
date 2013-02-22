@@ -20,9 +20,9 @@
   BOOL needsValidation;
 }
 
-// private methods
+// private
 - (void)checkForAutoOps; // save if automatic save / validation
-
+@property (readonly,nonatomic) NSString *shortDesc;
 @end
 
 
@@ -106,6 +106,12 @@
 }
 
 
+- (NSString *)shortDesc
+{
+  return [NSString stringWithFormat:@"<model(%@.%@) <-> editor(%@.%@) in %@>", [target class], self.keyPath, [owner class], self.valuePath, [owner class]];
+}
+
+
 
 #pragma mark - remote (model) and internal (usually control) value connection via KVO/KVC
 
@@ -155,10 +161,10 @@
 // when everything is in place.
 - (void)setActive:(BOOL)aActive
 {
-  IFTRACE
-  NSLog(@"valueConnector active=%d: %@", aActive, self);
-  ENDIFTRACE
   if (aActive!=active) {
+    IFTRACE
+    NSLog(@"valueConnector changes active to %d - %@", aActive, self.shortDesc);
+    ENDIFTRACE
     if (active) {
       // first disconnect externally
       [self disconnectTargetValue];
@@ -197,6 +203,9 @@
 - (void)setTarget:(id)aTarget
 {
   if (aTarget!=target) {
+    IFTRACE
+    NSLog(@"valueConnector sets target to %@ - %@", aTarget, self.shortDesc);
+    ENDIFTRACE
     if (target) {
       // release from KVO if we have a keyPath and an target object
       [self disconnectTargetValue];
@@ -215,6 +224,9 @@
 - (void)setKeyPath:(NSString *)aKeyPath
 {
   if (!samePropertyString(&aKeyPath,keyPath)) {
+    IFTRACE
+    NSLog(@"valueConnector sets keyPath to %@ - %@", aKeyPath, self.shortDesc);
+    ENDIFTRACE
     if (keyPath) {
       // release from KVO if we have a keyPath and a target object
       [self disconnectTargetValue];
@@ -234,6 +246,9 @@
 // convenience one-line connect
 - (void)connectTo:(id)aTarget keyPath:(NSString *)aKeyPath
 {
+  IFTRACE
+  NSLog(@"valueConnector connectTo:%@ keyPath:%@ - %@", [aTarget class], aKeyPath, self.shortDesc);
+  ENDIFTRACE
   if (target!=aTarget) {
     // changing target needs re-establishing KVO, so prevent it until new keyPath is set
     self.keyPath = nil;
@@ -251,10 +266,16 @@
   BOOL handled = NO;
   // - first call handler block, if any
   if (valueChangedHandler) {
+    IFTRACE
+    NSLog(@"- calling valueChangedHandler");
+    ENDIFTRACE
     handled = valueChangedHandler(self);
   }
   // - if not yet handled, inform owner
   if (!handled && [owner respondsToSelector:@selector(valueChangedInConnector:)]) {
+    IFTRACE
+    NSLog(@"- calling valueChangedInConnector delegate method");
+    ENDIFTRACE
     handled = [owner valueChangedInConnector:self];
   }
   if (!handled) {
@@ -271,6 +292,9 @@
 {
   // check if it is the main object and path, and actually connected
   if (aObject==target && [aKeyPath isEqualToString:keyPath]) {
+    IFTRACE
+    NSLog(@"received KVO notification for model path %@ - %@", keyPath, self.shortDesc);
+    ENDIFTRACE
     // this is the value I am responsible for -> update the cell value
     if (!saving && active && !unsavedChanges && (autoUpdateValue || !loadedValue)) {
       // load new value for cell from remote object
@@ -280,17 +304,26 @@
       loadedValue = YES; // now loaded, only update further if autoUpdate is set
       loading = YES;
       id newVal = [aChange objectForKey:NSKeyValueChangeNewKey];
+      IFTRACE
+      NSLog(@"- loading new value %@", newVal);
+      ENDIFTRACE
       // filter NSNull
       if (newVal==[NSNull null])
         newVal = nil; 
       self.value = newVal;
       loading = NO;
       if (callChangedHandlerOnLoad && valueChangedHandler) {
+        IFTRACE
+        NSLog(@"- calling valueChangedHandler");
+        ENDIFTRACE
         valueChangedHandler(self);
       }
     }
   }
   else if (aObject==owner && [aKeyPath isEqualToString:[self valuePath]]) {
+    IFTRACE
+    NSLog(@"received KVO notification from internalValue path %@ - %@", valuePath, self.shortDesc);
+    ENDIFTRACE
     // this is a change to the internal object represented by the cell
     if (!loading) {
       // - mark dirty
@@ -312,6 +345,9 @@
 - (void)setValuePath:(NSString *)aValuePath
 {
   if (!samePropertyString(&aValuePath, valuePath)) {
+    IFTRACE
+    NSLog(@"set new internalValue path to %@ - %@", aValuePath, self);
+    ENDIFTRACE
     if (valuePath && active) {
       [owner removeObserver:self forKeyPath:valuePath];      
     }
@@ -341,6 +377,9 @@
 {
   BOOL validates = YES;
   id val = *aInOutValueP;
+  IFTRACE
+  NSLog(@"validateAndConvert starts with val = %@ - %@", val, self.shortDesc);
+  ENDIFTRACE
   // custom validation comes first
   if (validationHandler) {
     NSError *err = nil;
@@ -408,6 +447,9 @@
   }
   // pass back
   *aInOutValueP = validates ? val : nil;
+  IFTRACE
+  NSLog(@"- result: validated=%d, val = %@", validates, val);
+  ENDIFTRACE
   // return validation result
   return validates;
 }
@@ -420,11 +462,17 @@
 - (BOOL)validated
 {
   if (needsValidation) {
+    IFTRACE
+    NSLog(@"validation needed - %@", self.shortDesc);
+    ENDIFTRACE
     NSError *err = nil;
     id val = self.internalValue;
     validated = [self validateAndConvert:&val error:&err];
     needsValidation = NO;
     if (val!=valueForExternal) {
+      IFTRACE
+      NSLog(@"- valueForExternal changes during validation to %@", val);
+      ENDIFTRACE
       [self willChangeValueForKey:@"valueForExternal"];
       valueForExternal = val;
       [self didChangeValueForKey:@"valueForExternal"];
@@ -434,10 +482,16 @@
       BOOL handled = NO;
       // - first call handler block, if any
       if (validationChangedHandler) {
+        IFTRACE
+        NSLog(@"- calling validationChangedHandler");
+        ENDIFTRACE
         handled = validationChangedHandler(self);
       }
       // - if not yet handled, inform owner
       if (!handled && [owner respondsToSelector:@selector(validationStatusChangedInConnector:error:)]) {
+        IFTRACE
+        NSLog(@"- calling validationStatusChangedInConnector delegate method");
+        ENDIFTRACE
         handled = [owner validationStatusChangedInConnector:self error:validationError];
       }
       // - only if unhandled, consider reverting to original value
@@ -445,9 +499,9 @@
         [self loadValue];
       }
       if (validated)
-        DBGNSLOG(@"Validation status OK - connector:%@",self.description);
+        DBGNSLOG(@"Validation status OK - connector:%@",self.shortDesc);
       else
-        DBGNSLOG(@"Validation error=%@ - connector:%@",self.validationError, self.description);
+        DBGNSLOG(@"Validation error=%@ - connector:%@",self.validationError, self.shortDesc);
     }
   }
   return validated;
@@ -499,8 +553,16 @@
 - (void)setInternalValue:(id)aInternalValue
 {
   // Note: value for external implicitly changes as well, so alert it
+  IFTRACE
+  NSLog(@"internalValue set to %@ - %@", aInternalValue, self.shortDesc);
+  ENDIFTRACE
   [self willChangeValueForKey:@"valueForExternal"];
-  [owner setValue:aInternalValue forKeyPath:self.valuePath];
+  @try {
+    [owner setValue:aInternalValue forKeyPath:self.valuePath];
+  }
+  @catch (NSException *exception) {
+    DBGNSLOG(@"cannot set internal value to %@ in %@: %@", aInternalValue, self.shortDesc, exception);
+  }
   [self didChangeValueForKey:@"valueForExternal"];
 }
 
@@ -534,6 +596,9 @@
   unsavedChanges = aUnsavedChanges;
   // trigger change propagation, even if already unsaved before
   if (unsavedChanges) {
+    IFTRACE
+    NSLog(@"unsavedChanges set YES - %@", self.shortDesc);
+    ENDIFTRACE
     // marked unsaved now - act like value has changed
     needsValidation = YES;
     [self propagateChange];
@@ -570,6 +635,9 @@
 // to perform autosave and calling custom handlers)
 - (void)setValue:(id)aValue
 {
+  IFTRACE
+  NSLog(@"value set to %@ - %@", aValue, self.shortDesc);
+  ENDIFTRACE
   // modify the internal object
   unsavedChanges = NO;
   if (self.valuePath) {
@@ -600,6 +668,9 @@
 - (void)loadValue
 {
   if (active && target && keyPath) {
+    IFTRACE
+    NSLog(@"loading value - %@", self.shortDesc);
+    ENDIFTRACE
     self.value = [target valueForKeyPath:keyPath];
     needsValidation = YES; // in case we had a validation error before, this is needed to clear it
     if (callChangedHandlerOnLoad && valueChangedHandler) {
@@ -612,6 +683,9 @@
 - (void)saveValue
 {
   if (!readonly && active && !saving && unsavedChanges) {
+    IFTRACE
+    NSLog(@"saving value - %@", self.shortDesc);
+    ENDIFTRACE
     saving = YES;
     if (self.validated) {
       if (target && keyPath) {
