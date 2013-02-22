@@ -862,6 +862,10 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
         vf.origin.x -= room; // move left by what description does not use 
         vf.size.width += room; // extend by what description does not use 
       }
+      // reduce value view when custom accessory is set
+      if (self.accessoryView) {
+        vf.size.width -= self.accessoryView.frame.size.width+2; // minimal margin
+      }
       // assign hidden and frames
       BOOL canHide = self.descriptionView!=self.valueView;
       if (self.valueView) {

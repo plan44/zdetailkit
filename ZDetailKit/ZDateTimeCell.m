@@ -20,6 +20,7 @@
 @interface ZDateTimeCell ( /* class extension */ )
 {
   NSDateFormatter *formatter;
+  UIButton *deleteButton;
   BOOL pickerIsUpdating;
   BOOL pickerInstalling;
   NSTimeInterval intervalFromMasterDate;
@@ -60,6 +61,8 @@
     minuteInterval = 1; // 1 minute by default
     // formatter
     formatter = [[NSDateFormatter alloc] init];
+    // delete button created on demand
+    deleteButton = nil;
     // valueConnectors
     // - first those that values might depend
     suggestedDateConnector = [self registerValueConnector:
@@ -136,29 +139,50 @@
 }
 
 
+- (UIButton *)deleteAccessoryButton
+{
+  if (deleteButton==nil) {
+    deleteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    deleteButton.frame = CGRectMake(0, 0, 20, 20);
+    [deleteButton setImage:[UIImage imageNamed:@"ZDTC_delbtn.png"] forState:UIControlStateNormal];
+    [deleteButton addTarget:self action:@selector(deleteAccessoryButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    deleteButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+  }
+  return deleteButton;
+}
+
+
 - (void)updateForDisplay
 {
-  // update cell basic layout
-  [super updateForDisplay];
-  // adjust disclosure
+  // adjust accessory
+  self.editingAccessoryType = UITableViewCellAccessoryNone; // none during table editing
+  BOOL needsDisclosure = NO;
+  BOOL needsDelButton = NO;
+  // calculate what we need
   if (self.editInDetailView && self.allowsEditing) {
     // edit in separate detail view - show disclosure indicator
-    self.accessoryType =  UITableViewCellAccessoryDisclosureIndicator;
+    needsDisclosure = YES;
   }
   else {
     // view only or inplace editing
-    if (self.startDateConnector.nilAllowed && clearDateButtonText==nil) {
+    if (self.startDateConnector.nilAllowed && clearDateButtonText==nil && datePicker) {
       // nil is allowed, show clear button instead
-      UIButton *b = [UIButton buttonWithType:UIButtonTypeCustom];
-      b.frame = CGRectMake(0, 0, 20, 20);
-      [b setImage:[UIImage imageNamed:@"ZDTC_delbtn.png"] forState:UIControlStateNormal];
-      [b addTarget:self action:@selector(deleteAccessoryButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-      self.accessoryView = b;
+      needsDelButton = YES;
     }
-    else {
-      self.accessoryType = UITableViewCellAccessoryNone;
-    }
-  }  
+  }
+  // apply
+  if ((self.accessoryType==UITableViewCellAccessoryDisclosureIndicator)!=needsDisclosure) {
+    // needs setting new value
+    self.accessoryType =
+      needsDisclosure ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
+  }
+  if ((self.accessoryView!=nil)!=needsDelButton) {
+    // needs setting new view
+    self.accessoryView =
+      needsDelButton ? self.deleteAccessoryButton : nil;
+  }
+  // update cell basic layout
+  [super updateForDisplay];
   // readjust font if autostyling
   if (self.detailViewCellStyle & ZDetailViewCellStyleFlagAutoStyle) {
     // smaller font
@@ -224,6 +248,7 @@
     if (!datePicker) {
       // note: it is important to require the picker only once, to prevent usage count from this cell >1
       [dvc requireCustomInputView:self.datePicker];
+      [self updateForDisplay];
     }
     // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
     // - remove previous target and recognizers
@@ -266,6 +291,7 @@
       [dvc releaseCustomInputView:datePicker];
     }
     datePicker = nil;
+    [self updateForDisplay];
   }
   [super defocusCell];
 }
