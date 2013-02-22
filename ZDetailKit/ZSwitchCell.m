@@ -89,6 +89,15 @@
 #pragma mark - switch value
 
 
+// should return true when cell is presenting an "empty" value (such that empty cells can be hidden in some modes)
+- (BOOL)presentingEmptyValue
+{
+  // for switches, we consider switches in off position as "empty"
+  return !self.internalState; // empty if internal state is NO
+}
+
+
+
 - (BOOL)internalState
 {
   if (checkMark)
