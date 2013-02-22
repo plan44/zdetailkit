@@ -92,7 +92,7 @@
   detailDidCloseHandler = nil;
   // default navigation
   navigationMode = ZDetailNavigationModeLeftButtonAuto; // no extra buttons, but left button automatically set to "done" for modally presented details
-  // default mode: editing basics, scroll enabled
+  // default mode: editing basics
   displayMode = ZDetailDisplayModeBasics+ZDetailDisplayModeEditing; // no details, enabled for editing
 }
 

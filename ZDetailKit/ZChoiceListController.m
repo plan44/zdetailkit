@@ -61,7 +61,7 @@
         sw.checkMark = !self.choicesManager.reorderable; // use in-cell switch control when cells need to be reorderable
         sw.showsReorderControl = self.choicesManager.reorderable;
         sw.shouldIndentWhileEditing = NO; // no indent (but seems not effective, need shouldIndentWhileEditingRowAtIndexPath:
-        sw.neededModes = 0; // no restrictions, always show
+        sw.showInModes = ZDetailDisplayModeAlways; // no restrictions, always show
         // - connect to choicesManager's dynamic "sel_nn" properties which represent the selected choices
         [sw.valueConnector connectTo:choicesManager keyPath:[NSString stringWithFormat:@"sel_%d",info.index]];
         sw.valueConnector.autoSaveValue = YES;

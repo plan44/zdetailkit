@@ -81,8 +81,9 @@ typedef enum {
 @property (readonly, nonatomic) UITableViewCellStyle basicCellStyle;
 
 
-/// display mode flags describing which modes (display, details, editing) and condtions (non-empty value) must be set to make this cell to become visible
-@property (assign, nonatomic) ZDetailDisplayMode neededModes;
+/// display mode flags describing in which modes (display, details, editing) and states
+/// (non-empty value) this cell will be made visible (ORed flags)
+@property (assign, nonatomic) ZDetailDisplayMode showInModes;
 
 /// @name Cell geometry and layout
 
@@ -146,7 +147,7 @@ typedef enum {
 ///
 /// This block, when assiged, is called to make a decision if the cell should be visible or not for the passed ZDetailDisplayMode.
 /// The block must return YES if the cell should be visible, NO otherwise
-/// If no block is assigned, the cell is visible when the current mode satisfies neededModes 
+/// If no block is assigned, the cell is visible when the current mode satisfies showInModes
 @property (copy, nonatomic) ZDetailCellVisibleInModeHandler cellVisibleInModeHandler;
 - (void)setCellVisibleInModeHandler:(ZDetailCellVisibleInModeHandler)cellVisibleInModeHandler; // declaration needed only for XCode autocompletion of block
 
@@ -229,12 +230,12 @@ typedef enum {
 /// the current display mode of the cell.
 ///
 /// The mode determines if only viewing or editing values, and if detail properties are to be shown. Depending on
-/// neededModes, the cell might become invisible in some modes.
+/// showInModes, the cell might become invisible in some modes.
 /// @note the display mode is usually changed by ZDetailTableViewController calling setDisplayMode:animated:
 /// and should not normally be set directly.
 @property (readonly, nonatomic) ZDetailDisplayMode displayMode;
 
-/// returns YES if cell currently allows editing its value (derived from readOnly setting and displayMode/neededModes)
+/// returns YES if cell currently allows editing its value (derived from readOnly setting and displayMode/showInModes)
 @property (readonly, nonatomic) BOOL allowsEditing;
 
 /// returns YES if cell currently has editing focus (like active cursor in a text field)

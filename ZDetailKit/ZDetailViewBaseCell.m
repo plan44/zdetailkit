@@ -35,7 +35,7 @@
 - (void)internalInit
 {
   // needed mode flags to be visible (included in table view)
-  neededModes = ZDetailDisplayModeNone; // no particular mode needed for being visible (is always visible by default)
+  showInModes = ZDetailDisplayModeAlways; // always visible by default
   showsValidationStatus = YES; // show validation problems
   active = NO;
   cellOwner = nil;
@@ -177,11 +177,13 @@ static NSInteger numObjs = 0;
 {
   // Or in non-empty flag from actual internal state
   if (![self presentingEmptyValue]) {
-    // cell is currently non-empty, so adapt aMode to pass the XXXnonEmpty requirements
+    // cell is currently non-empty, so adapt aMode to also pass the XXXnonEmpty requirements
     if (aMode & ZDetailDisplayModeBasics)
       aMode |= ZDetailDisplayModeBasicsNonEmpty;
     if (aMode & ZDetailDisplayModeDetails)
       aMode |= ZDetailDisplayModeDetailsNonEmpty;
+    if (aMode & ZDetailDisplayModeViewing)
+      aMode |= ZDetailDisplayModeViewingNonEmpty;
     if (aMode & ZDetailDisplayModeEditing)
       aMode |= ZDetailDisplayModeEditingNonEmpty;
   }
@@ -189,8 +191,12 @@ static NSInteger numObjs = 0;
   if (self.cellVisibleInModeHandler) {
     return self.cellVisibleInModeHandler(self, aMode);
   }
-  // default behaviour: visible if all needed modes are present
-  return (aMode & self.neededModes)==self.neededModes;
+  // default behaviour: visible if
+  // - no level flags specified in showInModes or at least one of them matching
+  // - AND no editing flags specified in showInModes or at least one of them matching
+  return
+    ((self.showInModes & ZDetailDisplayModeLevelMask)==0 || (self.showInModes & aMode & ZDetailDisplayModeLevelMask)!=0) &&
+    ((self.showInModes & ZDetailDisplayModeEditingMask)==0 || (self.showInModes & aMode & ZDetailDisplayModeEditingMask)!=0);
 }
 
 
@@ -280,7 +286,7 @@ static NSInteger numObjs = 0;
 #pragma mark - services for cell owners
 
 @synthesize cellOwner;
-@synthesize neededModes;
+@synthesize showInModes;
 
 @synthesize cellVisibleInModeHandler;
 @synthesize valueChangedHandler;

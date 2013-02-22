@@ -25,15 +25,20 @@ typedef int ZDetailViewCellStyle;
 
 /// display modes (visibility flags)
 typedef enum {
-  ZDetailDisplayModeNone = 0,
-  ZDetailDisplayModeBasics = 0x01, // basic selection of properties
-  ZDetailDisplayModeDetails = 0x02, // detailed selection of properties 
-  ZDetailDisplayModeViewing = 0x04, // viewing
-  ZDetailDisplayModeEditing = 0x08,  // editing cell contents (NOT UITableView editing mode!)
+  ZDetailDisplayModeAlways = 0,             // in showInModes: no restrictions, always show
+  // detail level
+  ZDetailDisplayModeBasics = 0x01,          // basic selection of properties
+  ZDetailDisplayModeBasicsNonEmpty = 0x02,  // in showInModes: view only if not empty in basics mode
+  ZDetailDisplayModeDetails = 0x04,         // detailed selection of properties
+  ZDetailDisplayModeDetailsNonEmpty = 0x08, // in showInModes: view only if not empty in detail mode
+  ZDetailDisplayModeLevelMask = 0x0F,       // detail level mask
+  // view/edit
+  ZDetailDisplayModeViewing = 0x10, // viewing
+  ZDetailDisplayModeViewingNonEmpty = 0x20, // in showInModes: view only if not empty in editing mode
+  ZDetailDisplayModeEditing = 0x40,         // editing cell contents (NOT UITableView editing mode!)
+  ZDetailDisplayModeEditingNonEmpty = 0x80, // in showInModes: view only if not empty in editing mode
+  ZDetailDisplayModeEditingMask = 0xF0,     // editing mode mask
   // special flags
-  ZDetailDisplayModeBasicsNonEmpty = 0x100,  // in neededModes: view only if not empty in basics mode
-  ZDetailDisplayModeDetailsNonEmpty = 0x200,  // in neededModes: view only if not empty in detail mode
-  ZDetailDisplayModeEditingNonEmpty = 0x400,  // in neededModes: view only if not empty in editing mode
 } ZDetailDisplayMode;
 
 
