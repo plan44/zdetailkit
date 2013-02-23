@@ -47,6 +47,9 @@
 		ED1F708615BD9EA20046CFBC /* ZIntToUIColorTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708515BD9EA20046CFBC /* ZIntToUIColorTransformer.m */; };
 		ED1F708915BDA37F0046CFBC /* ZGeometry_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708815BDA37F0046CFBC /* ZGeometry_utils.m */; };
 		ED1F708C15BDA4100046CFBC /* ZColor_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708B15BDA4100046CFBC /* ZColor_utils.m */; };
+		ED321EE016D8DAF100CB76B1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = ED321EDD16D8DAF100CB76B1 /* Default-568h@2x.png */; };
+		ED321EE116D8DAF100CB76B1 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = ED321EDE16D8DAF100CB76B1 /* Default@2x.png */; };
+		ED321EE216D8DAF100CB76B1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = ED321EDF16D8DAF100CB76B1 /* Default.png */; };
 		ED49A99B1585F623007FEBF0 /* ZDateTimeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */; };
 		ED5D933815BEDC35008A98FF /* ZSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED5D933715BEDC35008A98FF /* ZSliderCell.m */; };
 		ED81B7EB16D0F46F00ED1F3F /* ZMapLocationEdit.m in Sources */ = {isa = PBXBuildFile; fileRef = ED81B7E816D0F46F00ED1F3F /* ZMapLocationEdit.m */; };
@@ -145,6 +148,9 @@
 		ED1F708A15BDA4100046CFBC /* ZColor_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZColor_utils.h; sourceTree = "<group>"; };
 		ED1F708B15BDA4100046CFBC /* ZColor_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZColor_utils.m; sourceTree = "<group>"; };
 		ED321ED616D82AF200CB76B1 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		ED321EDD16D8DAF100CB76B1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		ED321EDE16D8DAF100CB76B1 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		ED321EDF16D8DAF100CB76B1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		ED43CA3E16CFDAE600C28E48 /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
 		ED49A9991585F623007FEBF0 /* ZDateTimeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDateTimeCell.h; sourceTree = "<group>"; };
 		ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDateTimeCell.m; sourceTree = "<group>"; };
@@ -231,6 +237,9 @@
 		ED12E7421582494C00DE3ED3 /* ZDetailKitDemo */ = {
 			isa = PBXGroup;
 			children = (
+				ED321EDD16D8DAF100CB76B1 /* Default-568h@2x.png */,
+				ED321EDE16D8DAF100CB76B1 /* Default@2x.png */,
+				ED321EDF16D8DAF100CB76B1 /* Default.png */,
 				ED12E751158249BB00DE3ED3 /* en.lproj */,
 				ED12E756158249BB00DE3ED3 /* main.m */,
 				ED12E757158249BB00DE3ED3 /* ZDetailKitDemo-Info.plist */,
@@ -473,6 +482,9 @@
 				ED81B85416D182EF00ED1F3F /* ZBC_delbtn.png in Resources */,
 				EDB2F49016D57CD600C6EAD6 /* ZDTC_delbtn.png in Resources */,
 				EDB2F49116D57CD600C6EAD6 /* ZDTC_delbtn@2x.png in Resources */,
+				ED321EE016D8DAF100CB76B1 /* Default-568h@2x.png in Resources */,
+				ED321EE116D8DAF100CB76B1 /* Default@2x.png in Resources */,
+				ED321EE216D8DAF100CB76B1 /* Default.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
