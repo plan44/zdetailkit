@@ -55,7 +55,7 @@
       }
       if (!cell) {
         // standard list consists of switch cells
-        ZSwitchCell *sw = [[ZSwitchCell alloc] initWithStyle:UITableViewCellStyleValue1+ZDetailViewCellStyleFlagCustomLayout reuseIdentifier:nil];
+        ZSwitchCell *sw = [[ZSwitchCell alloc] initWithStyle:UITableViewCellStyleValue1+ZDetailViewCellStyleFlagAutoLabelLayout reuseIdentifier:nil];
         sw.labelText = [info.choice valueForKey:@"text"];
         sw.tableEditingStyle = UITableViewCellEditingStyleNone; // no editing style
         sw.checkMark = !self.choicesManager.reorderable; // use in-cell switch control when cells need to be reorderable

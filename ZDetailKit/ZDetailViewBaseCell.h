@@ -97,6 +97,13 @@ typedef enum {
 ///
 /// - positive values describe the share relative to the entire cell width (=table view width)
 /// - negative values describe the share relative to the content view width (which might be indented, see contentIndent)
+/// @note valueCellShare applies only to valueView and descriptionView (which are only assigned to the standard UITableViewCell
+//    labels when ZDetailViewCellStyleFlagAutoLabelLayout flag is set in the cell style)
+/// @note The default of this is dependent on the cell style set when creating the cell.
+///   UITableViewCellStyleDefault have a valueCellShare of 1.0 (no description label), other styles
+///   usually have something between 0.4 (prefs) and 0.65 (addressbook style).
+/// @note to automatically set valueCellShare for all cells to the same value, use ZDetailTableViewController's
+//    defaultValueCellShare property.
 @property (assign, nonatomic) CGFloat valueCellShare;
 
 /// content view indent (enlarged left margin) in pixels
@@ -108,11 +115,11 @@ typedef enum {
 /// margin between description and value labels
 @property (assign, nonatomic) CGFloat labelValueMargin;
 
-/// defines how the description view is placed and resized (if cusom layout is enabled by including ZDetailViewCellStyleFlagCustomLayout in the cellstyle when initializing the cell)
-@property (assign, nonatomic) ZDetailCellItemAdjust descriptionViewAdjustment; // for custom layout: how to adjust description view
+/// defines how the description view is placed and resized
+@property (assign, nonatomic) ZDetailCellItemAdjust descriptionViewAdjustment;
 
-/// defines how the value view is placed and resized (if cusom layout is enabled by including ZDetailViewCellStyleFlagCustomLayout in the cellstyle when initializing the cell)
-@property (assign, nonatomic) ZDetailCellItemAdjust valueViewAdjustment; // for custom layout: how to adjust value view
+/// defines how the value view is placed and resized
+@property (assign, nonatomic) ZDetailCellItemAdjust valueViewAdjustment;
 
 
 /// @name Description and value representation
@@ -130,14 +137,18 @@ typedef enum {
 ///
 /// Usually, this is one of the standard UITableViewCell labels, but can be set to any other view
 /// (for example a UISwitch or UISlider).
-/// The custom layout mechanism of ZDetailViewCell (if enabled by including ZDetailViewCellStyleFlagCustomLayout in the cellstyle when initializing the cell)
-/// will place and resize the view assigned here according to valueViewAdjustment and chosen cell style
-@property (strong, nonatomic) UIView *valueView; // for custom layout: must contain the view that shows the value 
+/// The custom layout mechanism of ZDetailViewCell will place and resize the view assigned here according to
+/// valueViewAdjustment, valueCellShare and chosen cell style.
+/// @note the standard UITableViewCell UILabel is only automatically assigend to valueView (and thus put under layout control)
+/// when ZDetailViewCellStyleFlagAutoLabelLayout flag is set in the cell style.
+@property (strong, nonatomic) UIView *valueView;
 /// This is the view which represents the description
 ///
 /// Usually, this is one of the standard UITableViewCell labels
-/// The custom layout mechanism of ZDetailViewCell (if enabled by including ZDetailViewCellStyleFlagCustomLayout in the cellstyle when initializing the cell)
-/// will place and resize the view assigned here according to descriptionViewAdjustment and chosen cell style
+/// The custom layout mechanism of ZDetailViewCell will place and resize the view assigned here according to
+/// descriptionViewAdjustment, valueCellShare and chosen cell style.
+/// @note the standard UITableViewCell UILabel is only automatically assigend to valueView (and thus put under layout control)
+/// when ZDetailViewCellStyleFlagAutoLabelLayout flag is set in the cell style.
 @property (strong, nonatomic) UIView *descriptionView; // for custom layout: must contain the view that shows the description
 
 

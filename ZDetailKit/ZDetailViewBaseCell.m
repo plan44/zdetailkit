@@ -75,7 +75,7 @@
   detailTitleText = nil;
   placeholderText = nil;
   // Custom layout mechanism init
-  if (detailViewCellStyle & ZDetailViewCellStyleFlagCustomLayout) {
+  if (detailViewCellStyle & ZDetailViewCellStyleFlagAutoLabelLayout) {
     // put labels under custom layout control
     self.descriptionView = self.descriptionLabel;
     self.valueView = self.valueLabel;
@@ -740,142 +740,145 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  // custom layout mechanism
-  if (YES /* self.detailViewCellStyle & ZDetailViewCellStyleFlagCustomLayout */) {
-    #if LAYOUT_DEBUG
-    // color views for debugging
-    self.contentView.backgroundColor = [UIColor colorWithRed:0.847 green:1.000 blue:0.738 alpha:0.7];
-    if (self.descriptionView && !self.descriptionView.hidden) {
-      self.descriptionView.backgroundColor = [UIColor colorWithRed:0.730 green:0.934 blue:1.000 alpha:0.7]; 
+  // automatic layout mechanism for valueView and descriptionView
+  // Note:
+  // - the ZDetailViewCellStyleFlagCustomLayout flag is not checked here, because it already decides
+  //   if the standard UITableViewCell labels are assigned to valueView and descriptionView or not.
+  // - even without ZDetailViewCellStyleFlagCustomLayout, autoLayout is active for views
+  //   programmatically assigned to valueView and descriptionView.
+  #if LAYOUT_DEBUG
+  // color views for debugging
+  self.contentView.backgroundColor = [UIColor colorWithRed:0.847 green:1.000 blue:0.738 alpha:0.7];
+  if (self.descriptionView && !self.descriptionView.hidden) {
+    self.descriptionView.backgroundColor = [UIColor colorWithRed:0.730 green:0.934 blue:1.000 alpha:0.7]; 
+  }
+  if (self.valueView && !self.valueView.hidden) {
+    self.valueView.backgroundColor = [UIColor colorWithRed:1.000 green:0.783 blue:0.772 alpha:0.7]; 
+  }
+  #endif
+  // perform custom layout
+  UIView *bv = self.backgroundView;
+  UIView *cv = self.contentView;
+  // try to measure standard geometry
+  // Note: differences here between iPhone and iPad - don't try to measure before BOTH cv and bv are ready!
+  if (cv && bv && !self.editing && contentLeftMargin<0) {
+    // - content view
+    contentLeftMargin = cv.frame.origin.x;
+    contentRightMargin = cv.superview.bounds.size.width - contentLeftMargin - cv.frame.size.width;
+    // - background view
+    backgroundLeftMargin = bv.frame.origin.x;
+    backgroundRightMargin = bv.superview.bounds.size.width - contentLeftMargin - bv.frame.size.width;
+  }
+  // do not try to layout content indent before we have both contentview and background view 
+  if (contentIndent>0 && bv && cv && contentLeftMargin>=0 && backgroundLeftMargin>=0) {
+    // get current frames
+    CGRect cf = cv.frame;
+    CGRect bf = bv.frame;
+    // add any extra indent that might have been added by table editing mode
+    CGFloat totalContentIndent = (cf.origin.x-contentLeftMargin) + contentIndent;
+    // adjust background view
+    bf.origin.x = backgroundLeftMargin+totalContentIndent;
+    bf.size.width = bv.superview.bounds.size.width-backgroundRightMargin-bf.origin.x;
+    bv.frame = bf;
+    self.selectedBackgroundView.frame = bf;
+    // adjust content view
+    cf.origin.x = contentLeftMargin+totalContentIndent;
+    cf.size.width = cv.superview.bounds.size.width-contentRightMargin-cf.origin.x;
+    cv.frame = cf;
+  }
+  // do not try to layout anything before we have the content view
+  if (cv!=nil) {
+    // assume both shown, if geometry demands, one or the other will be hidden below
+    BOOL valueShown = (self.valueViewAdjustment & ZDetailCellItemAdjustHide)==0;
+    BOOL descriptionShown = (self.descriptionViewAdjustment & ZDetailCellItemAdjustHide)==0;
+    // configure geometry
+    CGFloat cellWidth = self.bounds.size.width;
+    // determine start of X coordinate of value part:
+    // valueCellShare positive means relative to cellwidth, negative means relative to contentView width
+    CGFloat valueStartXinContent;
+    if (self.valueCellShare<0) {
+      // relative to content view with (which might be indented)
+      valueStartXinContent = fabs(self.valueCellShare)*cv.bounds.size.width;
     }
-    if (self.valueView && !self.valueView.hidden) {
-      self.valueView.backgroundColor = [UIColor colorWithRed:1.000 green:0.783 blue:0.772 alpha:0.7]; 
+    else {
+      // relative to entire cell width (does not move when cell morphs between modes)
+      CGFloat valuePartStart = round((1-self.valueCellShare)*cellWidth); // position in cell coords
+      // now find out where this line is in the current contentview
+      valueStartXinContent = [self convertPoint:CGPointMake(valuePartStart, 0) toView:cv].x;
     }
-    #endif
-    // perform custom layout
-    UIView *bv = self.backgroundView;
-    UIView *cv = self.contentView;
-    // try to measure standard geometry
-    // Note: differences here between iPhone and iPad - don't try to measure before BOTH cv and bv are ready!
-    if (cv && bv && !self.editing && contentLeftMargin<0) {
-      // - content view
-      contentLeftMargin = cv.frame.origin.x;
-      contentRightMargin = cv.superview.bounds.size.width - contentLeftMargin - cv.frame.size.width;
-      // - background view
-      backgroundLeftMargin = bv.frame.origin.x;
-      backgroundRightMargin = bv.superview.bounds.size.width - contentLeftMargin - bv.frame.size.width;
+    // - make adjustments when it is outside the content view
+    CGFloat contentStartX = self.contentMargins.width;
+    CGFloat contentWidth = cv.bounds.size.width-2*self.contentMargins.width;
+    CGFloat descriptionEndInContentX = valueStartXinContent-self.labelValueMargin;
+    if (descriptionEndInContentX<=contentStartX) {
+      // description has no room, disable it 
+      descriptionShown = NO; // no room for any description, hide it
+      if (valueStartXinContent<=contentStartX) {
+        // also value would start left of content start, adjust
+        valueStartXinContent = contentStartX; // start of value not outside content margin
+      }
     }
-    // do not try to layout content indent before we have both contentview and background view 
-    if (contentIndent>0 && bv && cv && contentLeftMargin>=0 && backgroundLeftMargin>=0) {
-      // get current frames
-      CGRect cf = cv.frame;
-      CGRect bf = bv.frame;
-      // add any extra indent that might have been added by table editing mode
-      CGFloat totalContentIndent = (cf.origin.x-contentLeftMargin) + contentIndent;
-      // adjust background view
-      bf.origin.x = backgroundLeftMargin+totalContentIndent;
-      bf.size.width = bv.superview.bounds.size.width-backgroundRightMargin-bf.origin.x;
-      bv.frame = bf;
-      self.selectedBackgroundView.frame = bf;
-      // adjust content view
-      cf.origin.x = contentLeftMargin+totalContentIndent;
-      cf.size.width = cv.superview.bounds.size.width-contentRightMargin-cf.origin.x;
-      cv.frame = cf;
+    else if (valueStartXinContent>=contentStartX+contentWidth) {
+      // no room for value, only description
+      valueShown = NO;
+      descriptionEndInContentX = contentStartX+contentWidth;
     }
-    // do not try to layout anything before we have the content view
-    if (cv!=nil) {
-      // assume both shown, if geometry demands, one or the other will be hidden below
-      BOOL valueShown = (self.valueViewAdjustment & ZDetailCellItemAdjustHide)==0;
-      BOOL descriptionShown = (self.descriptionViewAdjustment & ZDetailCellItemAdjustHide)==0;
-      // configure geometry
-      CGFloat cellWidth = self.bounds.size.width;
-      // determine start of X coordinate of value part:
-      // valueCellShare positive means relative to cellwidth, negative means relative to contentView width
-      CGFloat valueStartXinContent;
-      if (self.valueCellShare<0) {
-        // relative to content view with (which might be indented)
-        valueStartXinContent = fabs(self.valueCellShare)*cv.bounds.size.width;
-      }
-      else {
-        // relative to entire cell width (does not move when cell morphs between modes)
-        CGFloat valuePartStart = round((1-self.valueCellShare)*cellWidth); // position in cell coords
-        // now find out where this line is in the current contentview
-        valueStartXinContent = [self convertPoint:CGPointMake(valuePartStart, 0) toView:cv].x;
-      }
-      // - make adjustments when it is outside the content view
-      CGFloat contentStartX = self.contentMargins.width;
-      CGFloat contentWidth = cv.bounds.size.width-2*self.contentMargins.width;
-      CGFloat descriptionEndInContentX = valueStartXinContent-self.labelValueMargin;
-      if (descriptionEndInContentX<=contentStartX) {
-        // description has no room, disable it 
-        descriptionShown = NO; // no room for any description, hide it
-        if (valueStartXinContent<=contentStartX) {
-          // also value would start left of content start, adjust
-          valueStartXinContent = contentStartX; // start of value not outside content margin
-        }
-      }
-      else if (valueStartXinContent>=contentStartX+contentWidth) {
-        // no room for value, only description
-        valueShown = NO;
-        descriptionEndInContentX = contentStartX+contentWidth;
-      }
-      // Now we have the two areas for description and value
-      CGRect df = self.descriptionView.frame;
-      CGRect vf = self.valueView.frame;
-      // - apply the layout where appropriate
-      if (self.descriptionView && descriptionShown) {
-        df = adjustFrame(
-          df,
-          self.descriptionViewAdjustment,
-          CGRectMake(
-            contentStartX, self.contentMargins.height,
-            descriptionEndInContentX-contentStartX, cv.bounds.size.height-2*self.contentMargins.height
-          )
-        );
-      }
-      if (self.valueView && valueShown) {
-        vf = adjustFrame(
-          vf,
-          self.valueViewAdjustment,
-          CGRectMake(
-            valueStartXinContent, self.contentMargins.height,
-            contentStartX+contentWidth-valueStartXinContent, cv.bounds.size.height-2*self.contentMargins.height
-          )
-        );
-      }
-      // extend views in case other view does not use its full size (only if both shown at all)
-      CGFloat room = 0;
-      // - possibly extend description
-      if (valueShown)
-        room = vf.origin.x-valueStartXinContent; // use what is not used by value
-      else
-        room = contentStartX+contentWidth-valueStartXinContent; // use entire space
-      if (descriptionShown && room>0 && (self.descriptionViewAdjustment & ZDetailCellItemAdjustExtend)) {
-        df.size.width += room; // extend by what value does not use
-      }
-      // - possibly extend value
-      if (descriptionShown)
-        room = valueStartXinContent - (df.origin.x+df.size.width+self.labelValueMargin); // use what is not used by description
-      else
-        room = valueStartXinContent-contentStartX; // use entire space
-      if (valueShown && room>0 && (self.valueViewAdjustment & ZDetailCellItemAdjustExtend)) {
-        vf.origin.x -= room; // move left by what description does not use 
-        vf.size.width += room; // extend by what description does not use 
-      }
-      // reduce value view when custom accessory is set
-      if (self.accessoryView) {
-        vf.size.width -= self.accessoryView.frame.size.width+2; // minimal margin
-      }
-      // assign hidden and frames
-      BOOL canHide = self.descriptionView!=self.valueView;
-      if (self.valueView) {
-        self.valueView.hidden = !valueShown && canHide;
-        if (valueShown) self.valueView.frame = vf;
-      }
-      if (self.descriptionView) {
-        self.descriptionView.hidden = !descriptionShown && canHide;
-        if (descriptionShown) self.descriptionView.frame = df;
-      }
+    // Now we have the two areas for description and value
+    CGRect df = self.descriptionView.frame;
+    CGRect vf = self.valueView.frame;
+    // - apply the layout where appropriate
+    if (self.descriptionView && descriptionShown) {
+      df = adjustFrame(
+        df,
+        self.descriptionViewAdjustment,
+        CGRectMake(
+          contentStartX, self.contentMargins.height,
+          descriptionEndInContentX-contentStartX, cv.bounds.size.height-2*self.contentMargins.height
+        )
+      );
+    }
+    if (self.valueView && valueShown) {
+      vf = adjustFrame(
+        vf,
+        self.valueViewAdjustment,
+        CGRectMake(
+          valueStartXinContent, self.contentMargins.height,
+          contentStartX+contentWidth-valueStartXinContent, cv.bounds.size.height-2*self.contentMargins.height
+        )
+      );
+    }
+    // extend views in case other view does not use its full size (only if both shown at all)
+    CGFloat room = 0;
+    // - possibly extend description
+    if (valueShown)
+      room = vf.origin.x-valueStartXinContent; // use what is not used by value
+    else
+      room = contentStartX+contentWidth-valueStartXinContent; // use entire space
+    if (descriptionShown && room>0 && (self.descriptionViewAdjustment & ZDetailCellItemAdjustExtend)) {
+      df.size.width += room; // extend by what value does not use
+    }
+    // - possibly extend value
+    if (descriptionShown)
+      room = valueStartXinContent - (df.origin.x+df.size.width+self.labelValueMargin); // use what is not used by description
+    else
+      room = valueStartXinContent-contentStartX; // use entire space
+    if (valueShown && room>0 && (self.valueViewAdjustment & ZDetailCellItemAdjustExtend)) {
+      vf.origin.x -= room; // move left by what description does not use 
+      vf.size.width += room; // extend by what description does not use 
+    }
+    // reduce value view when custom accessory is set
+    if (self.accessoryView) {
+      vf.size.width -= self.accessoryView.frame.size.width+2; // minimal margin
+    }
+    // assign hidden and frames
+    BOOL canHide = self.descriptionView!=self.valueView;
+    if (self.valueView) {
+      self.valueView.hidden = !valueShown && canHide;
+      if (valueShown) self.valueView.frame = vf;
+    }
+    if (self.descriptionView) {
+      self.descriptionView.hidden = !descriptionShown && canHide;
+      if (descriptionShown) self.descriptionView.frame = df;
     }
   }
 }

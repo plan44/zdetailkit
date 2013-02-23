@@ -14,7 +14,7 @@
 {
   if (aStyle & ZDetailViewCellStyleFlagAutoStyle) {
     // set recommended standard style for buttons
-    aStyle = UITableViewCellStyleDefault+ZDetailViewCellStyleFlagCustomLayout+ZDetailViewCellStyleFlagAutoStyle;
+    aStyle = UITableViewCellStyleDefault+ZDetailViewCellStyleFlagAutoLabelLayout+ZDetailViewCellStyleFlagAutoStyle;
   }
   if ((self = [super initWithStyle:aStyle reuseIdentifier:aReuseIdentifier])) {
     buttonStyle = ZButtonCellStyleDisclose; // default to disclosure (submenu) button

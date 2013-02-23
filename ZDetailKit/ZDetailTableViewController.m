@@ -172,6 +172,7 @@
   sectionToAdd = nil;
   nextGroupFlag = 0x1;
   defaultCellStyle = ZDetailViewCellStyleDefault|ZDetailViewCellStyleFlagInherit;
+  defaultValueCellShare = ZDetailViewCellValueCellShareNone; // none set
   buildingContent = NO;
   // no custom input view
   customInputView = nil;
@@ -353,22 +354,23 @@ static NSInteger numObjs = 0;
 }
 
 
-- (void)sortSectionBy:(NSString *)aKey ascending:(BOOL)aAscending
+- (void)sortSectionBy:(NSString *)aKeyPath ascending:(BOOL)aAscending
 {
+  NSAssert(sectionToAdd!=nil,@"Start a section before sorting cells!");
   [sectionToAdd.cells sortUsingComparator:
     ^NSComparisonResult(id ch1, id ch2) {
       ZDetailViewCellHolder *hch1 = aAscending ? ch1 : ch2;
       ZDetailViewCellHolder *hch2 = aAscending ? ch2 : ch1;
-      return [[hch1.cell valueForKey:aKey] compare:[hch2.cell valueForKey:aKey]];
+      return [[hch1.cell valueForKeyPath:aKeyPath] compare:[hch2.cell valueForKeyPath:aKeyPath]];
     }
   ];
 }
 
 
-- (void)endSectionAndSortBy:(NSString *)aKey ascending:(BOOL)aAscending
+- (void)endSectionAndSortBy:(NSString *)aKeyPath ascending:(BOOL)aAscending
 {
   // sort
-  [self sortSectionBy:aKey ascending:aAscending];
+  [self sortSectionBy:aKeyPath ascending:aAscending];
   // now add section to array
   [self endSection];
 }
@@ -407,7 +409,7 @@ static NSInteger numObjs = 0;
 }
 
 
-@synthesize defaultCellStyle;
+@synthesize defaultCellStyle, defaultValueCellShare;
 
 
 - (ZDetailTableViewController *)parentDetailTableViewController
@@ -426,9 +428,15 @@ static NSInteger numObjs = 0;
 
 - (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled
 {
+  // create the cell
   NSAssert([aClass isSubclassOfClass:[UITableViewCell class]], @"cells must be UITableViewCell descendants");
   UITableViewCell *newCell = [[aClass alloc] initWithStyle:aStyle reuseIdentifier:nil];
+  // add it
   [self addDetailCell:newCell neededGroups:aNeededGroups nowEnabled:aNowEnabled];
+  // apply the default value cell share if we have one
+  if (self.defaultValueCellShare!=ZDetailViewCellValueCellShareNone && [newCell isKindOfClass:[ZDetailViewBaseCell class]]) {
+    ((ZDetailViewBaseCell *)newCell).valueCellShare = self.defaultValueCellShare;
+  }
   // apply the default configurator
   if (cellSetupHandler) {
     cellSetupHandler(self,newCell,sectionToAdd.overallSectionIndex);
@@ -1705,6 +1713,8 @@ static NSInteger numObjs = 0;
     ZDetailTableViewController *dtvc = (ZDetailTableViewController *)aController;
     // inherit style
     self.defaultCellStyle = dtvc.defaultCellStyle | ZDetailViewCellStyleFlagInherit; // keep inherit flag, even if parent did not have it
+    // inherit defaultValueCellShare
+    self.defaultValueCellShare = dtvc.defaultValueCellShare;
     // inherit cell setup block (for additional table-wide styling) if I don't have one myself already
     if (self.cellSetupHandler==nil) {
       // I don't have a setup handler, take my parent's
