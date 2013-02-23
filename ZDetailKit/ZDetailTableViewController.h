@@ -92,33 +92,77 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 /// and also end the section
 - (void)endSectionAndSortBy:(NSString *)aKeyPath ascending:(BOOL)aAscending;
 
+/// create a detail cell of the given class and adds it to the current section
+/// @param aClass class of the cell to be created
+/// @param aStyle UITableViewCellStyle plus possibly some ZDetailViewCellStyleXXX flags
+/// @param aNeededGroups a ORed mask of group bitmasks (see newGroupFlag) which must be enabled
+///  in order to make the cell appear in the table view.
+/// @param aNowEnabled set to YES if cell should be initially enabled (for cells where no other conditions
+///  predetermined visibility anyway)
+/// @note a section must be opened with startSection or startSectionWithText:asTitle: before
+- (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
+
+/// convenience method: create and add a detail cell using the defaultCellStyle
+/// @note see detailCell:withStyle:neededGroups:nowEnabled: for details
+- (id)detailCell:(Class)aClass neededGroups:(NSUInteger)aNeededGroups;
+
+/// convenience method: create and add a detail cell using the defaultCellStyle and set enabled flag
+/// @note see detailCell:withStyle:neededGroups:nowEnabled: for details
+- (id)detailCell:(Class)aClass enabled:(BOOL)aEnabled;
+
+/// convenience method: create and add a detail cell with given style which is always visible
+/// @note see detailCell:withStyle:neededGroups:nowEnabled: for details
+- (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle;
+
+/// convenience method: create and add a detail cell with defaultCellStyle which is always visible
+/// @note see detailCell:withStyle:neededGroups:nowEnabled: for details
+- (id)detailCell:(Class)aClass;
+
+/// add a already created cell (must be a UITableViewCell, but use ZDetailViewBaseCell or at least
+/// cells conforming to ZDetailViewCell protocol for full functionality)
+/// @param the cell
+/// @param aNeededGroups a ORed mask of group bitmasks (see newGroupFlag) which must be enabled
+///  in order to make the cell appear in the table view.
+/// @param aNowEnabled set to YES if cell should be initially enabled (for cells where no other conditions
+///  predetermined visibility anyway)
+/// @note a section must be opened with startSection or startSectionWithText:asTitle: before
+- (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
+/// convenience method: add existing cell and set enabled flag
+- (void)addDetailCell:(UITableViewCell *)aCell enabled:(BOOL)aEnabled;
+/// convenience method: add existing cell which is always visible
+- (void)addDetailCell:(UITableViewCell *)aCell;
+
+/// @name apply common styling and setting to all cells
+
 /// This can be set to a ZDetailViewCellStyle to define the default cell style used when
 /// creating cells with detailCell: methods that don't have a withStyle parameter.
 /// ZDetailViewCellStyle consists of one of the standard UITableViewCellStyle values, plus
 /// optionally some ZDetailViewCellStyleXXX flags for extended style options for ZDetailViewBaseCell
 /// (such as automatic label layout etc.)
+/// @note if defaultCellStyle has the ZDetailViewCellStyleFlagInherit set, actual style will
+/// be inherited from the parent (master) ZDetailTableViewController
 @property (assign, nonatomic) ZDetailViewCellStyle defaultCellStyle; // style to be used to create default cells
 
 /// This can be set to define the relative amount (0...1.0) of horizontal space the value part of the
 /// cells will occupy. 
+/// @note if defaultCellStyle has the ZDetailViewCellStyleFlagInherit set, defaultValueCellShare will
+/// be inherited from the parent (master) ZDetailTableViewController
 @property (assign, nonatomic) double defaultValueCellShare;
 
 
+/// @note if defaultCellStyle has the ZDetailViewCellStyleFlagInherit set, cellSetupHandler will
+/// be inherited from the parent (master) ZDetailTableViewController
 @property (copy, nonatomic) ZDetailTableViewCellIterationHandler cellSetupHandler; // called on every cell added by detailCell:... method
 - (void)setCellSetupHandler:(ZDetailTableViewCellIterationHandler)cellSetupHandler; // declaration needed only for XCode autocompletion of block
-- (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
-- (id)detailCell:(Class)aClass neededGroups:(NSUInteger)aNeededGroups;
-- (id)detailCell:(Class)aClass enabled:(BOOL)aEnabled;
-- (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle;
-- (id)detailCell:(Class)aClass;
-- (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
-- (void)addDetailCell:(UITableViewCell *)aCell enabled:(BOOL)aEnabled;
-- (void)addDetailCell:(UITableViewCell *)aCell;
+
+/// convenience iterator to iterate over all cells (UITableViewCell and subclasses)
 - (void)forEachCell:(ZDetailTableViewCellIterationHandler)aIterationBlock;
+/// convenience iterator to iterate over all cells conforming to the ZDetailViewCell protocol
+/// (which are not necessarily ZDetailViewBaseCell s)
 - (void)forEachDetailViewCell:(ZDetailTableViewDetailViewCellIterationHandler)aIterationBlock;
+/// convenience iterator to iterate over all ZDetailViewBaseCell (and subclasses thereof)
+/// (but no regular UITableViewCell that may also be part of the table)
 - (void)forEachDetailViewBaseCell:(ZDetailTableViewDetailBaseCellIterationHandler)aIterationBlock;
-
-
 
 /// @name cell groups
 
@@ -130,30 +174,87 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 /// in a group, which can then be expanded/collapsed depending on other settings by changeGroups:toVisible:
 - (NSUInteger)newGroupFlag;
 
-// groups
+/// bitmask of currently enabled groups
+/// @note the integer values used for representing groups must be single bits (i.e. integer values 1,2,4,8...)
+/// The newGroupFlag convenience method can be used to generate these bitmasks.
+/// @note just setting this property does not automatically cause the changes to be applied to the table
+/// use applyGroupChangesAnimated: for that.
 @property (assign, nonatomic) NSUInteger enabledGroups;
-- (void)changeGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible;
-- (void)changeDisplayedGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible animated:(BOOL)aAnimated;
+
+/// apply current enabledGroups to the table, which will cause cells to animate in and out according
+/// to their visibility
 - (void)applyGroupChangesAnimated:(BOOL)aAnimated;
 
+/// convenience method to make one or multiple groups visible or invisible
+/// @param aGroupMask single group mask ORed combination of multiple groups
+/// @param aVisible set YES to make the groups(s) visible, NO to make them invisible
+- (void)changeGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible;
 
-
+/// convenience method to make one or multiple groups visible or invisible and then apply it to the table
+/// @param aGroupMask single group mask ORed combination of multiple groups
+/// @param aVisible set YES to make the groups(s) visible, NO to make them invisible
+- (void)changeDisplayedGroups:(NSUInteger)aGroupMask toVisible:(BOOL)aVisible animated:(BOOL)aAnimated;
 
 
 /// @name appearance and behaviour properties
 
-@property (assign, nonatomic) BOOL scrollEnabled; // controls if table may scroll
-@property (assign, nonatomic) BOOL autoStartEditing; // if set, first editable field will receive eding focus when detailview appears
+/// Set this to NO to prevent scrolling in the detail view (e.g. when it only contains a few fields). Default is YES.
+@property (assign, nonatomic) BOOL scrollEnabled;
 
-// input views (keyboard-alike, for example date chooser)
-@property (readonly, nonatomic) UIView *customInputView;
+/// if set, first editable field will receive eding focus when detailview appears. Default is NO.
+@property (assign, nonatomic) BOOL autoStartEditing;
+
+/// @name custom input view management (keyboard-alike, for example date chooser)
+
+/// editor cells can call this method to request presentation of a custom input view, which is
+/// then animated into the screen (or page/sheet in iPad modal views) similar to the keyboard
+/// @param aCustomInputView the view that should be presented as input view. It should be a UIView
+/// which can be horizontally resized (for landscape views and for iPad). For example a UIPicker view
+/// with autoresizeMask set to flexible right and left margins.
+/// @note calls to requireCustomInputView: need to be matched by calls to releaseCustomInputView:
+/// @note requireCustomInputView is usually called from beginEditing in a ZDetailViewBaseCell subclass
+///  (see ZDateTimeCell for an example)
+/// @note ZDetailTableViewController can manage a single input view shared by multiple cells.
+///  To use this feature, cells should first check the customInputView property to see if the needed
+///  view is already set, and if so, call requireCustomInputView with it. This prevents the same input view
+///  to animate out and in again when focus moves to the next cell.
 - (void)requireCustomInputView:(UIView *)aCustomInputView;
+
+/// editors that present a custom input view with requireCustomInputView: must call releaseCustomInputView:
+/// when editing is done to make the custom input view disappear.
+/// @param aNilOrCustomInputView pass the same view as for requireCustomInputView: here. It is possible
+///  to pass nil to just release the current input view, however this is not recommended in situations where
+///  other cells might have installed another inputView in the meantime.
+/// @note releaseCustomInputView is usually called from defocusCell in a ZDetailViewBaseCell subclass
+///  (see ZDateTimeCell for an example)
 - (void)releaseCustomInputView:(UIView *)aNilOrCustomInputView;
 
-// utilities for subclasses
+/// returns currently visible custom input view, or nil when there is none.
+/// @note see requireCustomInputView: for information how to use this for shared input views.
+@property (readonly, nonatomic) UIView *customInputView;
+
+
+/// @name utilities for subclasses
+
+/// returns the cell currently at given index path. All types of UITableViewCell are returned.
 - (UITableViewCell *)cellForRowAtIndexPath:(NSIndexPath *)aIndexPath;
+
+/// returns the ZDetailViewBaseCell currently at given index path, or nil if none. Only ZDetailViewBaseCell and subclasses are returned.
 - (ZDetailViewBaseCell *)detailCellForRowAtIndexPath:(NSIndexPath *)aIndexPath;
+
+/// moves a cell from one index to another (only within same section)
+/// @note this is a utility method to help implementing tableView:moveRowAtIndexPath:toIndexPath: UITableViewDelegate method
+///  in subclasses (like ZChoiceListeController)
 - (BOOL)moveRowFromIndexPath:(NSIndexPath *)aFromIndexPath toIndexPath:(NSIndexPath *)aToIndexPath;
 
+@end
+
+#pragma mark - ZDetailViewBaseCell (ZDetailTableViewControllerUtils)
+
+/// category on ZDetailViewBaseCell providing ZDetailTableViewController related methods
+@interface ZDetailViewBaseCell (ZDetailTableViewControllerUtils)
+
+/// returns the owning ZDetailTableViewController (if not owned by another type of UIViewController)
+- (ZDetailTableViewController *)detailTableViewController;
 
 @end

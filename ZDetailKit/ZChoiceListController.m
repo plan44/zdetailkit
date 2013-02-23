@@ -97,9 +97,9 @@
 
 - (void)tableView:(UITableView *)aTableView moveRowAtIndexPath:(NSIndexPath *)aFromIndexPath toIndexPath:(NSIndexPath *)aToIndexPath
 {
-  // reorder in 
+  // reorder in the cells in the base class
   if ([self moveRowFromIndexPath:aFromIndexPath toIndexPath:aToIndexPath]) {
-    // reorder in the choiceInfos
+    // also reorder in the choiceInfos
     [self.choicesManager moveChoiceFrom:aFromIndexPath.row to:aToIndexPath.row];
   }  
 }

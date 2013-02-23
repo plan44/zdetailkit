@@ -14,7 +14,7 @@ typedef int ZDetailViewCellStyle;
 // option flags
 #define ZDetailViewCellStyleFlagAutoLabelLayout 0x1000 // put the standard UITableViewCell labels under control of ZDetailViewBaseCell's layout mechanism
 #define ZDetailViewCellStyleFlagAutoStyle 0x2000 // allow cells to decide about matching style (most don't but some might)
-#define ZDetailViewCellStyleFlagInherit 0x4000 // (only for defaultCellStyle in ZDetailTableViewController) inherit style from parent controller, if any
+#define ZDetailViewCellStyleFlagInherit 0x4000 // (only for defaultCellStyle in ZDetailTableViewController) inherit defaultCellStyle, defaultValueShare and cellStyleBlock from parent controller, if any
 
 // predefined styles
 #define ZDetailViewCellStyleEntryDetail (UITableViewCellStyleValue2+ZDetailViewCellStyleFlagAutoLabelLayout+ZDetailViewCellStyleFlagAutoStyle)

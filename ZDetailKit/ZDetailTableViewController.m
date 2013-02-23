@@ -1725,10 +1725,23 @@ static NSInteger numObjs = 0;
   [super becomesDetailViewOfCell:aCell inController:aController];
 }
 
+@end
 
 
+#pragma mark - ZDetailViewBaseCell (ZDetailTableViewControllerUtils)
+
+// This is implemented as a category to prevent introducing direct dependency of ZDetailViewBaseCell
+// on ZDetailTableViewController
+@implementation ZDetailViewBaseCell (ZDetailTableViewControllerUtils)
+
+// returns the owning ZDetailTableViewController (if not owned by another type of UIViewController)
+- (ZDetailTableViewController *)detailTableViewController
+{
+  if ([self.cellOwner isKindOfClass:[ZDetailTableViewController class]])
+    return (ZDetailTableViewController *)self.cellOwner;
+  return nil;
+}
 
 
 @end
-
 

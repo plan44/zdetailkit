@@ -290,8 +290,15 @@ typedef enum {
 /// @param aGotoNext if set, the owner will try to move the focus to the next cell which can take a focus
 - (BOOL)endedEditingWithGotoNext:(BOOL)aGotoNext;
 
+/// Internal initialisation
+///
+/// This method is called by the public initXXX method(s).
+/// Subclasses which don't need their own initXXX method(s) but just need to initialize some internals
+/// can override this single method.
+- (void)internalInit;
 
-/// @name Services for subclasses (DO NOT DERIVE!)
+
+/// @name Services for subclasses (DO NOT OVERRIDE!)
 
 /// call when updating visual representation (calling updateForDisplay) is needed
 - (void)setNeedsUpdate;
@@ -301,14 +308,6 @@ typedef enum {
 
 /// call when reloading this cell (re-fetching data from connected model) is needed
 - (void)setNeedsReloadAnimated:(BOOL)aAnimated;
-
-/// Internal initialisation
-///
-/// This method is called by the public initXXX method(s).
-/// Subclasses which don't need their own initXXX method(s) but just need to initialize some internals
-/// can override this single method.
-- (void)internalInit;
-
 
 
 @end

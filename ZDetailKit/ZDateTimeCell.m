@@ -203,8 +203,8 @@
 {
   if (datePicker==nil) {
     // check if current custom input view is of right type - if so, reuse it
-    if ([self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
-      ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
+    ZDetailTableViewController *dvc = self.detailTableViewController;
+    if (dvc) {
       UIView *iv = dvc.customInputView;
       if (iv && iv.tag==ZDATETIMECELL_INPUTVIEW_TAG && [iv isKindOfClass:[UIDatePicker class]]) {
         // we can use this as-is
@@ -241,8 +241,8 @@
 // called to try to begin editing (e.g. getting kbd focus) in this cell. Returns YES if possible
 - (BOOL)beginEditing
 {
-  if (!self.editInDetailView && self.allowsEditing && [self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
-    ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
+  ZDetailTableViewController *dvc = self.detailTableViewController;
+  if (dvc && !self.editInDetailView && self.allowsEditing) {
     pickerInstalling = YES;
     // present it (if not already presented)
     if (!datePicker) {
@@ -286,8 +286,8 @@
 {
   // only if already focused editing started, dismiss custom input view.
   if (self.focusedEditing && !pickerInstalling) {
-    if ([self.cellOwner isKindOfClass:[ZDetailTableViewController class]]) {
-      ZDetailTableViewController *dvc = (ZDetailTableViewController *)self.cellOwner;
+    ZDetailTableViewController *dvc = self.detailTableViewController;
+    if (dvc) {
       [dvc releaseCustomInputView:datePicker];
     }
     datePicker = nil;
