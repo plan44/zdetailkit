@@ -141,7 +141,7 @@ static NSTimeZone *cachedTimeZone = nil;
 
 + (void)resetCachedTimezone
 {
-  NSTimeZone *t = cachedTimeZone;
+  __unused NSTimeZone *t = [self cachedTimezone];
   cachedTimeZone = nil;
 }
 
