@@ -325,6 +325,7 @@ static NSInteger numObjs = 0;
 
 #pragma mark - services for myself and subclasses (methods that can be called by subclasses)
 
+
 // will cause updateForDisplay to be called before cell is shown next time
 - (void)setNeedsUpdate
 {
@@ -611,7 +612,7 @@ static NSInteger numObjs = 0;
     if (aContentIndent>0) {
       DBGNSLOG(@"Warning: contentIndent>0 does not look nice with UITableViewCellSeparatorStyleSingleLineEtched!");
     }
-    contentIndent = aContentIndent;
+    contentIndent = floorf(aContentIndent); // make integer pixel count, display artifacts otherwise
     [self setNeedsLayout];
   }
 }
