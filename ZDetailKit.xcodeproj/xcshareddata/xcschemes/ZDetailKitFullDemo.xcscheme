@@ -14,8 +14,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "ED12E7371582494C00DE3ED3"
-               BuildableName = "ZDetailKitDemo.app"
-               BlueprintName = "ZDetailKitDemo"
+               BuildableName = "ZDetailKitFullDemo.app"
+               BlueprintName = "ZDetailKitFullDemo"
                ReferencedContainer = "container:ZDetailKit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,8 +32,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "ED12E7371582494C00DE3ED3"
-            BuildableName = "ZDetailKitDemo.app"
-            BlueprintName = "ZDetailKitDemo"
+            BuildableName = "ZDetailKitFullDemo.app"
+            BlueprintName = "ZDetailKitFullDemo"
             ReferencedContainer = "container:ZDetailKit.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -51,8 +51,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "ED12E7371582494C00DE3ED3"
-            BuildableName = "ZDetailKitDemo.app"
-            BlueprintName = "ZDetailKitDemo"
+            BuildableName = "ZDetailKitFullDemo.app"
+            BlueprintName = "ZDetailKitFullDemo"
             ReferencedContainer = "container:ZDetailKit.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -79,8 +79,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "ED12E7371582494C00DE3ED3"
-            BuildableName = "ZDetailKitDemo.app"
-            BlueprintName = "ZDetailKitDemo"
+            BuildableName = "ZDetailKitFullDemo.app"
+            BlueprintName = "ZDetailKitFullDemo"
             ReferencedContainer = "container:ZDetailKit.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
