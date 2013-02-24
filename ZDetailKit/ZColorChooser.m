@@ -65,6 +65,7 @@
 
 
 #define PREVIEW_MARGIN 4
+#define CORNER_RADIUS 10
 
 #define MAX_BLACK 0.5
 #define MAX_WHITE 0.8
@@ -78,9 +79,23 @@
   CGRect f = self.bounds;
   CGFloat pav = f.size.height+PREVIEW_MARGIN;
 
-  // - white bg for now
-  [[UIColor whiteColor] setFill];
-	CGContextFillRect(context, f);
+  // - same background as superview
+  [self.backgroundColor setFill];
+  CGContextFillRect(context, f);
+
+  // set a clipping rounded rect
+  CGMutablePathRef rr = CGPathCreateMutable();
+  CGPathMoveToPoint(rr, NULL, CORNER_RADIUS, 0);
+  CGPathAddLineToPoint(rr, NULL, f.size.width-CORNER_RADIUS, 0);
+  CGPathAddArcToPoint(rr, NULL, f.size.width, 0, f.size.width, CORNER_RADIUS, CORNER_RADIUS);
+  CGPathAddLineToPoint(rr, NULL, f.size.width, f.size.height-CORNER_RADIUS);
+  CGPathAddArcToPoint(rr, NULL, f.size.width, f.size.height, f.size.width-CORNER_RADIUS, f.size.height, CORNER_RADIUS);
+  CGPathAddLineToPoint(rr, NULL, CORNER_RADIUS, f.size.height);
+  CGPathAddArcToPoint(rr, NULL, 0, f.size.height, 0, f.size.height-CORNER_RADIUS, CORNER_RADIUS);
+  CGPathAddLineToPoint(rr, NULL, 0, CORNER_RADIUS);
+  CGPathAddArcToPoint(rr, NULL, 0, 0, CORNER_RADIUS, 0, CORNER_RADIUS);
+  CGContextAddPath(context, rr);
+  CGContextClip(context);
 
   // draw the current color
   if (color) {
@@ -91,8 +106,9 @@
 	      [[UIImage imageNamed:@"ZCCH_clrBtn.png"] drawAtPoint:CGPointMake(0,0)];
       }
     }
-    else
-	    CGContextFillRect(context, CGRectMake(f.size.width-f.size.height, 0, f.size.height, f.size.height));
+    else {
+	    CGContextFillRect(context, CGRectMake(0, 0, f.size.width, f.size.height));
+    }
   }
   else {
   	if (self.enabled) {

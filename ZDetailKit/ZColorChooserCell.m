@@ -100,4 +100,13 @@
 }
 
 
+// Note: overriding this seems to be the only clean way to pass the correct background color to
+//   the color chooser (pre iOS5 white, iOS5/6 greyish, selected blue).
+- (void)setBackgroundColor:(UIColor *)aBackgroundColor
+{
+  [super setBackgroundColor:aBackgroundColor];
+  colorChooser.backgroundColor = aBackgroundColor;
+}
+
+
 @end
