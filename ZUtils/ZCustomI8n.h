@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-/// Customizable internationalisation: if Z_CUSTOM_I8N is defined in a project, all strings localized with
+/// Customizable internationalisation: if Z_CUSTOM_I8N is defined non-zero in a project, all strings localized with
 /// the ZLocalizedString and ZLocalizedStringWithDefault macros will first look up strings from a
 /// customer provided string file at Z_CUSTOM_I8N_PATH. This allows for end-user aided i8n, in that
 /// end user can create and test a internationalisation by storing a customized .strings file

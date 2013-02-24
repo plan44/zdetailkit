@@ -13,10 +13,12 @@
 
 #pragma mark - NSValueTransformer methods
 
+
 + (BOOL)allowsReverseTransformation
 {
   return YES;
 }
+
 
 + (Class)transformedValueClass
 {

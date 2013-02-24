@@ -165,11 +165,11 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 ///
 /// This is the value pointed to by valuePath, and usually is the value of a UIControl which shows/edits the value
 ///
-/// This property is not KVO compliant, but other value connectors can be connected here
-/// as long as automatic updates are not needed.
+/// This property is not KVO compliant, but it is KVC compliant including validation, such that other value
+/// connectors can be connected here as long as automatic updates are not needed.
 /// @note As an example, the separate editor for ZTextFieldCell/ZTextViewCell (used when not editing in-place)
-/// is connected to internalValue. Once the separate editor gets active, it reads internalValue, and when
-/// the editor is closed, internalValue is updated.
+/// is connected to internalValue. Once the separate editor gets active, it reads internalValue, when
+/// the editor is being closed, validation is checked and if ok, internalValue is updated.
 @property (strong, nonatomic) id internalValue;
 
 /// The internal value, parsed, validated and transformed into representation suitable for being stored in target (model).

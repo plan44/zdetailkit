@@ -70,7 +70,7 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 
 /// for subclasses, this method can be overridden to build the content (instead of
 /// assigning a block to buildDetailContentHandler.
-/// Must return YES if 
+/// Must return YES to signal content could be built.
 - (BOOL)buildDetailContent;
 
 /// @name adding editing sections and cells
@@ -150,7 +150,8 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 /// be inherited from the parent (master) ZDetailTableViewController
 @property (assign, nonatomic) double defaultValueCellShare;
 
-
+/// This block is called for every cell added to the view. This can be used to set common properties
+/// to all cells of a detail view, like special background, different font etc.
 /// @note if defaultCellStyle has the ZDetailViewCellStyleFlagInherit set, cellSetupHandler will
 /// be inherited from the parent (master) ZDetailTableViewController
 @property (copy, nonatomic) ZDetailTableViewCellIterationHandler cellSetupHandler; // called on every cell added by detailCell:... method
