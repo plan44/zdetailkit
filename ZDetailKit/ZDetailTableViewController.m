@@ -8,6 +8,8 @@
 
 #import "ZDetailTableViewController.h"
 
+#import "ZDBGMacros.h"
+
 #pragma mark - internal Helper classes declarations
 
 
@@ -460,7 +462,7 @@ static NSInteger numObjs = 0;
 
 - (id)detailCell:(Class)aClass withStyle:(ZDetailViewCellStyle)aStyle
 {
-  return [self detailCell:aClass withStyle:aStyle neededGroups:0 nowEnabled:NO];
+  return [self detailCell:aClass withStyle:aStyle neededGroups:0 nowEnabled:YES];
 }
 
 

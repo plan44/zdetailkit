@@ -29,6 +29,7 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 /// set up without needing any subclassing, just by parametrizing the controller and its cells.
 ///
 /// ZDetailTableViewController includes features such as
+///
 /// - different displayMode settings: basic/detail and viewing/editing which allow showing some
 ///   options/fields only in certain modes.
 /// - cell grouping to expand/collapse subsections of a table depending on other settings, like a

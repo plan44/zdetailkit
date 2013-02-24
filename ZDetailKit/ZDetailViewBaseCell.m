@@ -9,6 +9,7 @@
 #import "ZDetailViewBaseCell.h"
 
 #import "NSObject+ZValueConnectorContainer.h"
+#import "ZDBGMacros.h"
 
 @interface ZDetailViewBaseCell ( /* class extension */ )
 {

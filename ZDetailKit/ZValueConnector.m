@@ -8,8 +8,10 @@
 
 #import "ZValueConnector.h"
 
+#import "ZDBGMacros.h"
 #import "ZString_utils.h"
 #import "ZCustomI8n.h"
+
 
 @interface ZValueConnector ( /* class extension */ )
 {

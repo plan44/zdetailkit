@@ -11,6 +11,8 @@
 #import "ZTextExpanderSupport.h"
 #import "ZDetailTableViewController.h"
 
+#import "ZDBGMacros.h"
+
 
 @interface ZTextViewCell ( /* class extension */ )
 {
