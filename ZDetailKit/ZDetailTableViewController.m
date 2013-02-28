@@ -1373,18 +1373,26 @@ static NSInteger numObjs = 0;
 
 - (UIView *)parentViewForInputView
 {
-  // find the first non-scrollview superview of my own view
-  // Note: - without special setup, my view is the UITableView, and its superView is a wrapper
-  //       - but my view might be a regular view that holds the table plus some other stuff
-  UIView *v = self.view;
-  while (v && [v isKindOfClass:[UIScrollView class]]) {
-    v = v.superview;
+  // best fit is my own navigation controller.
+  // In all but weird cases we should have a navigation controller
+  // as no detail subview will work without.
+  if (self.navigationController) {
+    return self.navigationController.view;
   }
-  if (v) {
-    // Now v is a non-scrolling view. The target for the input view is its superview
-    v = v.superview;
-  }
-  return v;
+  return nil;
+// %%% this was the best working assumption until I realized we always have a nav controller...
+//  // find the first non-scrollview superview of my own view
+//  // Note: - without special setup, my view is the UITableView, and its superView is a wrapper
+//  //       - but my view might be a regular view that holds the table plus some other stuff
+//  UIView *v = self.view;
+//  while (v && [v isKindOfClass:[UIScrollView class]]) {
+//    v = v.superview;
+//  }
+//  if (v) {
+//    // Now v is a non-scrolling view. The target for the input view is its superview
+//    v = v.superview;
+//  }
+//  return v;
 }
 
 
@@ -1393,7 +1401,7 @@ static NSInteger numObjs = 0;
   if (customInputView) {
     customInputView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth; // keep at bottom of view we place it in, and full width
     UIView *viewToAddInputView = self.parentViewForInputView; // input view needs to be anchored in non-scrolling superview of the table
-    CGRect appearanceRect = viewToAddInputView.frame;
+    CGRect appearanceRect = viewToAddInputView.bounds;
     CGRect vf = customInputView.frame; // viewToAddInputView coords
     // size input view to root view width
     vf.size.width = appearanceRect.size.width;
