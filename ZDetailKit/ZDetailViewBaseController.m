@@ -165,6 +165,25 @@
 }
 
 
+- (void)changeDisplayMode:(ZDetailDisplayMode)aDisplayModeBits enable:(BOOL)aEnable animated:(BOOL)aAnimated
+{
+  ZDetailDisplayMode m = self.displayMode;
+  if (aEnable) {
+    // clear affected bitfields first
+    if (aDisplayModeBits & ZDetailDisplayModeLevelMask) m &= ~ZDetailDisplayModeLevelMask;
+    if (aDisplayModeBits & ZDetailDisplayModeEditingMask) m &= ~ZDetailDisplayModeEditingMask;
+    m |= aDisplayModeBits;
+  }
+  else {
+    // set both opposing bits first
+    if (aDisplayModeBits & ZDetailDisplayModeLevelMask) m |= ZDetailDisplayModeDetails+ZDetailDisplayModeBasics;
+    if (aDisplayModeBits & ZDetailDisplayModeEditingMask) m |= ZDetailDisplayModeEditing+ZDetailDisplayModeViewing;
+    m &= ~aDisplayModeBits;
+  }
+  [self setDisplayMode:m animated:aAnimated];
+}
+
+
 - (void)updateVisibilitiesAnimated:(BOOL)aAnimated
 {
   // nop in base class
@@ -269,7 +288,7 @@
 
 - (void)detailsStartButtonAction
 {
-  // switch to basic mode
+  // switch to details mode
   [self setDisplayMode:(self.displayMode & ~ZDetailDisplayModeBasics) | ZDetailDisplayModeDetails animated:YES];
 }
 

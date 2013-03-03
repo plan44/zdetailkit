@@ -97,16 +97,18 @@ typedef enum {
 ///
 /// - positive values describe the share relative to the entire cell width (=table view width)
 /// - negative values describe the share relative to the content view width (which might be indented, see contentIndent)
+///
 /// @note valueCellShare applies only to valueView and descriptionView (which are only assigned to the standard UITableViewCell
-//    labels when ZDetailViewCellStyleFlagAutoLabelLayout flag is set in the cell style)
+///   labels when ZDetailViewCellStyleFlagAutoLabelLayout flag is set in the cell style)
 /// @note The default of this is dependent on the cell style set when creating the cell.
 ///   UITableViewCellStyleDefault have a valueCellShare of 1.0 (no description label), other styles
 ///   usually have something between 0.4 (prefs) and 0.65 (addressbook style).
 /// @note to automatically set valueCellShare for all cells to the same value, use ZDetailTableViewController's
-//    defaultValueCellShare property.
+///   defaultValueCellShare property.
 @property (assign, nonatomic) CGFloat valueCellShare;
 
 /// content view indent (enlarged left margin) in pixels
+/// @warning content indent does not look ok with UITableViewCellSeparatorStyleSingleLineEtched
 @property (assign, nonatomic) CGFloat contentIndent;
 
 /// content margins (free pixels to the left and right or top and bottom of actual cell content)
@@ -147,9 +149,9 @@ typedef enum {
 /// Usually, this is one of the standard UITableViewCell labels
 /// The custom layout mechanism of ZDetailViewCell will place and resize the view assigned here according to
 /// descriptionViewAdjustment, valueCellShare and chosen cell style.
-/// @note the standard UITableViewCell UILabel is only automatically assigend to valueView (and thus put under layout control)
+/// @note the standard UITableViewCell UILabel is only automatically assigend to descriptionView (and thus put under layout control)
 /// when ZDetailViewCellStyleFlagAutoLabelLayout flag is set in the cell style.
-@property (strong, nonatomic) UIView *descriptionView; // for custom layout: must contain the view that shows the description
+@property (strong, nonatomic) UIView *descriptionView;
 
 
 /// @name Customizing behaviour using blocks

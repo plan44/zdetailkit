@@ -165,6 +165,9 @@ typedef enum {
 /// @note see ZDetailDisplayMode enum for available options
 - (void)setDisplayMode:(ZDetailDisplayMode)aDisplayMode animated:(BOOL)aAnimated;
 
+/// convenience method to set/clear bits of the displayMode (basics, details, editing)
+- (void)changeDisplayMode:(ZDetailDisplayMode)aDisplayModeBits enable:(BOOL)aEnable animated:(BOOL)aAnimated;
+
 
 /// will be called after closing a detail editor
 @property (copy,nonatomic) ZDetailViewDidCloseHandler detailDidCloseHandler;
