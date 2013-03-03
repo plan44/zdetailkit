@@ -110,9 +110,9 @@
       [dc endSection];
 
       // If you want to see more, like multiple choices, validation, colors, numbers, submenus, expanding/collapsing subsections
-      // password cells 
+      // password cells, see the ZDetailKitFullDemo sample project.
 
-
+      // return YES if contents were generated
       return YES;
     }
   ];
