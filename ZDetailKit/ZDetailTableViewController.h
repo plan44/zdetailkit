@@ -203,6 +203,10 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 /// Set this to NO to prevent scrolling in the detail view (e.g. when it only contains a few fields). Default is YES.
 @property (assign, nonatomic) BOOL scrollEnabled;
 
+/// If set, any touch of a cell (even if touch is in a subview and does not select the cell) to
+/// defocus all other cells (= make input views go away). Default is YES.
+@property (assign, nonatomic) BOOL defocusOnTouch;
+
 /// if set, first editable field will receive eding focus when detailview appears. Default is NO.
 @property (assign, nonatomic) BOOL autoStartEditing;
 
