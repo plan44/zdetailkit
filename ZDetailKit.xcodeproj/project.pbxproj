@@ -1030,6 +1030,7 @@
 				ED321F0716D97BD700CB76B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		ED43CA3D16CE9FF200C28E48 /* Build configuration list for PBXLegacyTarget "ZDetailKit appledoc" */ = {
 			isa = XCConfigurationList;

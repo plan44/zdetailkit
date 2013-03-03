@@ -33,6 +33,7 @@ typedef enum {
 @end
 
 
+/// delegate protocol for choice manager, allows to respond to changes in choice list and selection
 @protocol ZChoicesManagerDelegate <NSObject>
 
 @optional

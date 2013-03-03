@@ -56,6 +56,13 @@
 // coordinate is invisible on the cell level, just holds the edits made in ZMapLocationEdit
 
 
+- (BOOL)presentingEmptyValue
+{
+  return [editedText length]==0;
+}
+
+
+
 #pragma mark - detail editor
 
 
