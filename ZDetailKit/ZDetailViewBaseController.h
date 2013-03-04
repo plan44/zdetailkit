@@ -127,6 +127,16 @@ typedef enum {
 /// call to cancel has been made.
 - (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave animated:(BOOL)aAnimated;
 
+/// present a subdetail editor modally (rather than pusing onto the navigation stack).
+/// @param aCell can be nil, but when ZDetailTableViewController calls this method, it will pass
+///   the originating cell here.
+/// @note This can be used for detail views which don't support navigation (like AB views)
+- (void)presentDetailModally:(UIViewController *)aViewController fromCell:(id<ZDetailViewCell>)aCell animated:(BOOL)aAnimated;
+
+/// dismiss modally presented detail view
+- (void)dismissModallyPresentedAnimated:(BOOL)aAnimated;
+
+
 /// dismiss all open details on top of and including this controller
 - (void)dismissDetailStack;
 

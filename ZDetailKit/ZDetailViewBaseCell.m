@@ -263,6 +263,10 @@ static NSInteger numObjs = 0;
 // The caller only needs to present that editor (push to navcontroller, show as popover)
 - (UIViewController *)editorForTapInAccessory:(BOOL)aInAccessory
 {
+  if (editorSetupHandler) {
+    // return the editor
+    return editorSetupHandler(self,aInAccessory);
+  }
   return nil; // no editor
 }
 
@@ -292,6 +296,7 @@ static NSInteger numObjs = 0;
 @synthesize cellVisibleInModeHandler;
 @synthesize valueChangedHandler;
 @synthesize tapHandler;
+@synthesize editorSetupHandler;
 @synthesize editorFinishedHandler;
 @synthesize editingEndedHandler;
 @synthesize validationStatusHandler;

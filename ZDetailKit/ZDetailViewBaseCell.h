@@ -26,6 +26,8 @@ typedef BOOL (^ZDetailCellConnectionHandler)(ZDetailViewBaseCell *aCell, ZValueC
 typedef BOOL (^ZDetailCellEditorFinishedHandler)(ZDetailViewBaseCell *aCell, BOOL aCancelled);
 // handler for tap in cell or cell accessory
 typedef BOOL (^ZDetailCellTapHandler)(ZDetailViewBaseCell *aCell, BOOL aInAccessory);
+// handler for creating editor
+typedef UIViewController *(^ZDetailCellEditorSetupHandler)(ZDetailViewBaseCell *aCell, BOOL aInAccessory);
 // handler for checking if cell should be visible in a particular mode
 typedef BOOL (^ZDetailCellVisibleInModeHandler)(ZDetailViewBaseCell *aCell, ZDetailDisplayMode aMode);
 // handler for custom end-of-editing behaviour
@@ -182,6 +184,15 @@ typedef enum {
 /// perform standard actions (like opening a separate editor view for the value, for example)
 @property (copy, nonatomic) ZDetailCellTapHandler tapHandler;
 - (void)setTapHandler:(ZDetailCellTapHandler)tapHandler; // declaration needed only for XCode autocompletion of block
+
+/// block called to return a value editor (separate view that opens to edit the value)
+///
+/// This block, when assigned, is called when a cell would like to open a value editor
+/// @note unlike tapHandler, this handler should be used when the action of tapping a cell (or accessory)
+///   should be pushing a detail editor for the cell's value (or set of values represented by the cell).
+///   tapHandler is for more generic actions, which are not exactly opening a detail editor.
+@property (copy, nonatomic) ZDetailCellEditorSetupHandler editorSetupHandler;
+- (void)setEditorSetupHandler:(ZDetailCellEditorSetupHandler)editorSetupHandler; // declaration needed only for XCode autocompletion of block
 
 /// block to respond to a value editor (separate view that opened to edit the value) being closed.
 ///

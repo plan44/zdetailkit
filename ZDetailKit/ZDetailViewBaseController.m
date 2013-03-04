@@ -543,10 +543,8 @@
 }
 
 
-
-- (void)pushViewControllerForDetail:(UIViewController *)aViewController fromCell:(id<ZDetailViewCell>)aCell animated:(BOOL)aAnimated
+- (void)prepareForPresentingDetailViewController:(UIViewController *)aViewController fromCell:(id<ZDetailViewCell>)aCell
 {
-  disappearsUnderPushed = YES;
   // defocus edit fields
   [self defocus];
   // inherit default content size for popovers
@@ -560,9 +558,28 @@
     // remember opened child
     self.currentChildDetailViewController = (id<ZDetailViewController>)aViewController; // strong
   }
-  [self.navigationController pushViewController:aViewController animated:YES];
 }
 
+
+- (void)presentDetailModally:(UIViewController *)aViewController fromCell:(id<ZDetailViewCell>)aCell animated:(BOOL)aAnimated
+{
+  [self prepareForPresentingDetailViewController:aViewController fromCell:aCell];
+  [self.navigationController presentViewController:aViewController animated:aAnimated completion:nil];
+}
+
+
+- (void)dismissModallyPresentedAnimated:(BOOL)aAnimated
+{
+  [self.navigationController dismissViewControllerAnimated:aAnimated completion:nil];
+}
+
+
+
+- (void)pushViewControllerForDetail:(UIViewController *)aViewController fromCell:(id<ZDetailViewCell>)aCell animated:(BOOL)aAnimated
+{
+  [self prepareForPresentingDetailViewController:aViewController fromCell:aCell];
+  [self.navigationController pushViewController:aViewController animated:aAnimated];
+}
 
 
 // dismiss myself - save if selected. Returns NO if dismissal is not possible (save throws exception, validation error usually)
