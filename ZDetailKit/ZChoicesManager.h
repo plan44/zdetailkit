@@ -92,9 +92,13 @@ typedef enum {
 /// delegate 
 @property (unsafe_unretained, nonatomic) id<ZChoicesManagerDelegate> delegate;
 
-// current choice, formatted according to mode
+/// current choice, formatted according to mode
 @property (strong, nonatomic) id currentChoice;
-// configured list of choices
+
+/// configured list of choices
+/// @note usually, choices are constructed using addChoice: family of methods. However, choicesArray can also be set
+/// directly - in this case it needs to be a array of choice dictionaries. For possible key/values in a choiceDict,
+/// see aChoiceDict param in addChoice:
 @property (strong, nonatomic) NSArray *choicesArray;
 
 // internal array of choices plus selection status, in display order

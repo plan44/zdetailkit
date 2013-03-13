@@ -62,6 +62,18 @@
         sw.showsReorderControl = self.choicesManager.reorderable;
         sw.shouldIndentWhileEditing = NO; // no indent (but seems not effective, need shouldIndentWhileEditingRowAtIndexPath:
         sw.showInModes = ZDetailDisplayModeAlways; // no restrictions, always show
+        // - optional image
+        UIImage *img = nil;
+        NSString *imgName = [info.choice valueForKey:@"imageName"];
+        if (imgName) {
+          img = [UIImage imageNamed:imgName];
+        }
+        if (!img) {
+          img = [info.choice valueForKey:@"image"];
+        }    
+        if (img) {
+          sw.imageView.image = img;
+        }
         // - connect to choicesManager's dynamic "sel_nn" properties which represent the selected choices
         [sw.valueConnector connectTo:choicesManager keyPath:[NSString stringWithFormat:@"sel_%d",info.index]];
         sw.valueConnector.autoSaveValue = YES;
