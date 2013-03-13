@@ -22,6 +22,8 @@
   CGFloat contentRightMargin; // right margin (space to size of superview on the right)
   CGFloat backgroundLeftMargin; // origin.x of contentView in non-tableedit mode relative to its superview
   CGFloat backgroundRightMargin; // right margin (space to size of superview on the right)
+  // image view usage
+  BOOL imageViewInUse;
 }
 
 @end
@@ -61,6 +63,7 @@
   valueViewAdjustment = ZDetailCellItemAdjustMiddle;
   // - other internals
   nonErrorTextColor = nil;
+  imageViewInUse = NO; // will be set when imageView property is first accessed
   // - measured values for content indent
   contentLeftMargin = -1; // not yet measured
   contentRightMargin = -1; // not yet measured
@@ -744,6 +747,15 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
 }
 
 
+- (UIImageView *)imageView
+{
+  // mark image view in use
+  imageViewInUse = YES;
+  return super.imageView;
+}
+
+
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
@@ -815,7 +827,12 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
     }
     // - make adjustments when it is outside the content view
     CGFloat contentStartX = self.contentMargins.width;
-    CGFloat contentWidth = cv.bounds.size.width-2*self.contentMargins.width;
+    if (imageViewInUse) {
+      // take image into account
+      CGRect imgf = self.imageView.frame;
+      contentStartX += imgf.origin.x+imgf.size.width;
+    }
+    CGFloat contentWidth = cv.bounds.size.width-contentStartX-self.contentMargins.width;
     CGFloat descriptionEndInContentX = valueStartXinContent-self.labelValueMargin;
     if (descriptionEndInContentX<=contentStartX) {
       // description has no room, disable it 

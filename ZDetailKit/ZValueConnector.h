@@ -15,6 +15,8 @@
 // - can return YES to signal situation fully handled (suppresses default action, if any)
 // - if no handler is set, processing continues as if the handler had returned NO
 typedef BOOL (^ZValueConnectorHandler)(ZValueConnector *aConnector);
+// handler for other notifications
+typedef void (^ZValueConnectorNotifyHandler)(ZValueConnector *aConnector);
 // - custom validation
 typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id aValue, NSError **aErrorP);
 
@@ -206,8 +208,8 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 @property (copy, nonatomic) ZValueConnectorHandler valueChangedHandler;
 - (void)setValueChangedHandler:(ZValueConnectorHandler)valueChangedHandler;
 /// called after the value has been saved to the target (model) 
-@property (copy, nonatomic) ZValueConnectorHandler valueSavedHandler;
-- (void)setValueSavedHandler:(ZValueConnectorHandler)valueSavedHandler;
+@property (copy, nonatomic) ZValueConnectorNotifyHandler valueSavedHandler;
+- (void)setValueSavedHandler:(ZValueConnectorNotifyHandler)valueSavedHandler;
 /// called as a first step of internal value validation. This handler can be set to implement custom validation.
 @property (copy, nonatomic) ZValueConnectorValidationHandler validationHandler;
 - (void)setValidationHandler:(ZValueConnectorValidationHandler)validationHandler; // declaration needed only for XCode autocompletion of block
