@@ -1131,17 +1131,6 @@ static NSInteger numObjs = 0;
 
 - (void)defocusAllBut:(UITableViewCell *)aFocusedCell
 {
-//  // first make sure new cell receives focus (which might include becoming first responder)
-//  if (aFocusedCell) {
-//    BOOL couldFocus = NO;
-//    if ([aFocusedCell conformsToProtocol:@protocol(ZDetailViewCell)]) {
-//      couldFocus = [(id<ZDetailViewCell>)aFocusedCell beginEditing];
-//    }
-//    if (!couldFocus) {
-//      // try maing it first responder
-//      [aFocusedCell becomeFirstResponder];
-//    }
-//  }
   // defocus all other cells
   for (ZDetailViewSection *section in allSectionsAndCells) {
     for (ZDetailViewCellHolder *dvch in section.cells) {
@@ -1189,7 +1178,7 @@ static NSInteger numObjs = 0;
 	[[NSNotificationCenter defaultCenter]
     addObserver:self
     selector:@selector(editingInRect:)
-    name:@"EditingInRect"
+    name:@"ZDetailKitEditingInRect"
     object:nil
   ];
   // install keyboard hide/show handlers

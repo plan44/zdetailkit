@@ -434,7 +434,7 @@ static NSInteger numObjs = 0;
     CGRect r = [tv rectForRowAtIndexPath:[tv indexPathForCell:self]];
     // send rectangle (in tableview coordinates)
     [[NSNotificationCenter defaultCenter]
-      postNotificationName:@"EditingInRect"
+      postNotificationName:@"ZDetailKitEditingInRect"
       object:[NSValue valueWithCGRect:r]
     ];
   }  
@@ -463,7 +463,7 @@ static NSInteger numObjs = 0;
     focusedEditing = NO; // not ending twice!
     // let app know editing has ended
     [[NSNotificationCenter defaultCenter]
-      postNotificationName:@"EditingInRect"
+      postNotificationName:@"ZDetailKitEditingInRect"
       object:nil
     ];
     // call handler if any
