@@ -200,8 +200,6 @@
 // will be called from detailviewcontroller on all other cells when a new cell gets focus
 - (void)defocusCell
 {
-  // Note: direct call works too, at least in iOS 5 - but in older versions probable sometimes not, so we delay it
-  //[textField performSelector:@selector(resignFirstResponder) withObject:nil afterDelay:0];
   [textField resignFirstResponder];
   [super defocusCell];
 }

@@ -96,24 +96,6 @@
 }
 
 
-//%%%
-#warning "%%% input view experiments"
-
-- (UIView *)inputView
-{
-  return [self datePicker];
-}
-
-
-- (BOOL)canBecomeFirstResponder
-{
-  return YES;
-}
-
-
-
-
-
 #pragma mark - cell configuration
 
 
@@ -208,6 +190,22 @@
   }
 }
 
+
+
+
+//%%%
+#warning "%%% input view experiments"
+
+- (UIView *)inputView
+{
+  return [self datePicker];
+}
+
+
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
 
 
 #pragma mark - inplace editing date picker (used as custom input view)
