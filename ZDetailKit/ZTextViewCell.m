@@ -132,8 +132,8 @@
       [self cellEditingRectChanged];
     }
   }
-  // make sure value connector knows about unsaved changes even if KVO does not work
-  self.valueConnector.unsavedChanges = YES;  
+  // make sure value connector knows about unsaved changes even if KVO on textView's text property does not work
+  [self.valueConnector markInternalValueChanged];  
 }
 
 

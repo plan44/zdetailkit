@@ -172,19 +172,13 @@
 #pragma mark - embedded switch
 
 
-- (void)switchChanged
-{
-  // KVO on UISwitch.on does not work, report change
-  self.valueConnector.unsavedChanges = YES;
-}
-
-
 
 - (UISwitch *)switchControl
 {
   if (switchControl==nil) {
     switchControl = [[UISwitch alloc] initWithFrame:CGRectZero];
-    [switchControl addTarget:self action:@selector(switchChanged) forControlEvents:UIControlEventValueChanged];
+    // KVO on UISwitch.on does not work, add target to forward change to value connector
+    [switchControl addTarget:self.valueConnector action:@selector(markInternalValueChanged) forControlEvents:UIControlEventValueChanged];
     [self.contentView addSubview:switchControl];
   }
   return switchControl;

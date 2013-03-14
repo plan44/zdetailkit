@@ -61,20 +61,14 @@
 #pragma mark - embedded slider
 
 
-- (void)sliderChanged
-{
-  // KVO on UISwitch.on does not work, report change
-  self.valueConnector.unsavedChanges = YES;
-}
-
-
 
 - (UISlider *)sliderControl
 {
   if (_sliderControl==nil) {
     _sliderControl = [[UISlider alloc] initWithFrame:CGRectZero];
     _sliderControl.continuous = self.valueConnector.autoSaveValue;
-    [_sliderControl addTarget:self action:@selector(sliderChanged) forControlEvents:UIControlEventValueChanged];
+    // KVO on slider.value does not work, add target to forward change to value connector
+    [_sliderControl addTarget:self.valueConnector action:@selector(markInternalValueChanged) forControlEvents:UIControlEventValueChanged];
     [self.contentView addSubview:_sliderControl];
   }
   return _sliderControl;

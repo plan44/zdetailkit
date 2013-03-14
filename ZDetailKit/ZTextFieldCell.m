@@ -168,13 +168,6 @@
 }
 
 
-- (void)textFieldChanged
-{
-  // make sure value connector knows about unsaved changes even if KVO does not work
-  self.valueConnector.unsavedChanges = YES;
-}
-
-
 - (void)textFieldExited
 {
   [self endedEditingWithGotoNext:NO];  
@@ -253,8 +246,8 @@
     textField.clearButtonMode = self.valueLabel.textAlignment==UITextAlignmentLeft ? UITextFieldViewModeWhileEditing : UITextFieldViewModeNever;
 		// KVO does not catch all changes to textField.text (KVO triggers when field resigns first responder,
     // but that does not always happen reliably in time depending on how view is dismissed
-    // So: we need notice when editing so we can set the value connector dirty
-    [textField addTarget:self action:@selector(textFieldChanged)
+    // So: value connector needs a notice when the value has changed
+    [textField addTarget:self.valueConnector action:@selector(markInternalValueChanged)
     	forControlEvents:UIControlEventEditingChanged
     ];
 		// need notice when done (return/next) key is pressed so we can remove keyboard

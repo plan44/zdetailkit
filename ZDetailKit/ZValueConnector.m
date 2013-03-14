@@ -42,9 +42,26 @@
 @implementation ZValueConnector
 
 
++ (id)connectorForKeyPath:(NSString *)aValuePath inControl:(UIControl *)aControl
+{
+  return [[self alloc] initForKeyPath:aValuePath inControl:aControl];
+}
+
+
 + (id)connectorWithValuePath:(NSString *)aValuePath owner:(id)aOwner;
 {
   return [[self alloc] initWithValuePath:aValuePath owner:aOwner];
+}
+
+
+
+- (id)initForKeyPath:(NSString *)aValuePath inControl:(UIControl *)aControl
+{
+  if ((self = [self initWithValuePath:aValuePath owner:aControl])) {
+    // register for value changes in the control (note: target is not retained, so it will not prevent deallocation of myself)
+    [aControl addTarget:self action:@selector(markInternalValueChanged) forControlEvents:UIControlEventEditingChanged];
+  }
+  return self;
 }
 
 
@@ -587,6 +604,11 @@
 }
 
 
+// mark internal value changed
+- (void)markInternalValueChanged
+{
+  self.unsavedChanges = YES;
+}
 
 
 // explicitly mark unsaved or saved 

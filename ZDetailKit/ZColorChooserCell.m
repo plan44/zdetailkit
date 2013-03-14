@@ -93,7 +93,8 @@
   if (colorChooser==nil) {
     colorChooser = [[ZColorChooser alloc] initWithFrame:CGRectZero];
     colorChooser.delegate = self;
-    [colorChooser addTarget:self action:@selector(colorChanged) forControlEvents:UIControlEventValueChanged];
+    // KVO on colorchooser.color does not work, add target to forward change to value connector
+    [colorChooser addTarget:self.valueConnector action:@selector(markInternalValueChanged) forControlEvents:UIControlEventValueChanged];
     [self.contentView addSubview:colorChooser];
   }
   return colorChooser;
