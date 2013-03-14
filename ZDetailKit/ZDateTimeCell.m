@@ -192,25 +192,43 @@
 
 
 
-#pragma mark - inplace editing date picker (used as custom input view)
+#pragma mark - custom input view
 
 @synthesize datePicker;
 
-#warning "%%% maybe implement shared instance, and just reassign targets when requested"?
+#warning "%%% maybe implement shared instance, and just reassign targets when requested?"
+#warning "%%% should deactivate updating when not in use, maybe even deallocate (weak static??)?"
 
 - (UIDatePicker *)datePicker
 {
   if (datePicker==nil) {
-    // we need a new one
+    // Create a date picker
     datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 1, self.window.frame.size.width , 216)];
     datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
     datePicker.contentMode = UIViewContentModeBottom;
     // set time zone (note that it must be explicitly assigned, as we use datePicker.timeZone for pickerDate adjustment)
-    datePicker.timeZone = [NSTimeZone cachedTimezone];
+    datePicker.timeZone = [NSTimeZone cachedTimezone];    
+    // set up for use with this cell
+    // i.e. make sure THIS cell gets picker events, and previous user not any more (in case of future %%% shared picker)
+    // %%% re-enable these lines once we have a shared picker
+    //    // - remove previous target and recognizers
+    //    [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
+    //    for (UIGestureRecognizer *g in [datePicker.gestureRecognizers copy]) [datePicker removeGestureRecognizer:g];
+    // - add new target
+    [datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
+    // - add gesture recognizer that will never fire, but allows to see when the picker view is touched
+    UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dummySelectorNeverUsed)];
+    tgr.cancelsTouchesInView = NO; // let touches get through
+    tgr.numberOfTapsRequired = 1;
+    tgr.delegate = self;
+    [datePicker addGestureRecognizer:tgr];
+    // adjust minute interval
+    datePicker.minuteInterval = self.minuteInterval;
+    // make sure picker has current data
+    [self updateData];
   }
   return datePicker;
 }
-
 
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
@@ -223,8 +241,6 @@
   return NO;
 }
 
-
-#pragma mark - custom input view
 
 - (UIView *)inputView
 {
@@ -239,10 +255,6 @@
 
 
 
-
-
-
-
 // called to try to begin editing (e.g. getting kbd focus) in this cell. Returns YES if possible
 - (BOOL)beginEditing
 {
@@ -251,30 +263,11 @@
     pickerInstalling = YES;
     // present it (if not already presented)
     [self becomeFirstResponder];
-    // update my own display status
-    [self updateForDisplay];
-    
-    #warning "%%% maybe move to inputView getter"
-    // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
-    // - remove previous target and recognizers
-    [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
-    for (UIGestureRecognizer *g in [datePicker.gestureRecognizers copy]) [datePicker removeGestureRecognizer:g];
-    // - add new target
-    [self.datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
-    // - add gesture recognizer that will never fire, but allows to see when the picker view is touched
-    UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dummySelectorNeverUsed)];
-    tgr.cancelsTouchesInView = NO; // let touches get through
-    tgr.numberOfTapsRequired = 1;
-    tgr.delegate = self;
-    [datePicker addGestureRecognizer:tgr];
-    // adjust minute interval
-    self.datePicker.minuteInterval = self.minuteInterval;
     // now editing can start
     [self startedEditing];
     pickerInstalling = NO;
-    // make sure picker has current data
-    [self updateData];
-    
+    // update my own display status
+    [self updateForDisplay];    
     // in case we have a suggestion, and start date is empty, set it now
     if (!self.startDateConnector.nilAllowed && startDate==nil) {
       // we MUST have a value, apply default
@@ -542,6 +535,7 @@ static id _sd_startDateConnector = nil;
       [sd.suggestedDateConnector connectTo:self keyPath:@"defaultDate"];
       sd.startDateConnector.autoSaveValue = NO;
       sd.autoEnterDefaultDate = !self.startDateConnector.nilAllowed;
+      sd.startDateConnector.autoValidate = YES; // immediately validate to update valueForExternal (for being master, and for actual validation)
       ZDateTimeCell *ed = nil;
       if (self.endDateConnector.connected) {
         // Optional end date
@@ -565,7 +559,6 @@ static id _sd_startDateConnector = nil;
         _sd_startDateConnector = sd.startDateConnector; // %%%
         if (moveEndWithStart) {
           // link to start date as master
-          sd.startDateConnector.autoValidate = YES; // immediately validate to update valueForExternal
           [ed.masterDateConnector connectTo:sd.startDateConnector keyPath:@"valueForExternal"];
         }
         // preventing end before start
