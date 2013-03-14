@@ -139,7 +139,7 @@
 // private methods
 - (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
 - (void)updateTableRepresentationWithAdjust:(BOOL)aWithTableAdjust animated:(BOOL)aAnimated;
-- (void)defocusAllBut:(id)aFocusedCell;
+- (void)defocusAllBut:(UITableViewCell *)aFocusedCell;
 - (NSIndexPath *)indexPathForCell:(UITableViewCell *)aCell;
 @end
 
@@ -1123,16 +1123,33 @@ static NSInteger numObjs = 0;
 }
 
 
-- (void)defocusAllBut:(id)aFocusedCell
+- (void)defocusAllBut:(UITableViewCell *)aFocusedCell
 {
+  // first make sure new cell receives focus (which might include becoming first responder)
+  if (aFocusedCell) {
+    BOOL couldFocus = NO;
+    if ([aFocusedCell conformsToProtocol:@protocol(ZDetailViewCell)]) {
+      couldFocus = [(id<ZDetailViewCell>)aFocusedCell beginEditing];
+    }
+    if (!couldFocus) {
+      // try maing it first responder
+      [aFocusedCell becomeFirstResponder];
+    }
+  }
   // TODO: there's a UIView method endEditing: which finds any first responder
   //   subview and have it resign first responder status (Dave's Tip 2011-07-14)
   //   Might be an option instead of this one
   for (ZDetailViewSection *section in allSectionsAndCells) {
     for (ZDetailViewCellHolder *dvch in section.cells) {
     	// defocus if it's not the specified cell
-    	if (dvch.cell!=aFocusedCell && [dvch.cell conformsToProtocol:@protocol(ZDetailViewCell)])
-      	[(id<ZDetailViewCell>)dvch.cell defocusCell];
+    	if (dvch.cell!=aFocusedCell) {
+        if ([dvch.cell conformsToProtocol:@protocol(ZDetailViewCell)]) {
+          [(id<ZDetailViewCell>)dvch.cell defocusCell];
+        }
+        else {
+          [dvch.cell endEditing:NO];
+        }
+      }
     }
   }
 }
