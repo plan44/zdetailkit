@@ -192,22 +192,6 @@
 
 
 
-
-//%%%
-#warning "%%% input view experiments"
-
-- (UIView *)inputView
-{
-  return [self datePicker];
-}
-
-
-- (BOOL)canBecomeFirstResponder
-{
-  return YES;
-}
-
-
 #pragma mark - inplace editing date picker (used as custom input view)
 
 @synthesize datePicker;
@@ -240,16 +224,37 @@
 }
 
 
+#pragma mark - custom input view
+
+- (UIView *)inputView
+{
+  return [self datePicker];
+}
+
+
+- (BOOL)canBecomeFirstResponder
+{
+  return self.allowsEditing && !self.editInDetailView;
+}
+
+
+
+
+
+
 
 // called to try to begin editing (e.g. getting kbd focus) in this cell. Returns YES if possible
 - (BOOL)beginEditing
 {
   ZDetailTableViewController *dvc = self.detailTableViewController;
-  if (dvc && !self.editInDetailView && self.allowsEditing) {
+  if (dvc && [self canBecomeFirstResponder]) {
     pickerInstalling = YES;
     // present it (if not already presented)
     [self becomeFirstResponder];
-    // TODO: maybe move to inputView getter
+    // update my own display status
+    [self updateForDisplay];
+    
+    #warning "%%% maybe move to inputView getter"
     // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
     // - remove previous target and recognizers
     [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
@@ -269,6 +274,7 @@
     pickerInstalling = NO;
     // make sure picker has current data
     [self updateData];
+    
     // in case we have a suggestion, and start date is empty, set it now
     if (!self.startDateConnector.nilAllowed && startDate==nil) {
       // we MUST have a value, apply default
@@ -287,11 +293,6 @@
   // only if already focused editing started, dismiss custom input view.
   if (self.focusedEditing && !pickerInstalling) {
     [self resignFirstResponder];
-//    ZDetailTableViewController *dvc = self.detailTableViewController;
-//    if (dvc) {
-//      [dvc releaseCustomInputView:datePicker];
-//    }
-//    datePicker = nil;
     [self updateForDisplay];
   }
   [super defocusCell];
