@@ -430,14 +430,14 @@ static NSInteger numObjs = 0;
   // to allow tableview to scroll cell in view
 	UIView *v = [self superview];
   if ([v isKindOfClass:[UITableView class]]) {
-  	UITableView *tv = (UITableView *)v;
-    CGRect r = [tv rectForRowAtIndexPath:[tv indexPathForCell:self]];
+    // cell is subview of a table, which means its frame should be valid
+    CGRect r = self.frame;
     // send rectangle (in tableview coordinates)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:@"ZDetailKitEditingInRect"
       object:[NSValue valueWithCGRect:r]
     ];
-  }  
+  }
 }
 
 
