@@ -129,7 +129,7 @@
     recalcDynamicCellHeight = YES;
     if ([self hasNewCellHeight]) {
       [self setNeedsReloadAnimated:YES];
-      [self cellEditingRectChanged];
+      [self changedEditingRect:self.frame];
     }
   }
   // make sure value connector knows about unsaved changes even if KVO on textView's text property does not work
@@ -144,7 +144,7 @@
   recalcDynamicCellHeight = YES;
   if ([self hasNewCellHeight]) {
     [self setNeedsReloadAnimated:YES];
-    [self cellEditingRectChanged];
+    [self changedEditingRect:self.frame];
   }
   [self endedEditingWithGotoNext:self.returnKeyType==UIReturnKeyNext];
 }

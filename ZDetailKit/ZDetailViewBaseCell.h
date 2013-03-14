@@ -307,7 +307,8 @@ typedef enum {
 - (BOOL)presentingEmptyValue;
 
 /// might be called to communicate that the editing rectangle has changed (such as for live resizing textView)
-- (void)cellEditingRectChanged; 
+/// @param aEditingRect rectangle in table view coords where editing occurs
+- (void)changedEditingRect:(CGRect)aEditingRect;
 
 /// might be called by subclasses to signal start of in-cell editing (like focusing a text field)
 - (BOOL)startedEditing;

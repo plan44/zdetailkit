@@ -79,6 +79,11 @@ typedef enum {
 - (void)setNeedsReloadingCell:(UITableViewCell *)aCell animated:(BOOL)aAnimated;
 /// start editing in next cell (pass nil to start editing in first cell that can edit)
 - (void)beginEditingInNextCellAfter:(UITableViewCell *)aCell;
+/// inform owner of rectangle where editing currently occurs
+/// @param aEditingRect rectangle (in table view, i.e. scroll content coordinates) in which editing
+/// takes place now, and thus should be brought in view. Usually this is the frame of the active cell.
+/// If editing ends, CGRectNull is passed
+- (void)changedEditingRect:(CGRect)aEditingRect;
 @end
 
 
@@ -91,7 +96,7 @@ typedef enum {
 /// reference to the owning object.
 ///
 /// Usually this is a ZDetailTableViewController, but
-/// any other object implemenbe ting the ZDetailCellOwner protocol can be the owner
+/// any other object implementing the ZDetailCellOwner protocol can be the owner
 /// @note this property will automatically set when a cell is added using
 /// one of the [ZDetailTableViewController detailCell:] factory method variants
 @property (assign, nonatomic) id<ZDetailCellOwner> cellOwner;

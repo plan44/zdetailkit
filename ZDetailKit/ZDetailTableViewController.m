@@ -1168,13 +1168,6 @@ static NSInteger numObjs = 0;
 
 - (void)viewDidAppear:(BOOL)aAnimated
 {
-  // install editing start notification handler
-	[[NSNotificationCenter defaultCenter]
-    addObserver:self
-    selector:@selector(editingInRect:)
-    name:@"ZDetailKitEditingInRect"
-    object:nil
-  ];
   // install keyboard hide/show handlers
 	[[NSNotificationCenter defaultCenter]
     addObserver:self
@@ -1280,12 +1273,12 @@ static NSInteger numObjs = 0;
 }
 
 
-- (void)editingInRect:(NSNotification *)aNotification
+// cells report their editing rect here (in tableview coords, usually the cell's frame)
+- (void)changedEditingRect:(CGRect)aEditingRect
 {
 	// save the rectangle where we are editing
-  id obj = [aNotification object];
-  if (obj) {
-    editRect = [obj CGRectValue]; // in table view coordinates
+  editRect = aEditingRect; // in table view coordinates
+  if (!CGRectIsNull(editRect)) {
     focusedEditing = YES;
     DBGSHOWRECT(@"editingInRect (tableView coords)",editRect);
     if (topOfInputView>0) {
@@ -1295,7 +1288,6 @@ static NSInteger numObjs = 0;
   }
   else {
     // editing done
-    editRect = CGRectNull; // note: usually this was already reset before by bringEditRectInView
     focusedEditing = NO; // but receiving this notification means that focused editing is over now
     // now execute pending reloads
     [self checkReloadTable];

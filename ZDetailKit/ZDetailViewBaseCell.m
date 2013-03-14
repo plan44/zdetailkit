@@ -424,19 +424,12 @@ static NSInteger numObjs = 0;
 }
 
 
-- (void)cellEditingRectChanged
+- (void)changedEditingRect:(CGRect)aEditingRect
 {
   // if cell is used in a tableView (it usually is), communicate start of editing
-  // to allow tableview to scroll cell in view
-	UIView *v = [self superview];
-  if ([v isKindOfClass:[UITableView class]]) {
-    // cell is subview of a table, which means its frame should be valid
-    CGRect r = self.frame;
-    // send rectangle (in tableview coordinates)
-    [[NSNotificationCenter defaultCenter]
-      postNotificationName:@"ZDetailKitEditingInRect"
-      object:[NSValue valueWithCGRect:r]
-    ];
+  // or change of size to allow tableview to scroll cell in view
+  if ([cellOwner respondsToSelector:@selector(changedEditingRect:)]) {
+    [cellOwner changedEditingRect:aEditingRect];
   }
 }
 
@@ -445,7 +438,7 @@ static NSInteger numObjs = 0;
 - (BOOL)startedEditing
 {
   // communicate rectangle of cell being edited
-  [self cellEditingRectChanged];
+  [self changedEditingRect:self.frame];
   // flag to prevent multiple editing end events
   focusedEditing = YES;
   // otherwise, this is not considered handling it finally.
@@ -462,10 +455,7 @@ static NSInteger numObjs = 0;
   if (focusedEditing) {
     focusedEditing = NO; // not ending twice!
     // let app know editing has ended
-    [[NSNotificationCenter defaultCenter]
-      postNotificationName:@"ZDetailKitEditingInRect"
-      object:nil
-    ];
+    [self changedEditingRect:CGRectNull];
     // call handler if any
     if (self.editingEndedHandler) {
       handled = self.editingEndedHandler(self);
