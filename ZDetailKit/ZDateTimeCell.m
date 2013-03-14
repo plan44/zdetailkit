@@ -96,6 +96,21 @@
 }
 
 
+//%%%
+#warning "%%% input view experiments"
+
+- (UIView *)inputView
+{
+  return [self datePicker];
+}
+
+
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
+
 
 
 
@@ -247,11 +262,13 @@
   if (dvc && !self.editInDetailView && self.allowsEditing) {
     pickerInstalling = YES;
     // present it (if not already presented)
-    if (!datePicker) {
-      // note: it is important to require the picker only once, to prevent usage count from this cell >1
-      [dvc requireCustomInputView:self.datePicker];
-      [self updateForDisplay];
-    }
+    [self becomeFirstResponder];
+
+//    if (!datePicker) {
+//      // note: it is important to require the picker only once, to prevent usage count from this cell >1
+//      [dvc requireCustomInputView:self.datePicker];
+//      [self updateForDisplay];
+//    }
     // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
     // - remove previous target and recognizers
     [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
@@ -288,11 +305,12 @@
 {
   // only if already focused editing started, dismiss custom input view.
   if (self.focusedEditing && !pickerInstalling) {
-    ZDetailTableViewController *dvc = self.detailTableViewController;
-    if (dvc) {
-      [dvc releaseCustomInputView:datePicker];
-    }
-    datePicker = nil;
+    [self resignFirstResponder];
+//    ZDetailTableViewController *dvc = self.detailTableViewController;
+//    if (dvc) {
+//      [dvc releaseCustomInputView:datePicker];
+//    }
+//    datePicker = nil;
     [self updateForDisplay];
   }
   [super defocusCell];
