@@ -921,7 +921,10 @@ static NSInteger numObjs = 0;
           NSUInteger cidx_target = 0; // cell target index
           NSUInteger rowCorr = 0; // row index correction for table adjustment operations
           for (ZDetailViewCellHolder *cellholder in section.cells) {
-          	TDBGNSLOG(@"Cell #%d in section #%d has nowVisible=%d, group=%d",cidx_src,section.overallSectionIndex,cellholder.nowVisible,cellholder.groupNumber);
+          	TDBGNSLOG(
+              @"Cell #%d in section #%d has nowVisible=%d, neededGroups=%d",
+              cidx_src,section.overallSectionIndex,[cellholder nowVisibleInMode:self.displayMode],cellholder.neededGroups
+            );
             // make sure index is ok
             cellholder.overallRowIndex = cidx_src;
             // get possibly corresponding old cell
@@ -1045,22 +1048,25 @@ static NSInteger numObjs = 0;
       detailTableView.sectionFooterHeight = SECTION_FOOTER_HEIGHT;
       // prepare arrays
       // - clear if already existing
-      [self forgetTableData]; // Note: deactivates cells in the process, as they might 
+      [self forgetTableData]; // Note: deactivates cells in the process
       // - reset groups (do it before building content, as building content might already add/remove groups)
       [self resetGroups];
       // - reset group bitmask generator
       nextGroupFlag = 0x1; // start with Bit 0
       // activate controller-level value connectors already here before building cells,
-      // as these might be needed during build (will be done again at cellsActive)
+      // as these might be needed during build
       [super setActive:YES];
       // Note: subclasses build the content here (by adding sections and cells)
       buildingContent = YES;
       BOOL built = [self buildDetailContent];
-      buildingContent = NO;
       NSAssert(built, @"detail content was not built");
       NSAssert(sectionToAdd==nil,@"unterminated section at end of build");
       // activate the cells, so they can check their values (for detecting empty values that might not need to be shown)
-      self.cellsActive = YES; // activate them now
+      // Note: This is still considered part of building, as otherwise initial group setup
+      // might cause too early calls to updateTableRepresentationWithAdjust
+      self.cellsActive = YES; // activate cells now
+      // now content is built and ready for creating table representation
+      buildingContent = NO;
       // create array of currently visible sections and cells
       [self updateTableRepresentationWithAdjust:NO animated:NO];
       // now reload data
