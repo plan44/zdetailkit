@@ -50,7 +50,7 @@ typedef enum {
 /// ZChoicesManager is the object which manages a ordered and potentially orderable set of choices
 /// for use in editors like ZSegmentChoicesCell and ZChoiceListCell
 ///
-/// The basic asset is the choiceArray, which holds a dictionary for each choice.
+/// The basic asset is the choicesArray, which holds a dictionary for each choice.
 /// Each choice dictionary contains at least a key plus some values to visually represent the
 /// choice (text, summary text, image etc.).
 /// See addChoice: for a description of choice dictionary keys.
@@ -64,6 +64,7 @@ typedef enum {
 /// @name configuration
 
 /// This sets the interfacing mode for the choice manager as follows
+///
 /// - ZChoicesManagerModeSingleKey: the choice is a single choice key value (usually a NSNumber, NSValue, NSString)
 /// - ZChoicesManagerModeKeySet: the choice is a NSSet of choice key values
 /// - ZChoicesManagerModeKeyArray: the choice is a NSArray of choice key values
@@ -107,15 +108,19 @@ typedef enum {
 
 /// Add a new choice
 /// @param aChoiceDict a dictionary representing the choice with the following possible key/values:
+///
 /// - "key" : (id) the object to be used as key for this choice
 /// - "text" : (NSString) textual representation of the choice
 /// - "summary" : (NSString) summarized (short form) representation of the choice. Defaults to "text" if not set
 /// - "order" : (NSNumber) order. Choices are presented sorted ascending by this key first, and "text" next
 ///   (unless order is represented in currentChoice already (ZChoicesManagerModeDictArray and ZChoicesManagerModeChoiceInfoArray modes)
+///
 /// The above are the keys known by ZChoicesManager. Other keys might be used to add to the visual representation
 /// in actual choice editors like ZSegmentChoicesCell and ZChoiceListController/ZChoiceListCell
+///
 /// - "imageName" : a name which can be used with imageNamed: to get a image representing the choice
 /// - "image" : a UIImage representing the choice
+///
 /// @note addChoice: can only be used when the choice manager is not active
 - (void)addChoice:(NSDictionary *)aChoiceDict;
 
@@ -142,6 +147,8 @@ typedef enum {
 
 
 /// reordering support used e.g. by ZChoiceListController
+/// @param aFromIndex original row index
+/// @param aToIndex new row index
 - (void)moveChoiceFrom:(NSInteger)aFromIndex to:(NSInteger)aToIndex;
 
 @end

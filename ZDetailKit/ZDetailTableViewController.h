@@ -257,7 +257,7 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 
 #pragma mark - ZDetailViewBaseCell (ZDetailTableViewControllerUtils)
 
-/// category on ZDetailViewBaseCell providing ZDetailTableViewController related methods
+// category on ZDetailViewBaseCell providing ZDetailTableViewController related methods
 @interface ZDetailViewBaseCell (ZDetailTableViewControllerUtils)
 
 /// returns the owning ZDetailTableViewController (if not owned by another type of UIViewController)

@@ -18,6 +18,7 @@
 
 
 /// activate / deactivate all registered connectors
+/// @param aActive YES to activate connectors, NO to deactivate.
 - (void)setValueConnectorsActive:(BOOL)aActive;
 
 /// save data in all connectors
@@ -34,6 +35,7 @@
 - (BOOL)connectorsValidateWithErrors:(NSMutableArray **)aErrorsP;
 
 /// convenience method to register a value connector with the object
+/// @param aConnector a ZValueConnector, usually created with [ZValueConnector connectorWithValuePath:owner:]
 - (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector;
 
 @end

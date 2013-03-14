@@ -33,7 +33,7 @@ typedef BOOL (^ZDetailCellVisibleInModeHandler)(ZDetailViewBaseCell *aCell, ZDet
 // handler for custom end-of-editing behaviour
 typedef BOOL (^ZDetailCellEditingEndedHandler)(ZDetailViewBaseCell *aCell);
 
-/// Bitmasks to set label adjustments in descriptionViewAdjustment and valueViewAdjustment
+// Bitmasks to set label adjustments in descriptionViewAdjustment and valueViewAdjustment
 typedef enum {
   ZDetailCellItemAdjustNone = 0,
   ZDetailCellItemAdjustLeft = 0x01,
@@ -51,9 +51,22 @@ typedef enum {
 
 
 /// Base cell for use in ZDetailTableViewController
+///
+/// ZDetailViewBaseCell can be initialized and used like a regular UITableViewCell.
+/// It provides extensions over UITableViewCell in three main regards
+///
+/// - the style parameter passed in initWithStyle:reuseIdentifier:
+///   can contain additional flags (see ZDetailViewCellStyleXXXX definitions) to enable many extra
+///   automatic layout features for managing the description and value texts (for both cases when
+///   using the UITableViewCell built-in UILabels and also when using other UIView or UIControls).
+/// - ZDetailViewBaseCell is designed to interface in various ways with ZDetailTableViewController, by passing
+///   events, allowing cells to show/hide based on contents, provide view controllers (editors) for editing
+///   a cell's content and much more.
+/// - Support for embedded ZValueConnector objects to dynamically bind cell contents to model attributes,
+///   including save/cancel functionality, validation, value conversion and text formatting.
+///
+/// ZDetailViewBaseCell's behaviour can be customized in many ways by assigning handler blocks for various events.
 @interface ZDetailViewBaseCell : UITableViewCell <ZDetailViewCell, ZValueConnectorOwner, ZValueConnectorContainer>
-
-/// @name ZDetailViewCell basics
 
 /// @name Initializing a cell
 
