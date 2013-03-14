@@ -578,6 +578,7 @@
 - (void)pushViewControllerForDetail:(UIViewController *)aViewController fromCell:(id<ZDetailViewCell>)aCell animated:(BOOL)aAnimated
 {
   [self prepareForPresentingDetailViewController:aViewController fromCell:aCell];
+  disappearsUnderPushed = YES;
   [self.navigationController pushViewController:aViewController animated:aAnimated];
 }
 
