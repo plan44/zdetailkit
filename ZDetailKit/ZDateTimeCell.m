@@ -212,29 +212,17 @@
 
 @synthesize datePicker;
 
-#define ZDATETIMECELL_INPUTVIEW_TAG 27142178
+#warning "%%% maybe implement shared instance, and just reassign targets when requested"?
 
 - (UIDatePicker *)datePicker
 {
   if (datePicker==nil) {
-    // check if current custom input view is of right type - if so, reuse it
-    ZDetailTableViewController *dvc = self.detailTableViewController;
-    if (dvc) {
-      UIView *iv = dvc.customInputView;
-      if (iv && iv.tag==ZDATETIMECELL_INPUTVIEW_TAG && [iv isKindOfClass:[UIDatePicker class]]) {
-        // we can use this as-is
-        datePicker = (UIDatePicker *)iv;
-      }
-    }
-    if (datePicker==nil) {
-      // we need a new one
-      datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 1, self.window.frame.size.width , 216)];
-      datePicker.tag = ZDATETIMECELL_INPUTVIEW_TAG; // mark it as one of mine
-      datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
-      datePicker.contentMode = UIViewContentModeBottom;
-      // set time zone (note that it must be explicitly assigned, as we use datePicker.timeZone for pickerDate adjustment)
-      datePicker.timeZone = [NSTimeZone cachedTimezone];
-    }
+    // we need a new one
+    datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 1, self.window.frame.size.width , 216)];
+    datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
+    datePicker.contentMode = UIViewContentModeBottom;
+    // set time zone (note that it must be explicitly assigned, as we use datePicker.timeZone for pickerDate adjustment)
+    datePicker.timeZone = [NSTimeZone cachedTimezone];
   }
   return datePicker;
 }
@@ -261,19 +249,14 @@
     pickerInstalling = YES;
     // present it (if not already presented)
     [self becomeFirstResponder];
-
-//    if (!datePicker) {
-//      // note: it is important to require the picker only once, to prevent usage count from this cell >1
-//      [dvc requireCustomInputView:self.datePicker];
-//      [self updateForDisplay];
-//    }
+    // TODO: maybe move to inputView getter
     // in all cases, make sure THIS object gets picker events, and previous user doesn't any more
     // - remove previous target and recognizers
     [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
     for (UIGestureRecognizer *g in [datePicker.gestureRecognizers copy]) [datePicker removeGestureRecognizer:g];
     // - add new target
     [self.datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
-    // - add gesture recognizer that will never fire, but allows to see when the mapview is touched
+    // - add gesture recognizer that will never fire, but allows to see when the picker view is touched
     UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dummySelectorNeverUsed)];
     tgr.cancelsTouchesInView = NO; // let touches get through
     tgr.numberOfTapsRequired = 1;

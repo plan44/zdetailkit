@@ -124,8 +124,7 @@
   CGRect editRect; // navigation controller view coordinates of where next edit area is (needed to move it in view when input views show)
   BOOL focusedEditing; // set during focused editing
   CGSize inputViewSize;
-  CGFloat topOfInputView; // if >=0, keyboard or custom input view is up and inputViewSize valid
-  NSInteger customInputViewUsers; // number of cells that have requested but not yet released the current input view
+  CGFloat topOfInputView; // if >=0, keyboard or other input view is up and inputViewSize valid
   // temporary for constructing sections
   ZDetailViewSection *sectionToAdd;
   BOOL buildingContent;
@@ -177,9 +176,6 @@
   defaultCellStyle = ZDetailViewCellStyleDefault|ZDetailViewCellStyleFlagInherit;
   defaultValueCellShare = ZDetailViewCellValueCellShareNone; // none set
   buildingContent = NO;
-  // no custom input view
-  customInputView = nil;
-  customInputViewUsers = 0;
   // input view control
   topOfInputView = -1;
   inputViewSize = CGSizeZero;
@@ -759,8 +755,6 @@ static NSInteger numObjs = 0;
 - (void)detailViewDidClose:(BOOL)aAnimated
 {
   [super detailViewDidClose:aAnimated];
-  // close custom input view in case we have any
-  [self removeCustomInputViewAnimated:NO];
 }
 
 
@@ -1208,10 +1202,6 @@ static NSInteger numObjs = 0;
   ];
   // super
 	[super viewDidAppear:aAnimated];
-  // bring up custom input view in case we have one already now
-  if (customInputView) {
-    [self showCustomInputViewAnimated:YES];
-  }
 }
 
 
@@ -1350,10 +1340,6 @@ static NSInteger numObjs = 0;
 
 - (void)keyboardWillShow:(NSNotification *)aNotification
 {
-  // dismiss other input view that might be present (not yet in iPad modal views)
-  if (self.modalViewWrapper==nil || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-    [self removeCustomInputViewAnimated:YES];
-  }
   // get info about keyboard and window (received in screen coordinates)
   // - keyboard frame
   CGRect kf = [[[aNotification userInfo] valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue]; // keyboard frame in windows coords
@@ -1372,7 +1358,6 @@ static NSInteger numObjs = 0;
   // in modal views on iPad, we need to wait until here, because only now all view resizing
   // magic caused by keyboard appearance is done
   if (self.modalViewWrapper && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-    [self removeCustomInputViewAnimated:NO];
     [self makeRoomForInputViewOfSize:inputViewSize];
   }
 }
@@ -1391,9 +1376,6 @@ static NSInteger numObjs = 0;
 }
 
 
-@synthesize customInputView;
-
-
 - (UIViewController *)currentRootViewController
 {
   //%%% alternative:
@@ -1404,171 +1386,6 @@ static NSInteger numObjs = 0;
   }
   UIViewController *v = w.rootViewController;
   return v;
-}
-
-
-- (UIView *)parentViewForInputView
-{
-  // best fit is my own navigation controller.
-  // In all but weird cases we should have a navigation controller
-  // as no detail subview will work without.
-  if (self.navigationController) {
-    return self.navigationController.view;
-  }
-  return nil;
-// %%% this was the best working assumption until I realized we always have a nav controller...
-//  // find the first non-scrollview superview of my own view
-//  // Note: - without special setup, my view is the UITableView, and its superView is a wrapper
-//  //       - but my view might be a regular view that holds the table plus some other stuff
-//  UIView *v = self.view;
-//  while (v && [v isKindOfClass:[UIScrollView class]]) {
-//    v = v.superview;
-//  }
-//  if (v) {
-//    // Now v is a non-scrolling view. The target for the input view is its superview
-//    v = v.superview;
-//  }
-//  return v;
-}
-
-
-- (void)showCustomInputViewAnimated:(BOOL)aAnimated
-{
-  if (customInputView) {
-    customInputView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth; // keep at bottom of view we place it in, and full width
-    UIView *viewToAddInputView = self.parentViewForInputView; // input view needs to be anchored in non-scrolling superview of the table
-    CGRect appearanceRect = viewToAddInputView.bounds;
-    CGRect vf = customInputView.frame; // viewToAddInputView coords
-    // size input view to root view width
-    vf.size.width = appearanceRect.size.width;
-    vf.origin.x = appearanceRect.origin.x;
-    // starts off-screen at bottom
-    vf.origin.y = appearanceRect.origin.y+appearanceRect.size.height;
-    // have table adjust for showing input view
-    // - relative to rootviewcontroller
-    CGRect gf = self.currentRootViewController.view.bounds; // rootViewController frame
-    CGPoint lowerLeftCorner = [viewToAddInputView convertPoint:vf.origin toView:self.currentRootViewController.view];
-    CGSize sizeFromBottom = vf.size;
-    sizeFromBottom.height += gf.origin.y+gf.size.height-lowerLeftCorner.y;
-    [self makeRoomForInputViewOfSize:sizeFromBottom];
-    // now present
-    DBGNSLOG(@"viewToAddInputView: %@",viewToAddInputView.description);
-    DBGSHOWRECT(@"customInputView.frame (viewToAddInputView coords)",vf);
-    // slide up from below like keyboard
-    if (aAnimated) {
-      // add in off-window position
-      customInputView.frame = vf;
-      [viewToAddInputView addSubview:customInputView];
-      // animate in
-      [UIView animateWithDuration:0.25
-        animations:^{
-          CGRect avf = vf;
-          avf.origin.y -= avf.size.height;
-          customInputView.frame = avf;
-        }
-      ];
-    }
-    else {
-      // add in final position
-      vf.origin.y -= vf.size.height; // calc final position
-      customInputView.frame = vf;
-      [viewToAddInputView addSubview:customInputView];
-    }
-  }
-}
-
-
-- (void)reanchorInputView
-{
-  if (customInputView) {
-    CGRect f = [self.view convertRect:customInputView.frame fromView:customInputView.superview];
-    [customInputView removeFromSuperview];
-    customInputView.frame = f;
-    [self.view addSubview:customInputView];
-  }
-}
-
-
-- (void)removeCustomInputViewAnimated:(BOOL)aAnimated
-{
-  if (customInputView) {
-    [self reanchorInputView];
-    customInputView.autoresizingMask = UIViewAutoresizingNone; // prevent autresizing magic for disappearing
-    // Note: animation behaviour is very strange (animation gets aborted and customInputView is
-    // animated to 0,0 origin without a reason I see) during dismissal, so we just suppress
-    // animation for that case.
-    if (aAnimated) {
-      // have table re-adjust to no input view shown
-      [self releaseRoomForInputView];
-      // slide out
-      UIView *civ = customInputView;
-      [UIView animateWithDuration:0.25 animations:^{
-        CGRect avf = civ.frame;
-        avf.origin.y += avf.size.height;
-        civ.frame = avf;
-      }
-      completion:^(BOOL finished) {
-        if (finished) {
-          [civ removeFromSuperview];
-        }
-      }];
-    }
-    else {
-      // just remove
-      [customInputView removeFromSuperview];
-    }
-    // forget
-    customInputView = nil;
-    customInputViewUsers = 0;
-    // finally, always remove the extra footer
-    if (detailTableView) {
-      detailTableView.tableFooterView = nil;
-    }
-  }
-}
-
-
-- (void)requireCustomInputView:(UIView *)aCustomInputView
-{
-  if (aCustomInputView==customInputView) {
-    // same input view as before, increase usage count only
-    customInputViewUsers++;
-  }
-  else {
-    // different input view
-    if (customInputView) {
-      [self removeCustomInputViewAnimated:YES];
-    }
-    else {
-      // we had no custom input view, but possibly the keyboard
-      // - dismiss it
-      [self.detailTableView endEditing:NO]; // not forced
-    }
-    customInputView = aCustomInputView;
-    customInputViewUsers = 1;
-    // present at bottom of current window
-    if (self.hasAppeared) {
-      // already appeared - do it now
-      [self showCustomInputViewAnimated:YES];
-    }    
-  }
-  DBGNSLOG(@"Requested custom input view, current users now = %d",customInputViewUsers);
-}
-
-
-- (void)releaseCustomInputView:(UIView *)aNilOrCustomInputView
-{
-  // if view passed, check if it's really ours - protection against late defocusing
-  if (!customInputView || (aNilOrCustomInputView && aNilOrCustomInputView!=customInputView))
-    return; // no current input view, or view has nothing todo with caller's
-  // one user less
-  if (customInputViewUsers>0)
-    customInputViewUsers--;
-  DBGNSLOG(@"Released custom input view, remaining users = %d",customInputViewUsers);
-  if (customInputViewUsers==0) {
-    // last user gone - remove it
-    [self removeCustomInputViewAnimated:YES];
-  }
 }
 
 

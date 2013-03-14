@@ -35,7 +35,6 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 /// - cell grouping to expand/collapse subsections of a table depending on other settings, like a
 ///   switch.
 /// - Managing the keyboard and smoothly moving editors in view when the keyboard appears
-/// - Custom input views (e.g. date picker for ZDateTimeCell), sliding in and out in a keyboard-like fashion.
 ///
 /// Simplest usage of ZDetailTableViewController is setting the buildDetailContentHandler property
 /// with a block which creates some detail editing fields (cells) using the detailCell:withStyle: family of
@@ -209,35 +208,6 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 
 /// if set, first editable field will receive eding focus when detailview appears. Default is NO.
 @property (assign, nonatomic) BOOL autoStartEditing;
-
-/// @name custom input view management (keyboard-alike, for example date chooser)
-
-/// editor cells can call this method to request presentation of a custom input view, which is
-/// then animated into the screen (or page/sheet in iPad modal views) similar to the keyboard
-/// @param aCustomInputView the view that should be presented as input view. It should be a UIView
-/// which can be horizontally resized (for landscape views and for iPad). For example a UIPicker view
-/// with autoresizeMask set to flexible right and left margins.
-/// @note calls to requireCustomInputView: need to be matched by calls to releaseCustomInputView:
-/// @note requireCustomInputView is usually called from beginEditing in a ZDetailViewBaseCell subclass
-///  (see ZDateTimeCell for an example)
-/// @note ZDetailTableViewController can manage a single input view shared by multiple cells.
-///  To use this feature, cells should first check the customInputView property to see if the needed
-///  view is already set, and if so, call requireCustomInputView with it. This prevents the same input view
-///  to animate out and in again when focus moves to the next cell.
-- (void)requireCustomInputView:(UIView *)aCustomInputView;
-
-/// editors that present a custom input view with requireCustomInputView: must call releaseCustomInputView:
-/// when editing is done to make the custom input view disappear.
-/// @param aNilOrCustomInputView pass the same view as for requireCustomInputView: here. It is possible
-///  to pass nil to just release the current input view, however this is not recommended in situations where
-///  other cells might have installed another inputView in the meantime.
-/// @note releaseCustomInputView is usually called from defocusCell in a ZDetailViewBaseCell subclass
-///  (see ZDateTimeCell for an example)
-- (void)releaseCustomInputView:(UIView *)aNilOrCustomInputView;
-
-/// returns currently visible custom input view, or nil when there is none.
-/// @note see requireCustomInputView: for information how to use this for shared input views.
-@property (readonly, nonatomic) UIView *customInputView;
 
 
 /// @name utilities for subclasses
