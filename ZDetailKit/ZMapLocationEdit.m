@@ -10,6 +10,7 @@
 
 #import <AddressBook/AddressBook.h>
 
+#import "ZTransparentTouchDetector.h"
 
 @interface ZMapLocationEdit () {
   // edited values
@@ -222,27 +223,17 @@
 
 
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-{
-  // there's a touch in the map, remove the keyboard
-  [locationTextField resignFirstResponder];
-  // ...but always pretend we're not interested in the touch at all, so mapView will work as normal
-  return NO;
-}
-
-
 #pragma mark - appearance
 
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  // add gesture recognizer that will never fire, but allows to see when the mapview is touched
-  UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dummySelectorNeverUsed)];
-  tgr.cancelsTouchesInView = NO; // let touches get through
-  tgr.numberOfTapsRequired = 1;
-  tgr.delegate = self;
-  [mapView addGestureRecognizer:tgr];
+  // add detector to see when the mapview is touched
+  [mapView addGestureRecognizer:[ZTransparentTouchDetector transparentTouchDetectorWithHandler:^(ZTransparentTouchDetector *aGestureRecognizer) {
+    // there's a touch in the map, remove the keyboard
+    [locationTextField resignFirstResponder];
+  }]];
 }
 
 
