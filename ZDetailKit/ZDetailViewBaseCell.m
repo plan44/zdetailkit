@@ -15,8 +15,9 @@
 {
   // non-public instance vars
   BOOL needsDisplayUpdate;
-  // normal description label color (used to remember during validation errors)
+  // normal description label colors (used to remember during validation errors)
   UIColor *nonErrorTextColor;
+  UIColor *nonErrorHighlightedTextColor;
   // measured values for content indenting
   CGFloat contentLeftMargin; // origin.x of contentView in non-tableedit mode relative to its superview
   CGFloat contentRightMargin; // right margin (space to size of superview on the right)
@@ -63,6 +64,7 @@
   valueViewAdjustment = ZDetailCellItemAdjustMiddle;
   // - other internals
   nonErrorTextColor = nil;
+  nonErrorHighlightedTextColor = nil;
   imageViewInUse = NO; // will be set when imageView property is first accessed
   // - measured values for content indent
   contentLeftMargin = -1; // not yet measured
@@ -403,14 +405,16 @@ static NSInteger numObjs = 0;
 // called when validation status changes (so subclasses can show/hide in-cell notices)
 - (void)updateValidationStatusError:(NSError *)aError
 {
-  // %%% simplistic mechanism in base class: make label red when we have an error
+  // Simple mechanism in base class: make label red when we have an error
   if (aError) {
-    if (nonErrorTextColor==nil)
-      nonErrorTextColor = self.descriptionLabel.textColor; // capture this
+    if (nonErrorTextColor==nil) nonErrorTextColor = self.descriptionLabel.textColor; // capture this
+    if (nonErrorHighlightedTextColor==nil) nonErrorHighlightedTextColor = self.descriptionLabel.highlightedTextColor; // capture this
     self.descriptionLabel.textColor = [UIColor redColor];
+    self.descriptionLabel.highlightedTextColor = [UIColor colorWithRed:1.000 green:0.289 blue:0.294 alpha:1.000]; // light red has better contrast
   }
   else {
     self.descriptionLabel.textColor = nonErrorTextColor;
+    self.descriptionLabel.highlightedTextColor = nonErrorHighlightedTextColor;
   }
 }
 

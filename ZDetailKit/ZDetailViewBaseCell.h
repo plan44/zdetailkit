@@ -301,14 +301,12 @@ typedef enum {
 - (void)updateForDisplay;
 
 /// called when validation status changes (so subclasses can show/hide in-cell notices)
+/// @note base class' default implementation is setting the descriptionLabel's text color to red when there is a validation error
 - (void)updateValidationStatusError:(NSError *)aError;
 
-/// should return true when cell is presenting an empty value (such that empty cells can be hidden in some modes)
+/// should return true when cell is presenting an empty value (according to cell's own semantics),
+/// such that empty cells can be automatically hidden when using a ZDetailDisplayModeXXXXXNonEmpty flag in showInModes
 - (BOOL)presentingEmptyValue;
-
-/// might be called to communicate that the editing rectangle has changed (such as for live resizing textView)
-/// @param aEditingRect rectangle in table view coords where editing occurs
-- (void)changedEditingRect:(CGRect)aEditingRect;
 
 /// might be called by subclasses to signal start of in-cell editing (like focusing a text field)
 - (BOOL)startedEditing;
@@ -335,6 +333,12 @@ typedef enum {
 
 /// call when reloading this cell (re-fetching data from connected model) is needed
 - (void)setNeedsReloadAnimated:(BOOL)aAnimated;
+
+/// should be called to communicate that the editing rectangle has changed (such as for live resizing textView)
+/// ZDetailTableViewController uses this information to scroll edited cells such that they are not obscured by
+/// the keyboard or other input views.
+/// @param aEditingRect rectangle in table view coords where editing occurs
+- (void)changedEditingRect:(CGRect)aEditingRect;
 
 
 @end
