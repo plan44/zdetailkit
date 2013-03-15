@@ -389,17 +389,6 @@ static NSInteger numObjs = 0;
   ZDetailViewCellHolder *ch = [[ZDetailViewCellHolder alloc] initWithCell:aCell neededGroups:aNeededGroups];
   ch.cellEnabled = aNowEnabled;
   [sectionToAdd.cells addObject:ch];
-  // add detector to see when the view is touched
-  [aCell addGestureRecognizer:[ZTransparentTouchDetector transparentTouchDetectorWithHandler:^(ZTransparentTouchDetector *aGestureRecognizer) {
-    // there's a touch in a cell, defocus others
-    if (self.defocusOnTouch && [aGestureRecognizer.view conformsToProtocol:@protocol(ZDetailViewCell)]) {
-      id<ZDetailViewCell> dvc = (id<ZDetailViewCell>)aGestureRecognizer.view;
-      if (dvc.tapClaimsFocus) {
-        // now defocus others
-        [self defocusAllBut:(UITableViewCell *)dvc];
-      }
-    }
-  }]];
   // configure if it is a ZDetailViewCell
   if ([aCell conformsToProtocol:@protocol(ZDetailViewCell)]) {
     id<ZDetailViewCell> dvc = (id<ZDetailViewCell>)aCell;
