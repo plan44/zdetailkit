@@ -400,12 +400,15 @@
 
 - (void)setStartDate:(NSDate *)aStartDate
 {
+  BOOL unsaved = NO;
   if (aStartDate==nil && self.autoEnterDefaultDate) {
     aStartDate = self.defaultDate;
-    self.startDateConnector.unsavedChanges = YES;
+    unsaved = YES; // we modified the start date
   }
   if (!sameDate(aStartDate, startDate)) {
     startDate = aStartDate;
+    if (unsaved)
+      self.startDateConnector.unsavedChanges = YES; // change from within, unsaved now
     [self updateData];
   }
 }
@@ -504,11 +507,6 @@
 
 #pragma mark - detail editor
 
-static id _sd = nil;
-static id _sd_dateOnlyConnector = nil; // %%%
-static id _adsw_valueConnector = nil;
-static id _sd_startDateConnector = nil;
-
 - (UIViewController *)editorForTapInAccessory:(BOOL)aInAccessory
 {
   ZDetailTableViewController *dtvc = nil;
@@ -522,7 +520,6 @@ static id _sd_startDateConnector = nil;
       [c startSection];
       // Start date
       ZDateTimeCell *sd = [c detailCell:[ZDateTimeCell class]];
-      _sd = sd; // %%%
       sd.labelText = self.calculatedStartDateLabelText;
       sd.clearDateButtonText = self.clearDateButtonText; // inherit as it switches off clear button accessory if we have a common clear button
       sd.minuteInterval = self.minuteInterval;
@@ -556,7 +553,6 @@ static id _sd_startDateConnector = nil;
         sd.keepSelectedAfterTap = YES;
         ed.keepSelectedAfterTap = YES;
         // moving end with start
-        _sd_startDateConnector = sd.startDateConnector; // %%%
         if (moveEndWithStart) {
           // link to start date as master
           [ed.masterDateConnector connectTo:sd.startDateConnector keyPath:@"valueForExternal"];
@@ -588,13 +584,11 @@ static id _sd_startDateConnector = nil;
       if (self.dateOnlyConnector.connected && self.dateOnlyConnector.readonly==NO) {
         // Optional allday switch if allday status is not readonly
         ZSwitchCell *adsw = [c detailCell:[ZSwitchCell class]];
-        _adsw_valueConnector = adsw.valueConnector; // %%%
         adsw.labelText = self.dateOnlyLabelText;
         [adsw.valueConnector connectTo:self.dateOnlyConnector keyPath:@"internalValue"];
         adsw.valueConnector.autoSaveValue = NO;
         adsw.valueConnector.autoValidate = YES; // immediately validate to update valueForExternal
         // - connect the allday of the start and end (optional) dates to this switch's internal value
-        _sd_dateOnlyConnector = sd.dateOnlyConnector; // %%%
         [sd.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"valueForExternal"];
         if (ed) [ed.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"valueForExternal"];
         // prevent tapping cells from defocusing other cells

@@ -372,22 +372,22 @@
   }
   /* inplace dateTime cell */ {
     ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class] neededGroups:GROUP_DATETIME];
-    d.startDateLabelText = @"Start Date";
+    d.startDateLabelText = @"Single Date";
     d.editInDetailView = NO;
     d.startDateConnector.nilAllowed = YES;
-    [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
+    [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"singleDate"];
     [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
     d.startDateConnector.autoSaveValue = YES;
     d.dateOnlyConnector.autoSaveValue = YES;
   }
-  /* inplace dateTime cell */ {
+  /* dateTime cell with separate editor */ {
     ZDateTimeCell *d = [c detailCell:[ZDateTimeCell class] neededGroups:GROUP_DATETIME];
-    d.startDateLabelText = @"Start Date";
+    d.startDateLabelText = @"Single Date";
     d.dateOnlyLabelText = @"Allday";
     d.clearDateButtonText = @"No date";
     d.editInDetailView = YES;
     d.startDateConnector.nilAllowed = YES;
-    [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
+    [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"singleDate"];
     [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
     d.startDateConnector.autoSaveValue = YES;
     d.dateOnlyConnector.autoSaveValue = YES;
@@ -406,6 +406,7 @@
     [d.startDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"startDate"];
     [d.endDateConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"endDate"];
     [d.dateOnlyConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"dateOnly"];
+    d.suggestedDuration = 60*60; // one hour
     d.startDateConnector.autoSaveValue = YES;
     d.endDateConnector.autoSaveValue = YES;
     d.dateOnlyConnector.autoSaveValue = YES;
