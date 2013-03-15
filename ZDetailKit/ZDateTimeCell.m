@@ -518,7 +518,6 @@ static UIDatePicker *sharedDatePicker = nil;
     dtvc.navigationMode = ZDetailNavigationModeLeftButtonCancel+ZDetailNavigationModeRightButtonSave;
     [dtvc setBuildDetailContentHandler:^(ZDetailTableViewController *c) {
       c.autoStartEditing = YES; // auto-start editing in the first field
-      c.defocusOnTouch = NO; // do not defocus
       c.detailTableView.scrollEnabled = NO; // prevent scrolling
       [c startSection];
       // Start date

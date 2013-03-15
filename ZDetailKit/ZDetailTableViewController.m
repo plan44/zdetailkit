@@ -169,7 +169,6 @@
   currentSectionsAndCells = nil;
   currentSectionsAndCellsDirty = YES;
   scrollEnabled = YES;
-  defocusOnTouch = YES;
   needsReloadTable = NO;
   autoStartEditing = NO;
   // section construction
@@ -376,9 +375,6 @@ static NSInteger numObjs = 0;
   [self endSection];
 }
 
-
-
-@synthesize defocusOnTouch;
 
 
 // Add a new detail cell (private methods, basis for the the nicer APIs below)
