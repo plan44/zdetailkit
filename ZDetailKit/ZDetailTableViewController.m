@@ -1195,18 +1195,23 @@ static NSInteger numObjs = 0;
 }
 
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+  // remove input views when rotating, to avoid editing rect being out of view after rotation
+  [self.view endEditing:NO];
+}
+
+
 
 - (void)bringEditRectInView
 {
   if (!CGRectIsNull(editRect)) {
-    // edit rect is in coordinates of the navigation controller, which might have been moved already by
-    // iOS keyboard appearance logic (e.g. form sheets or popovers are moved up)
-    // - convert edit rect from tableview coordinates to now-current (possibly already moved) root view controller coordinates 
-    CGRect er = [self.detailTableView convertRect:editRect toView:self.currentRootViewController.view];
+    // edit rect is in coordinates of the table view (scrolling content view)
+    CGRect er = [self.detailTableView convertRect:editRect toView:self.fullScreenViewRotated];
     // see if keyboard will obscure the rectangle being edited
     CGFloat minYthatMustBeVisible = er.origin.y+er.size.height+MIN_SPACE_ABOVE_KBD;
     // also check if possibly detailview itself has been moved/resized such that we need to scroll even further
-    CGRect nv = [self.view.superview convertRect:self.view.frame toView:self.currentRootViewController.view];
+    CGRect nv = [self.view.superview convertRect:self.view.frame toView:self.fullScreenViewRotated];
     CGFloat bottomOfDetailView = nv.origin.y+nv.size.height;
     DBGNSLOG(@"Start: minYthatMustBeVisible=%f, bottomOfDetailView=%f, topOfInputView=%f", minYthatMustBeVisible, bottomOfDetailView, topOfInputView);
     // calculate how much to scroll to make sure we see the editRect above the input view
@@ -1232,7 +1237,7 @@ static NSInteger numObjs = 0;
       // check if upper end of edit rectangle is currently visible
       CGFloat ymin = er.origin.y-MIN_MARGIN_ABOVE_EDITRECT;
       // relative to content
-      CGFloat yrel = [self.detailTableView convertPoint:CGPointMake(0, ymin) fromView:self.currentRootViewController.view].y;
+      CGFloat yrel = [self.detailTableView convertPoint:CGPointMake(0, ymin) fromView:self.fullScreenViewRotated].y;
       // relative to top of visible part
       CGPoint co = detailTableView.contentOffset;
       yrel -= co.y;
@@ -1273,7 +1278,8 @@ static NSInteger numObjs = 0;
 - (void)makeRoomForInputViewOfSize:(CGSize)aInputViewSize
 {
   // get root view controller's bounds, which should be fullscreen, but rotated to current orientation 
-  CGRect rvcb = self.currentRootViewController.view.bounds;
+  CGRect rvcb = self.fullScreenViewRotated.bounds;
+  DBGSHOWRECT(@"makeRoomForInputViewOfSize: self.fullScreenViewRotated.bounds",rvcb);
   topOfInputView = rvcb.size.height-aInputViewSize.height; // in root view coords
   // always add a table footer with the size of the input view plus min space - this makes the table scrollable up to show last cell above the input view
 	if (detailTableView.tableFooterView==nil) {
@@ -1346,12 +1352,34 @@ static NSInteger numObjs = 0;
 - (UIViewController *)currentRootViewController
 {
   //%%% alternative:
-  //UIWindow *w = self.view.window;
-  UIWindow *w = detailTableView.window;
+  //UIWindow *w = detailTableView.window;
+  UIWindow *w = self.view.window;
+  DBGNSLOG(@"self.view.window = %@",w);
   if (w==nil) {
     return nil;
   }
-  UIViewController *v = w.rootViewController;
+  UIViewController *vc = w.rootViewController;
+  return vc;
+}
+
+
+// the full screen view rotated 
+- (UIView *)fullScreenViewRotated
+{
+  UIViewController *rvc = self.currentRootViewController;
+  UIView *v = nil;
+  while (rvc) {
+    v = rvc.view;
+    UIWindow *w = v.window;
+    if (w!=nil) break;
+    // root view might have no window if a full screen view has been presented on top of it
+    // -> we need to check controllers which are presented by this controller
+    UIViewController *next = rvc.presentedViewController;
+    if (next==rvc) return v; // safeguard around cycles
+    DBGNSLOG(@"rootview has no window - checking presentedViewController");
+    rvc = next;
+  }
+  DBGNSLOG(@"fullScreenViewRotated = %@",v);
   return v;
 }
 
