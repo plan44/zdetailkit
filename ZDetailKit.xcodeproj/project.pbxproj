@@ -135,6 +135,8 @@
 		EDA57D7216D040020044EB9C /* ZDetailViewBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED03B83616D037D800ADA844 /* ZDetailViewBaseController.m */; };
 		EDB2F49016D57CD600C6EAD6 /* ZDTC_delbtn.png in Resources */ = {isa = PBXBuildFile; fileRef = EDB2F48E16D57CD600C6EAD6 /* ZDTC_delbtn.png */; };
 		EDB2F49116D57CD600C6EAD6 /* ZDTC_delbtn@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EDB2F48F16D57CD600C6EAD6 /* ZDTC_delbtn@2x.png */; };
+		EDC3845616F37FBB00F0F361 /* ZTransparentTouchDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = EDC3845516F37FBB00F0F361 /* ZTransparentTouchDetector.m */; };
+		EDC3845716F37FBB00F0F361 /* ZTransparentTouchDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = EDC3845516F37FBB00F0F361 /* ZTransparentTouchDetector.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -260,6 +262,8 @@
 		ED9ABF3416D7897B00DA0E1A /* ZCustomI8n.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCustomI8n.m; sourceTree = "<group>"; };
 		EDB2F48E16D57CD600C6EAD6 /* ZDTC_delbtn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ZDTC_delbtn.png; sourceTree = "<group>"; };
 		EDB2F48F16D57CD600C6EAD6 /* ZDTC_delbtn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ZDTC_delbtn@2x.png"; sourceTree = "<group>"; };
+		EDC3845416F37FBB00F0F361 /* ZTransparentTouchDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTransparentTouchDetector.h; sourceTree = "<group>"; };
+		EDC3845516F37FBB00F0F361 /* ZTransparentTouchDetector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTransparentTouchDetector.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -452,6 +456,8 @@
 				ED1F708B15BDA4100046CFBC /* ZColor_utils.m */,
 				ED321F4A16D9933F00CB76B1 /* ZKeyChainWrapper.h */,
 				ED321F4B16D9933F00CB76B1 /* ZKeyChainWrapper.m */,
+				EDC3845416F37FBB00F0F361 /* ZTransparentTouchDetector.h */,
+				EDC3845516F37FBB00F0F361 /* ZTransparentTouchDetector.m */,
 			);
 			path = ZUtils;
 			sourceTree = "<group>";
@@ -701,6 +707,7 @@
 				ED81B80916D1404F00ED1F3F /* ZStringToCoordinate2DTransformer.m in Sources */,
 				ED81B87C16D65F8200ED1F3F /* NSObject+ZValueConnectorContainer.m in Sources */,
 				ED9ABF3516D7897B00DA0E1A /* ZCustomI8n.m in Sources */,
+				EDC3845716F37FBB00F0F361 /* ZTransparentTouchDetector.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -743,6 +750,7 @@
 				ED321F2516D97C7300CB76B1 /* ZColorChooser.m in Sources */,
 				ED321F2616D97C7300CB76B1 /* ZLocationCell.m in Sources */,
 				ED321F2716D97C7300CB76B1 /* ZMapLocationEdit.m in Sources */,
+				EDC3845616F37FBB00F0F361 /* ZTransparentTouchDetector.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
