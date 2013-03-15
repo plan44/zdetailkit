@@ -11,6 +11,7 @@
 #import "ZDate_utils.h"
 #import "ZCustomI8n.h"
 #import "ZDBGMacros.h"
+#import "ZTransparentTouchDetector.h"
 
 #import "ZDetailTableViewController.h"
 #import "ZSwitchCell.h"
@@ -194,57 +195,56 @@
 
 #pragma mark - custom input view
 
-@synthesize datePicker;
+static UIDatePicker *sharedDatePicker = nil;
 
-#warning "%%% maybe implement shared instance, and just reassign targets when requested?"
-#warning "%%% should deactivate updating when not in use, maybe even deallocate (weak static??)?"
++ (UIDatePicker *)sharedDatePicker
+{
+  if (sharedDatePicker==nil) {
+    // Create a date picker
+    sharedDatePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 1, [UIScreen mainScreen].bounds.size.width , 216)];
+    sharedDatePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
+    sharedDatePicker.contentMode = UIViewContentModeBottom;
+  }
+  return sharedDatePicker;
+}
+
+
+@synthesize datePicker;
 
 - (UIDatePicker *)datePicker
 {
   if (datePicker==nil) {
-    // Create a date picker
-    datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 1, self.window.frame.size.width , 216)];
-    datePicker.autoresizingMask = UIViewAutoresizingFlexibleTopMargin+UIViewAutoresizingFlexibleWidth;
-    datePicker.contentMode = UIViewContentModeBottom;
+    // Get the shared instance
+    datePicker = [self.class sharedDatePicker];
     // set time zone (note that it must be explicitly assigned, as we use datePicker.timeZone for pickerDate adjustment)
-    datePicker.timeZone = [NSTimeZone cachedTimezone];    
+    datePicker.timeZone = [NSTimeZone cachedTimezone];
     // set up for use with this cell
     // i.e. make sure THIS cell gets picker events, and previous user not any more (in case of future %%% shared picker)
-    // %%% re-enable these lines once we have a shared picker
-    //    // - remove previous target and recognizers
-    //    [self.datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
-    //    for (UIGestureRecognizer *g in [datePicker.gestureRecognizers copy]) [datePicker removeGestureRecognizer:g];
+    // - remove previous target and recognizers
+    [datePicker removeTarget:nil action:NULL forControlEvents:UIControlEventValueChanged];
+    for (UIGestureRecognizer *g in [datePicker.gestureRecognizers copy]) [datePicker removeGestureRecognizer:g];
     // - add new target
     [datePicker addTarget:self action:@selector(pickerChanged) forControlEvents:UIControlEventValueChanged];
-    // - add gesture recognizer that will never fire, but allows to see when the picker view is touched
-    UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dummySelectorNeverUsed)];
-    tgr.cancelsTouchesInView = NO; // let touches get through
-    tgr.numberOfTapsRequired = 1;
-    tgr.delegate = self;
-    [datePicker addGestureRecognizer:tgr];
+    // - add detector to see when the view is touched
+    [datePicker addGestureRecognizer:[ZTransparentTouchDetector transparentTouchDetectorWithHandler:^void(ZTransparentTouchDetector *aGestureRecognizer) {
+      // there's a touch on the picker, apply data if still empty
+      if (self.startDate==nil) {
+        self.startDate = self.pickerDate;
+      }
+    }]];
     // adjust minute interval
     datePicker.minuteInterval = self.minuteInterval;
-    // make sure picker has current data
-    [self updateData];
   }
   return datePicker;
 }
 
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-{
-  // there's a touch on the picker, apply data if still empty
-  if (self.startDate==nil) {
-    self.startDate = self.pickerDate;
-  }
-  // ...but always pretend we're not interested in the touch at all, so pickerView will work as normal
-  return NO;
-}
-
-
 - (UIView *)inputView
 {
-  return [self datePicker];
+  UIView *iv = [self datePicker];
+  // make sure picker has current data
+  [self updateData];
+  return iv;
 }
 
 
@@ -407,9 +407,11 @@
   }
   if (!sameDate(aStartDate, startDate)) {
     startDate = aStartDate;
-    if (unsaved)
-      self.startDateConnector.unsavedChanges = YES; // change from within, unsaved now
     [self updateData];
+  }
+  if (unsaved) {
+    // change from within, unsaved now
+    self.startDateConnector.unsavedChanges = unsaved;
   }
 }
 
@@ -516,6 +518,7 @@
     dtvc.navigationMode = ZDetailNavigationModeLeftButtonCancel+ZDetailNavigationModeRightButtonSave;
     [dtvc setBuildDetailContentHandler:^(ZDetailTableViewController *c) {
       c.autoStartEditing = YES; // auto-start editing in the first field
+      c.defocusOnTouch = NO; // do not defocus
       c.detailTableView.scrollEnabled = NO; // prevent scrolling
       [c startSection];
       // Start date

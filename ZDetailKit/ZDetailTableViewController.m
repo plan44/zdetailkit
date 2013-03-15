@@ -10,6 +10,8 @@
 
 #import "ZDBGMacros.h"
 
+#import "ZTransparentTouchDetector.h"
+
 #pragma mark - internal Helper classes declarations
 
 
@@ -376,6 +378,8 @@ static NSInteger numObjs = 0;
 
 
 
+@synthesize defocusOnTouch;
+
 
 // Add a new detail cell (private methods, basis for the the nicer APIs below)
 - (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled
@@ -385,12 +389,17 @@ static NSInteger numObjs = 0;
   ZDetailViewCellHolder *ch = [[ZDetailViewCellHolder alloc] initWithCell:aCell neededGroups:aNeededGroups];
   ch.cellEnabled = aNowEnabled;
   [sectionToAdd.cells addObject:ch];
-  // add a dummy gesture recognizer (which will never fire) to know when cell is touched
-  UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dummySelectorNeverUsed)];
-  tgr.cancelsTouchesInView = NO; // let touches get through
-  tgr.numberOfTapsRequired = 1;
-  tgr.delegate = self; // will receive the gestureRecognizer:shouldReceiveTouch: call
-  [aCell addGestureRecognizer:tgr];
+  // add detector to see when the view is touched
+  [aCell addGestureRecognizer:[ZTransparentTouchDetector transparentTouchDetectorWithHandler:^(ZTransparentTouchDetector *aGestureRecognizer) {
+    // there's a touch in a cell, defocus others
+    if (self.defocusOnTouch && [aGestureRecognizer.view conformsToProtocol:@protocol(ZDetailViewCell)]) {
+      id<ZDetailViewCell> dvc = (id<ZDetailViewCell>)aGestureRecognizer.view;
+      if (dvc.tapClaimsFocus) {
+        // now defocus others
+        [self defocusAllBut:(UITableViewCell *)dvc];
+      }
+    }
+  }]];
   // configure if it is a ZDetailViewCell
   if ([aCell conformsToProtocol:@protocol(ZDetailViewCell)]) {
     id<ZDetailViewCell> dvc = (id<ZDetailViewCell>)aCell;
@@ -1079,25 +1088,6 @@ static NSInteger numObjs = 0;
     }
   }
 }
-
-
-#pragma mark - gesture recognizer delegate method to detect any touch in a cell (even if non-selecting or in subview)
-
-@synthesize defocusOnTouch;
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-{
-  // there's a touch in a cell, defocus others
-  if (self.defocusOnTouch && [gestureRecognizer.view conformsToProtocol:@protocol(ZDetailViewCell)]) {
-    id<ZDetailViewCell> dvc = (id<ZDetailViewCell>)gestureRecognizer.view;
-    if (dvc.tapClaimsFocus) {
-      [self defocusAllBut:dvc];
-    }
-  }
-  // ...but always pretend we're not interested in the touch at all, so everything else will work as normal
-  return NO;
-}
-
 
 
 #pragma mark - private methods and properties

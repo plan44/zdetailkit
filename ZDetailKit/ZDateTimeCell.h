@@ -10,7 +10,18 @@
 
 
 /// ZDateTimeCell can edit a single date or date/time, or a pair of start/end dates or date/time.
-/// Optionally, it can also allow users to switch between date and date/time modes
+///
+/// Features:
+///
+/// - optionally allow users to switch between date and date/time modes
+/// - optionally allow setting no date (nil) or clearing it with a button
+/// - present a suggestedDate when actual value is not already set
+/// - uses a datepicker as input view which slides in/out like the keyboard
+/// - can "follow" another "master" date by using masterDateConnector
+///   (e.g. a reminder time which should be kept synchronized with the event start date)
+/// - can normalize date-only inputs by returning them as UTC time stamps independently from current time zone
+///   (as date-only timestamps should NOT be dependent on the time zone), see dateOnlyInUTC
+///
 @interface ZDateTimeCell : ZDetailViewBaseCell
 
 /// @name data connection
