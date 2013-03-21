@@ -2,6 +2,8 @@
 ZDetailKit
 ==========
 
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=luz&url=https://github.com/plan44/zdetailkit&title=ZDetailKit&language=&tags=github&category=software)
+
 ZDetailKit was born out of the need to generate editors for complex object in my tasks and calendaring apps
 Continuous, EverTaskZ, Tasks+Cal+Sync, SyncML PRO/LITE. These apps were based for a long time
 on a precedessor framework which generalized detail editing to some extent already, but became too complicated to
