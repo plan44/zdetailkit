@@ -2,7 +2,7 @@
 //  ZKeyChainSecretCell.m
 //
 //  Created by Lukas Zeller on 2011/08/16.
-//  Copyright 2013 plan44.ch. All rights reserved.
+//  Copyright (c) 2013 plan44.ch. All rights reserved.
 //
 
 #import "ZKeyChainSecretCell.h"

@@ -2,7 +2,7 @@
 //  ZColorChooserCell.m
 //  ZDetailKit
 //
-//  Copyright (c) 2012 plan44.ch. All rights reserved.
+//  Copyright (c) 2012-2013 plan44.ch. All rights reserved.
 //
 
 #import "ZColorChooserCell.h"

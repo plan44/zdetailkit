@@ -1,7 +1,8 @@
 //
 //  ZColorChooser.m
+//  ZDetailKit
 //
-//  Copyright 2010 by Lukas Zeller. All rights reserved.
+//  Copyright (c) 2011-2013 plan44.ch. All rights reserved.
 //
 
 #import "ZColorChooser.h"

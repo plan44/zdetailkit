@@ -3,7 +3,7 @@
 //  ZDetailViewTest
 //
 //  Created by Lukas Zeller on 19.05.12.
-//  Copyright (c) 2012 plan44.ch. All rights reserved.
+//  Copyright (c) 2012-2013 plan44.ch. All rights reserved.
 //
 
 #import "ZDVTViewController.h"
@@ -82,28 +82,10 @@
     ZButtonCell *b = [c detailCell:[ZButtonCell class]];
     b.buttonStyle = ZButtonCellStyleCenterText;
     b.tableEditingStyle = UITableViewCellEditingStyleNone; 
-    b.labelText = @"Editing on/off";
+    b.labelText = @"Disable/Enabled edits";
     [b setTapHandler:^(ZDetailViewBaseCell *aCell, BOOL aInAccessory) {
       [c setDisplayMode:c.displayMode ^ ZDetailDisplayModeEditing+ZDetailDisplayModeViewing animated:YES];
       return YES; // handled
-    }];
-  }
-  /* layout: separation between description and text */ {
-    ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
-    sl.valueConnector.autoSaveValue = YES;
-    sl.sliderControl.maximumValue = 1.0; // label/value ratio
-    sl.descriptionViewAdjustment = ZDetailCellItemAdjustHide; // hide
-    sl.sliderControl.value = 1-sl.valueCellShare; // init with current default label/value ratio
-    sl.valueCellShare = 1; // but myself, set full width slider, no label
-    [sl.valueConnector setValueChangedHandler:^BOOL(ZValueConnector *aConnector) {
-      [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell, NSInteger aSectionNo) {
-        // layout section itself is not changed
-        if (aSectionNo>0) {
-          aCell.valueCellShare = 1-[aConnector.value doubleValue];
-          [aCell prepareForDisplay];
-        }
-      }];
-      return YES; // fully handled value change
     }];
   }
   /* layout: cell indentation */ {
@@ -114,8 +96,8 @@
     sl.sliderControl.value = sl.contentIndent; // init with current default content indent
     [sl.valueConnector setValueChangedHandler:^BOOL(ZValueConnector *aConnector) {
       [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell, NSInteger aSectionNo) {
-        // layout section itself is not changed
-        if (aSectionNo>0) {
+        // this and the previous section are not changed
+        if (aSectionNo>1) {
           aCell.contentIndent = [aConnector.value doubleValue];
           [aCell prepareForDisplay];
         }
@@ -132,6 +114,26 @@
         [c setDisplayMode:c.displayMode | (ZDetailDisplayModeDetails+ZDetailDisplayModeBasics) animated:YES];
       else
         [c setDisplayMode:c.displayMode & ~(ZDetailDisplayModeDetails+ZDetailDisplayModeBasics) animated:YES];
+      return YES; // fully handled value change
+    }];
+  }
+  [c endSection];
+  [c startSectionWithText:@"You can vary the amount of space used for description and value parts of the cells below with the slider" asTitle:NO];
+  /* layout: separation between description and text */ {
+    ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
+    sl.valueConnector.autoSaveValue = YES;
+    sl.sliderControl.maximumValue = 1.0; // label/value ratio
+    sl.descriptionViewAdjustment = ZDetailCellItemAdjustHide; // hide
+    sl.sliderControl.value = 1-sl.valueCellShare; // init with current default label/value ratio
+    sl.valueCellShare = 1; // but myself, set full width slider, no label
+    [sl.valueConnector setValueChangedHandler:^BOOL(ZValueConnector *aConnector) {
+      [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell, NSInteger aSectionNo) {
+        // this and the previous section are not changed
+        if (aSectionNo>1) {
+          aCell.valueCellShare = 1-[aConnector.value doubleValue];
+          [aCell prepareForDisplay];
+        }
+      }];
       return YES; // fully handled value change
     }];
   }

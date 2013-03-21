@@ -1,8 +1,9 @@
 //
 //  ZKeyChainWrapper.m
+//  ZUtils
 //
 //  Created by Lukas Zeller on 2011/08/16.
-//  Copyright 2011 plan44.ch. All rights reserved.
+//  Copyright (c) 2011-2013 plan44.ch. All rights reserved.
 //
 
 #import "ZKeyChainWrapper.h"

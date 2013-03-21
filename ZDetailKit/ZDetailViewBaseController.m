@@ -1,5 +1,6 @@
 //
 //  ZDetailViewBaseController.m
+//  ZDetailKit
 //
 //  Created by Lukas Zeller on 16.02.13.
 //  Copyright (c) 2013 plan44.ch. All rights reserved.
@@ -330,7 +331,7 @@
     }
     else {
       // if it's a back button, intercept its action
-      #warning "%%% tbd - intercept back button press"
+      // TODO: maybe try to intercept back button action to gain more control over closing the detail editor
     }
   }
   // if no standard button, check for custom buttons
@@ -603,7 +604,7 @@
       }
       else {
         // validation error, can't save
-        #warning "%%% Simple Alert only for now"
+        // TODO: Add more control for how to show validation error
         NSMutableString *errMsg = [NSMutableString string];
         for (NSError *err in errors) {
           if (errMsg.length>0) [errMsg appendString:@"\n"];
@@ -658,7 +659,7 @@
 // dismiss entire open stack, and then myself
 - (void)dismissDetailStack
 {
-  #warning "%%% needs work"
+  // TODO: maybe enhance to gain more control over the way open stack is closed
   // close stack on top of me
   [self.navigationController popToViewController:self animated:NO];
   // ...and myself

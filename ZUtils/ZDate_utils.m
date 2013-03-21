@@ -1,8 +1,9 @@
 //
 //  ZDate_utils.m
+//  ZUtils
 //
 //  Created by Lukas Zeller on 2011/03/07.
-//  Copyright (c) 2011-2012 by Lukas Zeller. All rights reserved.
+//  Copyright (c) 2011-2013 by Lukas Zeller. All rights reserved.
 //
 
 #include "ZDate_utils.h"

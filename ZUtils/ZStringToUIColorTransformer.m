@@ -1,8 +1,9 @@
 //
 //  ZStringToUIColorTransformer.m
+//  ZUtils
 //
 //  Created by Lukas Zeller on 23.07.12.
-//  Copyright (c) 2012 plan44.ch. All rights reserved.
+//  Copyright (c) 2012-2013 plan44.ch. All rights reserved.
 //
 
 #import "ZStringToUIColorTransformer.h"

@@ -1,8 +1,9 @@
 //
 //  ZDetailEditing.h
+//  ZDetailKit
 //
 //  Created by Lukas Zeller on 19.05.12.
-//  Copyright (c) 2012 plan44.ch. All rights reserved.
+//  Copyright (c) 2012-2013 plan44.ch. All rights reserved.
 //
 
 // Cell Style (UITableViewCell styles enhanced with some flags)

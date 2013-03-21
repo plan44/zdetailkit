@@ -3,7 +3,7 @@
 //  TodoZ
 //
 //  Created by Lukas Zeller on 2011/07/02.
-//  Copyright 2011 plan44.ch. All rights reserved.
+//  Copyright (c) 2011-2013 plan44.ch. All rights reserved.
 //
 
 #import "ZMapLocationEdit.h"

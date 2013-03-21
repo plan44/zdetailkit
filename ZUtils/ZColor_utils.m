@@ -1,9 +1,9 @@
-/*
- *  ZColor_utils.m
- *
- *  Copyright 2011-2013 by plan44.ch
- *
- */
+//
+//  ZColor_utils.m
+//  ZUtils
+//
+//  Copyright (c) 2011-2013 plan44.ch. All rights reserved.
+//
 
 #include "ZColor_utils.h"
 
