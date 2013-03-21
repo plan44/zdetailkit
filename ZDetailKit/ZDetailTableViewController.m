@@ -53,15 +53,16 @@
 - (id)init
 {
 	if ((self = [super init])) {
-    titleTextOrView = nil;
     cells = [[NSMutableArray alloc] init];
+    titleTextOrView = nil;
   }
   return self;
 }
 
 - (id)initFromTemplate:(ZDetailViewSection *)aDetailViewSection;
 {
-	if ([self init]) {
+	if ((self = [super init])) {
+    cells = [[NSMutableArray alloc] init];
   	titleTextOrView = aDetailViewSection.titleTextOrView;
     overallSectionIndex = aDetailViewSection.overallSectionIndex;
   }

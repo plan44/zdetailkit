@@ -160,6 +160,8 @@
     CGGradientRelease(gradient);
     CGContextRestoreGState(context);
   }
+
+  CGPathRelease(rr);
 }
 
 
@@ -258,7 +260,7 @@
 {
 	if (self.enabled) {
     // determine where we are tracking
-    float factor;
+    float factor = 0;
     trackmode = [self trackValueWithTouch:touch intoFactor:&factor];
     [self updateColorForMode:trackmode andFactor:factor];
     // block scroller as otherwise touch tracking does not work
@@ -291,7 +293,7 @@
     // unblock scroller
     if (delegate && [delegate respondsToSelector:@selector(blockScrollingForSliders:)])
     	[delegate blockScrollingForSliders:NO];
-    float factor;
+    float factor = 0;
     [self trackValueWithTouch:touch intoFactor:&factor];
     [self updateColorForMode:trackmode andFactor:factor];
     if (trackmode!=HUE_MODE) {
