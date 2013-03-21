@@ -13,13 +13,21 @@ The primary goal of ZDetailKit is to make setting up a complex detail editors (t
 or calendar event entry) _really_ simple and focused. See the ZDetailKitMinimalDemo sample app to 
 see what this means.
 
+The approach taken was to provide a way to build detail editors in a mostly declarative way, but
+without giving up the flexibility of actual coding. So setup of the average detail screen
+usually consists of a linear piece of code, creating and configuring the editor elements one by one,
+linking them to the model data using ZValueConnector (a kind of bindings).
+But because it is code and not a static description, it is also  possible to generate
+the editor structure from metadata. For example, one could easily parse iOS settings .plists
+or core data models and generate UI automatically.
+
 License
 -------
 
 ZDetailKit is licensed under the MIT License (see LICENSE.txt).
 
-The only requirement of this license is that you must include the copyright
-and the license text when you distribute apps using ZDetailKit.
+The only requirement of this license is that you *must include the copyright
+and the license text* when you distribute apps using ZDetailKit.
 
 If that's a problem, I am open to provide a commercial license, please contact me at [luz@plan44.ch](mailto:luz@plan44.ch).
 
@@ -33,7 +41,7 @@ Features
   standard components without subclassing.
 - Based on KVC (key value coding) and KVO (key value observing) standard mechanisms
 - Full validation of input, before edits are commited, from subdetail editor through
-  value parsing, transformation down to the data model.
+  value parsing and transformation, down to the data model.
 - supports NSValueTransformer and NSFormatter
 - Immediate (live) representation of model values in the UI, as well as
   load + cancel/save semantics supported.
@@ -60,7 +68,7 @@ Getting Started
 
 - Clone the github repository
 
-    `git clone git://%%%%%`
+    `git clone https://github.com/plan44/zdetailkit`
 
 - Open the ZDetailKit.xcodeproj
 
@@ -75,11 +83,11 @@ Getting Started
   then have a look at class descriptions for an overview.
 
 - Use ZDetailKit in your own app. It is just a bunch of files (still waiting for official Apple support
-  for third-party iOS frameworks), so its nothing more than adding the files to your project.
+  for third-party iOS frameworks), so it's nothing more than adding the files to your project.
   My recommended way to do that is:
   + clone ZDetailKit as a submodule into a subfolder of your project
   
-     `git submodule add git://%%%%%`
+     `git submodule add https://github.com/plan44/zdetailkit`
 
      `git submodule init`
 
@@ -106,7 +114,7 @@ To create and install the ZDetailKit doc set in XCode:
 
 - install appledoc, I recommend from [homebrew](http://mxcl.github.com/homebrew/):
 
-    `brew appledoc`
+    `brew install appledoc`
 
 - open ZDetailKit.xcodeproj
 - choose the "ZDetailKit appledoc" scheme
@@ -116,7 +124,7 @@ To create and install the ZDetailKit doc set in XCode:
 - Open the Documentation tab in the XCode Organizer, click the eye icon and you'll see
   a new doc set named "ZDetailKit documentation"
 
-Please note: some versions of appledoc generated docsets that caused XCode 4.6 to crash when
+Please note: some versions of appledoc generated docsets caused XCode 4.6 to crash when
 double-option-clicking keywords or even on startup. If you run into the startup problem,
 delete ch.plan44.ZDetailKit.docset from ~/Library/Developer/Shared/Documentation/DocSets,
 install a better/newer version of appledoc and regenerate the docs.
@@ -125,12 +133,12 @@ install a better/newer version of appledoc and regenerate the docs.
 Supporting ZDetailKit
 ---------------------
 
-1) use it!
-2) spread the word
-3) contribute patches, issue reports and new functionality
-4) Buy plan44.ch products - sales revenue is paying the time for contributing to opensource projects :-)
+1. use it!
+2. spread the word
+3. contribute patches, issue reports and new functionality
+4. Buy plan44.ch products - sales revenue is paying the time for contributing to opensource projects :-)
 
-If you wan't me to do a specific feature in ZDetailKit on contract basis, please contact me at [luz@plan44.ch](mailto:luz@plan44.ch)
+If you want me to do a specific feature in ZDetailKit on contract basis, please contact me at [luz@plan44.ch](mailto:luz@plan44.ch)
 
 
 (c) 2013 by Lukas Zeller / [plan44.ch](www.plan44.ch)

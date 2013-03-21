@@ -232,7 +232,7 @@
 		ED321F3C16D9914200CB76B1 /* ZKeyChainSecretCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZKeyChainSecretCell.m; sourceTree = "<group>"; };
 		ED321F4A16D9933F00CB76B1 /* ZKeyChainWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZKeyChainWrapper.h; sourceTree = "<group>"; };
 		ED321F4B16D9933F00CB76B1 /* ZKeyChainWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZKeyChainWrapper.m; sourceTree = "<group>"; };
-		ED43CA3E16CFDAE600C28E48 /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
+		ED43CA3E16CFDAE600C28E48 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		ED49A9991585F623007FEBF0 /* ZDateTimeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZDateTimeCell.h; sourceTree = "<group>"; };
 		ED49A99A1585F623007FEBF0 /* ZDateTimeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZDateTimeCell.m; sourceTree = "<group>"; };
 		ED5D933615BEDC35008A98FF /* ZSliderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSliderCell.h; sourceTree = "<group>"; };
@@ -264,6 +264,7 @@
 		EDB2F48F16D57CD600C6EAD6 /* ZDTC_delbtn@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ZDTC_delbtn@2x.png"; sourceTree = "<group>"; };
 		EDC3845416F37FBB00F0F361 /* ZTransparentTouchDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTransparentTouchDetector.h; sourceTree = "<group>"; };
 		EDC3845516F37FBB00F0F361 /* ZTransparentTouchDetector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTransparentTouchDetector.m; sourceTree = "<group>"; };
+		EDF60C6316FB43D200CC27A9 /* VERSION.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = VERSION.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -300,8 +301,9 @@
 			children = (
 				ED81B80416D10D7300ED1F3F /* MapKit.framework */,
 				ED81B80216D10D6800ED1F3F /* CoreLocation.framework */,
-				ED43CA3E16CFDAE600C28E48 /* README.markdown */,
+				ED43CA3E16CFDAE600C28E48 /* README.md */,
 				ED321ED616D82AF200CB76B1 /* LICENSE.txt */,
+				EDF60C6316FB43D200CC27A9 /* VERSION.txt */,
 				ED1F707315BD951B0046CFBC /* ZUtils */,
 				ED12E76915824B8200DE3ED3 /* ZDetailKit */,
 				ED12E7421582494C00DE3ED3 /* ZDetailKitFullDemo */,
@@ -810,7 +812,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lukas Zeller";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lukas Zeller (7Z3P4LBQ7Z)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -833,7 +835,7 @@
 				INFOPLIST_FILE = "$(SRCROOT)/ZDetailKitFullDemo/ZDetailKitFullDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "C8EF8F9F-9C74-4FAE-969D-30659B6BEC1D";
+				PROVISIONING_PROFILE = "F860FE5D-46F0-4AD3-974D-DA2617D5A484";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
@@ -846,7 +848,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Lukas Zeller";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Lukas Zeller (7Z3P4LBQ7Z)";
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -863,7 +865,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "C8EF8F9F-9C74-4FAE-969D-30659B6BEC1D";
+				PROVISIONING_PROFILE = "F860FE5D-46F0-4AD3-974D-DA2617D5A484";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
