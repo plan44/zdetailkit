@@ -143,7 +143,7 @@ Supporting ZDetailKit
 If you want me to do a specific feature in ZDetailKit on contract basis, please contact me at [luz@plan44.ch](mailto:luz@plan44.ch)
 
 
-(c) 2013 by Lukas Zeller / [plan44.ch](www.plan44.ch)
+(c) 2013 by Lukas Zeller / [plan44.ch](http://www.plan44.ch)
 
 
 
