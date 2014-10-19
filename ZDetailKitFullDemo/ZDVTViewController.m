@@ -335,7 +335,7 @@
     cl.labelText = @"Multiple Choice";
     [cl.valueConnector connectTo:[NSUserDefaults standardUserDefaults] keyPath:@"choicesSet"];
     [cl.choicesManager addChoice:@"Albatross" order:2 key:[NSNumber numberWithInt:1]];
-    [cl.choicesManager addChoice:@"Baer" order:3 key:[NSNumber numberWithInt:2]];
+    [cl.choicesManager addChoice:@"Bear" order:3 key:[NSNumber numberWithInt:2]];
     [cl.choicesManager addChoice:@"Cheetah" order:4 key:[NSNumber numberWithInt:3]];
     [cl.choicesManager addChoice:@"Duck" order:5 key:[NSNumber numberWithInt:4]];
     [cl.choicesManager addChoice:@"Elephant" order:6 key:[NSNumber numberWithInt:5]];
