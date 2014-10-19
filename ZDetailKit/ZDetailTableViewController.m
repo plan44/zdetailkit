@@ -197,6 +197,7 @@
   // if initialized w/o NIB, autocreate and connect fullscreen table view
   if (self.nibName==nil && self.detailTableView==nil) {
     // no nib AND detail table view not provided by a subclassed loadView already
+    #warning "may be wrong in iOS7 on iPad (slides under transparent navigation bar?)"
     self.detailTableView = [[UITableView alloc]
       initWithFrame:[[UIScreen mainScreen] applicationFrame]
       style:UITableViewStyleGrouped
@@ -430,7 +431,7 @@ static NSInteger numObjs = 0;
 {
   // create the cell
   NSAssert([aClass isSubclassOfClass:[UITableViewCell class]], @"cells must be UITableViewCell descendants");
-  UITableViewCell *newCell = [[aClass alloc] initWithStyle:aStyle reuseIdentifier:nil];
+  UITableViewCell *newCell = [(UITableViewCell *)[aClass alloc] initWithStyle:aStyle reuseIdentifier:nil];
   // add it
   [self addDetailCell:newCell neededGroups:aNeededGroups nowEnabled:aNowEnabled];
   // apply the default value cell share if we have one
