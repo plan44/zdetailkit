@@ -268,6 +268,7 @@
     #endif    
     // add field
     [self.contentView addSubview:textField];
+    [textField setNeedsLayout];
     [self setNeedsLayout];
   }
   return textField;

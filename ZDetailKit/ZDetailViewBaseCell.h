@@ -81,7 +81,7 @@ typedef enum {
 /// reference to the owning object.
 ///
 /// Usually this is a ZDetailTableViewController, but
-/// any other object implemenbe ting the ZDetailCellOwner protocol can be the owner
+/// any other object implementing the ZDetailCellOwner protocol can be the owner
 /// @note this property will automatically set when a cell is added using
 /// one of the [ZDetailTableViewController detailCell:] factory method variants
 @property (unsafe_unretained, nonatomic) id<ZDetailCellOwner> cellOwner;
