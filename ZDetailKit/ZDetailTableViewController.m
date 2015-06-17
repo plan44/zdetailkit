@@ -1145,31 +1145,31 @@ static NSInteger numObjs = 0;
 
 - (void)viewDidAppear:(BOOL)aAnimated
 {
-  // install keyboard hide/show handlers
-	[[NSNotificationCenter defaultCenter]
-    addObserver:self
-    selector:@selector(keyboardWillShow:)
-    name:UIKeyboardWillShowNotification
-    object:nil
-  ];
-	[[NSNotificationCenter defaultCenter]
-    addObserver:self
-    selector:@selector(keyboardDidShow:)
-    name:UIKeyboardDidShowNotification
-    object:nil
-  ];
-	[[NSNotificationCenter defaultCenter]
-    addObserver:self
-    selector:@selector(keyboardWillHide:)
-    name:UIKeyboardWillHideNotification
-    object:nil
-  ];
-	[[NSNotificationCenter defaultCenter]
-    addObserver:self
-    selector:@selector(keyboardDidHide:)
-    name:UIKeyboardDidHideNotification
-    object:nil
-  ];
+//  // install keyboard hide/show handlers
+//	[[NSNotificationCenter defaultCenter]
+//    addObserver:self
+//    selector:@selector(keyboardWillShow:)
+//    name:UIKeyboardWillShowNotification
+//    object:nil
+//  ];
+//	[[NSNotificationCenter defaultCenter]
+//    addObserver:self
+//    selector:@selector(keyboardDidShow:)
+//    name:UIKeyboardDidShowNotification
+//    object:nil
+//  ];
+//	[[NSNotificationCenter defaultCenter]
+//    addObserver:self
+//    selector:@selector(keyboardWillHide:)
+//    name:UIKeyboardWillHideNotification
+//    object:nil
+//  ];
+//	[[NSNotificationCenter defaultCenter]
+//    addObserver:self
+//    selector:@selector(keyboardDidHide:)
+//    name:UIKeyboardDidHideNotification
+//    object:nil
+//  ];
   // super
 	[super viewDidAppear:aAnimated];
 }
@@ -1178,11 +1178,11 @@ static NSInteger numObjs = 0;
 - (void)viewWillDisappear:(BOOL)aAnimated
 {
   // remove those I DID register, but no others!
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"EditingStartedInRect" object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"EditingStartedInRect" object:nil];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
   [super viewWillDisappear:aAnimated];
 }
 
@@ -1208,47 +1208,47 @@ static NSInteger numObjs = 0;
 - (void)bringEditRectInView
 {
   if (!CGRectIsNull(editRect)) {
-    // edit rect is in coordinates of the table view (scrolling content view)
-    CGRect er = [self.detailTableView convertRect:editRect toView:self.fullScreenViewRotated];
-    // see if keyboard will obscure the rectangle being edited
-    CGFloat minYthatMustBeVisible = er.origin.y+er.size.height+MIN_SPACE_ABOVE_KBD;
-    // also check if possibly detailview itself has been moved/resized such that we need to scroll even further
-    CGRect nv = [self.view.superview convertRect:self.view.frame toView:self.fullScreenViewRotated];
-    CGFloat bottomOfDetailView = nv.origin.y+nv.size.height;
-    DBGNSLOG(@"Start: minYthatMustBeVisible=%f, bottomOfDetailView=%f, topOfInputView=%f", minYthatMustBeVisible, bottomOfDetailView, topOfInputView);
-    // calculate how much to scroll to make sure we see the editRect above the input view
-    CGFloat up = minYthatMustBeVisible-topOfInputView;
-    if (up>0) {
-      // adjust for what "up" already corrects
-      minYthatMustBeVisible = topOfInputView;
-    }
-    // check if that's enough, possibly we need more because bottom of detail view is even higher
-    if (bottomOfDetailView < minYthatMustBeVisible) {
-      // actual detail view ends above what keyboard restriction is -> move up even further
-      up += minYthatMustBeVisible-bottomOfDetailView;
-    }
-    DBGNSLOG(@"End: minYthatMustBeVisible=%f, up=%f", minYthatMustBeVisible, up);
-    // scroll if not high enough above keyboard
-    if (up>0) {
-      // animate content offset to move edited cell above keyboard
-      CGPoint co = detailTableView.contentOffset;
-      co.y += up;
-      [detailTableView setContentOffset:co animated:YES];
-    }
-    else {
-      // check if upper end of edit rectangle is currently visible
-      CGFloat ymin = er.origin.y-MIN_MARGIN_ABOVE_EDITRECT;
-      // relative to content
-      CGFloat yrel = [self.detailTableView convertPoint:CGPointMake(0, ymin) fromView:self.fullScreenViewRotated].y;
-      // relative to top of visible part
-      CGPoint co = detailTableView.contentOffset;
-      yrel -= co.y;
-      if (yrel<0) {
-        // we can scroll down -(up) maximally before lower end of rect scrolls 
-        co.y += yrel > up ? yrel : up;
-        [detailTableView setContentOffset:co animated:YES];
-      }
-    }
+//    // edit rect is in coordinates of the table view (scrolling content view)
+//    CGRect er = [self.detailTableView convertRect:editRect toView:self.fullScreenViewRotated];
+//    // see if keyboard will obscure the rectangle being edited
+//    CGFloat minYthatMustBeVisible = er.origin.y+er.size.height+MIN_SPACE_ABOVE_KBD;
+//    // also check if possibly detailview itself has been moved/resized such that we need to scroll even further
+//    CGRect nv = [self.view.superview convertRect:self.view.frame toView:self.fullScreenViewRotated];
+//    CGFloat bottomOfDetailView = nv.origin.y+nv.size.height;
+//    DBGNSLOG(@"Start: minYthatMustBeVisible=%f, bottomOfDetailView=%f, topOfInputView=%f", minYthatMustBeVisible, bottomOfDetailView, topOfInputView);
+//    // calculate how much to scroll to make sure we see the editRect above the input view
+//    CGFloat up = minYthatMustBeVisible-topOfInputView;
+//    if (up>0) {
+//      // adjust for what "up" already corrects
+//      minYthatMustBeVisible = topOfInputView;
+//    }
+//    // check if that's enough, possibly we need more because bottom of detail view is even higher
+//    if (bottomOfDetailView < minYthatMustBeVisible) {
+//      // actual detail view ends above what keyboard restriction is -> move up even further
+//      up += minYthatMustBeVisible-bottomOfDetailView;
+//    }
+//    DBGNSLOG(@"End: minYthatMustBeVisible=%f, up=%f", minYthatMustBeVisible, up);
+//    // scroll if not high enough above keyboard
+//    if (up>0) {
+//      // animate content offset to move edited cell above keyboard
+//      CGPoint co = detailTableView.contentOffset;
+//      co.y += up;
+//      [detailTableView setContentOffset:co animated:YES];
+//    }
+//    else {
+//      // check if upper end of edit rectangle is currently visible
+//      CGFloat ymin = er.origin.y-MIN_MARGIN_ABOVE_EDITRECT;
+//      // relative to content
+//      CGFloat yrel = [self.detailTableView convertPoint:CGPointMake(0, ymin) fromView:self.fullScreenViewRotated].y;
+//      // relative to top of visible part
+//      CGPoint co = detailTableView.contentOffset;
+//      yrel -= co.y;
+//      if (yrel<0) {
+//        // we can scroll down -(up) maximally before lower end of rect scrolls 
+//        co.y += yrel > up ? yrel : up;
+//        [detailTableView setContentOffset:co animated:YES];
+//      }
+//    }
     // consumed now
     editRect = CGRectNull;
   }
@@ -1313,42 +1313,42 @@ static NSInteger numObjs = 0;
 
 
 
-- (void)keyboardWillShow:(NSNotification *)aNotification
-{
-  // get info about keyboard and window (received in screen coordinates)
-  // - keyboard frame
-  CGRect kf = [[[aNotification userInfo] valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue]; // keyboard frame in windows coords
-  kf = [detailTableView convertRect:kf fromView:nil]; // keyboard frame in tableview coordinates
-  DBGSHOWRECT(@"UIKeyboardFrameEndUserInfoKey (in tableview coords)",kf);
-  inputViewSize = kf.size;
-  // in modal views on iPad, don't make room yet, as we need to wait until all keyboard magic is done
-  if (self.modalViewWrapper==nil || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-    [self makeRoomForInputViewOfSize:inputViewSize];    
-  }
-}
-
-
-- (void)keyboardDidShow:(NSNotification *)aNotification
-{
-  // in modal views on iPad, we need to wait until here, because only now all view resizing
-  // magic caused by keyboard appearance is done
-  if (self.modalViewWrapper && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-    [self makeRoomForInputViewOfSize:inputViewSize];
-  }
-}
-
-
-- (void)keyboardWillHide:(NSNotification *)aNotification
-{
-  [self releaseRoomForInputView];
-}
-
-
-- (void)keyboardDidHide:(NSNotification *)aNotification
-{
-	// always remove the extra footer
-  detailTableView.tableFooterView = nil;    
-}
+//- (void)keyboardWillShow:(NSNotification *)aNotification
+//{
+//  // get info about keyboard and window (received in screen coordinates)
+//  // - keyboard frame
+//  CGRect kf = [[[aNotification userInfo] valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue]; // keyboard frame in windows coords
+//  kf = [detailTableView convertRect:kf fromView:nil]; // keyboard frame in tableview coordinates
+//  DBGSHOWRECT(@"UIKeyboardFrameEndUserInfoKey (in tableview coords)",kf);
+//  inputViewSize = kf.size;
+//  // in modal views on iPad, don't make room yet, as we need to wait until all keyboard magic is done
+//  if (self.modalViewWrapper==nil || UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+//    [self makeRoomForInputViewOfSize:inputViewSize];    
+//  }
+//}
+//
+//
+//- (void)keyboardDidShow:(NSNotification *)aNotification
+//{
+//  // in modal views on iPad, we need to wait until here, because only now all view resizing
+//  // magic caused by keyboard appearance is done
+//  if (self.modalViewWrapper && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//    [self makeRoomForInputViewOfSize:inputViewSize];
+//  }
+//}
+//
+//
+//- (void)keyboardWillHide:(NSNotification *)aNotification
+//{
+//  [self releaseRoomForInputView];
+//}
+//
+//
+//- (void)keyboardDidHide:(NSNotification *)aNotification
+//{
+//	// always remove the extra footer
+//  detailTableView.tableFooterView = nil;    
+//}
 
 
 - (UIViewController *)currentRootViewController
