@@ -75,7 +75,7 @@
           sw.imageView.image = img;
         }
         // - connect to choicesManager's dynamic "sel_nn" properties which represent the selected choices
-        [sw.valueConnector connectTo:choicesManager keyPath:[NSString stringWithFormat:@"sel_%d",info.index]];
+        [sw.valueConnector connectTo:choicesManager keyPath:[NSString stringWithFormat:@"sel_%lu",(unsigned long)info.index]];
         sw.valueConnector.autoSaveValue = YES;
         cell = (ZDetailViewBaseCell *)sw;
       }

@@ -28,7 +28,7 @@
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<ZChoiceInfo selected=%d, key='%@' index=%d>",self.selected, self.key, self.index];
+  return [NSString stringWithFormat:@"<ZChoiceInfo selected=%d, key='%@' index=%lu>",self.selected, self.key, (unsigned long)self.index];
 }
 
 @end // ZChoiceInfo
@@ -439,7 +439,7 @@
 - (void)setSel:(BOOL)aSel inInfo:(ZChoiceInfo *)aInfo
 {
   if (aSel!=aInfo.selected) {
-    NSString *key = [NSString stringWithFormat:@"sel_%d", aInfo.index];
+    NSString *key = [NSString stringWithFormat:@"sel_%lu", (unsigned long)aInfo.index];
     [self willChangeValueForKey:key];
     [self willChangeValueForKey:@"currentChoice"];
     aInfo.selected = aSel;

@@ -73,7 +73,7 @@
     else {
       // text based segment
       NSString *text = [info.choice valueForKey:@"text"];
-      if (!text) text = [NSString stringWithFormat:@"#%d",index];
+      if (!text) text = [NSString stringWithFormat:@"#%ld",(long)index];
       [self.segmentedControl insertSegmentWithTitle:text atIndex:index animated:NO];
     }
     // check if selected one
