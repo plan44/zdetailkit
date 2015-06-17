@@ -33,6 +33,8 @@
 
 @implementation ZDetailViewBaseCell
 
+@dynamic valueConnectors;
+
 @synthesize basicCellStyle, detailViewCellStyle;
 
 // internal initialisation, might be derived in subclasses

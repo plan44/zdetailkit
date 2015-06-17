@@ -68,6 +68,8 @@
 
 #pragma mark - initialisation and cleanup
 
+@dynamic valueConnectors;
+
 @synthesize currentChildDetailViewController;
 @synthesize modalViewWrapper;
 @synthesize hasAppeared;
