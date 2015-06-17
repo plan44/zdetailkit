@@ -66,7 +66,7 @@
 
 
 #define PREVIEW_MARGIN 4
-#define CORNER_RADIUS 10
+#define CORNER_RADIUS 0
 
 #define MAX_BLACK 0.5
 #define MAX_WHITE 0.8
@@ -122,7 +122,7 @@
     [hueImage drawInRect:CGRectMake(pav, f.size.height/2+4, f.size.width-pav, f.size.height/2-2)];
     // draw intensity (combined saturation/brightness) rect
     // - calc the hue color if we don't have it already
-    float red,green,blue;
+    CGFloat red,green,blue;
     if (!hueColor) {
       if (color) {
         // calculate hue color
@@ -178,8 +178,10 @@
 #define INTENSITY_MODE 1
 #define CANCEL_MODE 2
 
-- (int)trackValueWithTouch:(UITouch *)touch intoFactor:(float *)aFactorP
+- (int)trackValueWithTouch:(UITouch *)touch intoFactor:(CGFloat *)aFactorP
 {
+  int mode;
+  CGFloat newFactor = 0;
   CGRect f = self.bounds;
   float pav = f.size.height+PREVIEW_MARGIN;
   CGPoint pt = [touch locationInView:self];
@@ -189,24 +191,27 @@
     if (factor<0) factor=0;
     if (pt.y > f.size.height/2) {
       // touch ended in hue bar (which spans only 90% of the actual hue scale)
-	    if (aFactorP) *aFactorP = factor*0.9;
-      return HUE_MODE;
+	    newFactor = factor*0.9;
+      mode = HUE_MODE;
     }
     else {
       // touch ended in intensity bar
       if (factor>0.7) {
       	// we're in the white-to-black grayscale area
-		    if (aFactorP) *aFactorP = (factor-1)/(1-COLOR_GRAY_SEP)*(MAX_WHITE-MAX_BLACK)-MAX_BLACK; // grayscale
+		    newFactor = (factor-1)/(1-COLOR_GRAY_SEP)*(MAX_WHITE-MAX_BLACK)-MAX_BLACK; // grayscale
       }
       else {
-	      if (aFactorP) *aFactorP = factor/COLOR_GRAY_SEP; // 0..1
+	      newFactor = factor/COLOR_GRAY_SEP; // 0..1
       }
-      return INTENSITY_MODE;
+      mode = INTENSITY_MODE;
     }
   }
   else {
-  	return CANCEL_MODE;
+  	mode = CANCEL_MODE;
   }
+  //DBGNSLOG(@"trackValueWithTouch: pt=(%f,%f), factor=%f, mode=%d", pt.x, pt.y, newFactor, mode);
+  if (aFactorP) *aFactorP = newFactor;
+  return mode;
 }
 
 
@@ -220,7 +225,7 @@
   else if (mode==INTENSITY_MODE) {
     // touch ended in intensity bar
     if (hueColor) {
-      float red,green,blue;
+      CGFloat red,green,blue;
       GetRGBFromColor(hueColor,&red,&green,&blue);
       float goal;
       if (factor<0) {
@@ -260,7 +265,7 @@
 {
 	if (self.enabled) {
     // determine where we are tracking
-    float factor = 0;
+    CGFloat factor = 0;
     trackmode = [self trackValueWithTouch:touch intoFactor:&factor];
     [self updateColorForMode:trackmode andFactor:factor];
     // block scroller as otherwise touch tracking does not work
@@ -277,7 +282,7 @@
 {
 	[super continueTrackingWithTouch:touch withEvent:event];
 	if (self.enabled) {
-    float factor;
+    CGFloat factor;
     int newmode = [self trackValueWithTouch:touch intoFactor:&factor];
     if (newmode!=CANCEL_MODE)
       [self updateColorForMode:trackmode andFactor:factor];
@@ -293,7 +298,7 @@
     // unblock scroller
     if (delegate && [delegate respondsToSelector:@selector(blockScrollingForSliders:)])
     	[delegate blockScrollingForSliders:NO];
-    float factor = 0;
+    CGFloat factor = 0;
     [self trackValueWithTouch:touch intoFactor:&factor];
     [self updateColorForMode:trackmode andFactor:factor];
     if (trackmode!=HUE_MODE) {

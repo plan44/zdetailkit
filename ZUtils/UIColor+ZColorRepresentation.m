@@ -26,7 +26,7 @@
 
 - (uint32_t)intColor
 {
-  float red,green,blue,alpha;
+  CGFloat red,green,blue,alpha;
   [self getRed:&red green:&green blue:&blue alpha:&alpha];
   return
     (((int)(red*255)) << 16) + // red
