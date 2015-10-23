@@ -59,15 +59,8 @@
     // like centered text
     self.accessoryType = UITableViewCellAccessoryNone;
     self.descriptionLabel.textAlignment = UITextAlignmentCenter;
-    // but with special background image
-    UIImage *img = [UIImage imageNamed:@"ZBC_delbtn.png"];
-    self.backgroundView = [[UIImageView alloc] initWithImage:[img stretchableImageWithLeftCapWidth:7 topCapHeight:0]];
-    // make sure content background is transparent
-    self.contentView.backgroundColor = [UIColor clearColor];
-    // value must have clear background to show button image through
-    self.textLabel.backgroundColor = [UIColor clearColor];
-    // label text is white
-    self.textLabel.textColor = [UIColor whiteColor];
+    // label text is red
+    self.textLabel.textColor = [UIColor redColor];
   }
   [super updateForDisplay];
 }
