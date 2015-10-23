@@ -11,7 +11,6 @@
 #import "ZValueConnector.h"
 #import "ZDetailEditing.h"
 
-#import "ZTextExpanderSupport.h"
 #import "ZString_utils.h"
 
 // set 1 to color views touched by custom layout for debugging

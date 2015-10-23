@@ -58,7 +58,6 @@ Features
 - Subclassing ZDetailViewBaseCell to create new editors is simple. Base class provides
   many services that _can_ be used, but does not interfere with normal UITableViewCell
   behaviour.
-- Support for TextExpander integration in all text editors.
 - Along with ZDetailKit come a few generic utility classes, categories and functions,
   collectively called ZUtils, including support for user-aided internationalisation
   (great for beta apps), date math, keychain wrapper etc.

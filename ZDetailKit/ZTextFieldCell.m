@@ -8,7 +8,6 @@
 
 #import "ZTextFieldCell.h"
 
-#import "ZTextExpanderSupport.h"
 #import "ZDetailTableViewController.h"
 
 @interface ZTextFieldCell ( /* class extension */ )
@@ -260,12 +259,6 @@
     [textField addTarget:self action:@selector(textFieldEditingStarted)
     	forControlEvents:UIControlEventEditingDidBegin
     ];
-    // add textExpander to in place editor
-    #ifdef TEXTEXPANDER_SUPPORT
-    if ([TextExpanderSingleton textExpanderEnabled]) {
-      textField.delegate = [TextExpanderSingleton sharedTextExpander];
-    }
-    #endif    
     // add field
     [self.contentView addSubview:textField];
     [textField setNeedsLayout];

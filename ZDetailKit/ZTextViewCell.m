@@ -8,7 +8,6 @@
 
 #import "ZTextViewCell.h"
 
-#import "ZTextExpanderSupport.h"
 #import "ZDetailTableViewController.h"
 
 #import "ZDBGMacros.h"
@@ -16,9 +15,6 @@
 
 @interface ZTextViewCell ( /* class extension */ )
 {
-  #ifdef TEXTEXPANDER_SUPPORT
-  SMTEDelegateController *textExpander;
-  #endif
   CGFloat dynamicCellHeight;
   BOOL recalcDynamicCellHeight;
 }
@@ -44,10 +40,7 @@
       // make sure content margin is high enough vertically
       self.contentMargins = CGSizeMake(self.contentMargins.width, MAX(self.contentMargins.height, 10));
     }
-    #ifdef TEXTEXPANDER_SUPPORT
-    textExpander = nil;
-    #endif
-    self.valueLabel.hidden = YES; // don't show value label    
+    self.valueLabel.hidden = YES; // don't show value label
   }
   return self;
 }
@@ -315,20 +308,8 @@
 		// KVO does not catch all changes to textView.text (KVO triggers when field resigns first responder,
     // but that does not always happen reliably in time depending on how view is dismissed
     // So: we need notice when editing so we can set the value connector dirty
-    #ifdef TEXTEXPANDER_SUPPORT
-    textExpander = nil;
-    if ([TextExpanderSingleton textExpanderEnabled]) {
-      // need my own instance, because I need my own delegate
-      textExpander = [[SMTEDelegateController alloc] init];
-      [textExpander setNextDelegate:self];
-      textView.delegate = textExpander;
-    }
-    else
-    #endif // TEXTEXPANDER_SUPPORT
-    {
-      // editing callbacks to myself
-      textView.delegate = (id<UITextViewDelegate>)self;
-    }
+    // editing callbacks to myself
+    textView.delegate = (id<UITextViewDelegate>)self;
     // add textView
     [self.contentView addSubview:textView];
   }

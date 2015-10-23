@@ -30,7 +30,6 @@
 		ED12E78E15824B8200DE3ED3 /* ZTextEditBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E78015824B8200DE3ED3 /* ZTextEditBaseCell.m */; };
 		ED12E78F15824B8200DE3ED3 /* ZTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E78115824B8200DE3ED3 /* ZTextFieldCell.m */; };
 		ED12E79015824B8200DE3ED3 /* ZTextViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E78315824B8200DE3ED3 /* ZTextViewCell.m */; };
-		ED12E79415824D5400DE3ED3 /* ZTextExpanderSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */; };
 		ED12E7A015829C0700DE3ED3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED12E79F15829C0700DE3ED3 /* Foundation.framework */; };
 		ED1F705615BD50C10046CFBC /* ZColorChooser.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F705515BD50C10046CFBC /* ZColorChooser.m */; };
 		ED1F705E15BD51D30046CFBC /* ZCCH_clrBtn.png in Resources */ = {isa = PBXBuildFile; fileRef = ED1F705915BD51D30046CFBC /* ZCCH_clrBtn.png */; };
@@ -73,7 +72,6 @@
 		ED321F1116D97C1900CB76B1 /* ZColor_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1F708B15BDA4100046CFBC /* ZColor_utils.m */; };
 		ED321F1216D97C7300CB76B1 /* ZValueConnector.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77815824B8200DE3ED3 /* ZValueConnector.m */; };
 		ED321F1316D97C7300CB76B1 /* NSObject+ZValueConnectorContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = ED81B87A16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.m */; };
-		ED321F1416D97C7300CB76B1 /* ZTextExpanderSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */; };
 		ED321F1516D97C7300CB76B1 /* ZDetailViewBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */; };
 		ED321F1616D97C7300CB76B1 /* ZDetailViewBaseController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED03B83616D037D800ADA844 /* ZDetailViewBaseController.m */; };
 		ED321F1716D97C7300CB76B1 /* ZDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ED12E77615824B8200DE3ED3 /* ZDetailTableViewController.m */; };
@@ -181,8 +179,6 @@
 		ED12E78115824B8200DE3ED3 /* ZTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ZTextFieldCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		ED12E78215824B8200DE3ED3 /* ZTextViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ZTextViewCell.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		ED12E78315824B8200DE3ED3 /* ZTextViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ZTextViewCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZTextExpanderSupport.h; sourceTree = "<group>"; };
-		ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZTextExpanderSupport.m; sourceTree = "<group>"; };
 		ED12E79B15824DC700DE3ED3 /* ZTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ZTextFieldCell.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		ED12E79F15829C0700DE3ED3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		ED1F705415BD50C10046CFBC /* ZColorChooser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZColorChooser.h; sourceTree = "<group>"; };
@@ -369,8 +365,6 @@
 				ED12E77815824B8200DE3ED3 /* ZValueConnector.m */,
 				ED81B87A16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.m */,
 				ED81B87B16D65F8100ED1F3F /* NSObject+ZValueConnectorContainer.h */,
-				ED12E79215824D5400DE3ED3 /* ZTextExpanderSupport.h */,
-				ED12E79315824D5400DE3ED3 /* ZTextExpanderSupport.m */,
 				ED12E77915824B8200DE3ED3 /* ZDetailViewBaseCell.h */,
 				ED12E77A15824B8200DE3ED3 /* ZDetailViewBaseCell.m */,
 				ED03B83516D037D800ADA844 /* ZDetailViewBaseController.h */,
@@ -691,7 +685,6 @@
 				ED12E78E15824B8200DE3ED3 /* ZTextEditBaseCell.m in Sources */,
 				ED12E78F15824B8200DE3ED3 /* ZTextFieldCell.m in Sources */,
 				ED12E79015824B8200DE3ED3 /* ZTextViewCell.m in Sources */,
-				ED12E79415824D5400DE3ED3 /* ZTextExpanderSupport.m in Sources */,
 				ED49A99B1585F623007FEBF0 /* ZDateTimeCell.m in Sources */,
 				ED1F705615BD50C10046CFBC /* ZColorChooser.m in Sources */,
 				ED1F706515BD52500046CFBC /* ZColorChooserCell.m in Sources */,
@@ -732,7 +725,6 @@
 				ED321F1116D97C1900CB76B1 /* ZColor_utils.m in Sources */,
 				ED321F1216D97C7300CB76B1 /* ZValueConnector.m in Sources */,
 				ED321F1316D97C7300CB76B1 /* NSObject+ZValueConnectorContainer.m in Sources */,
-				ED321F1416D97C7300CB76B1 /* ZTextExpanderSupport.m in Sources */,
 				ED321F1516D97C7300CB76B1 /* ZDetailViewBaseCell.m in Sources */,
 				ED321F1616D97C7300CB76B1 /* ZDetailViewBaseController.m in Sources */,
 				ED321F1716D97C7300CB76B1 /* ZDetailTableViewController.m in Sources */,
