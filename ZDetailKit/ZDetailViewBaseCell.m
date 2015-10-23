@@ -59,7 +59,6 @@
     valueCellShare = 0.4;
   else
     valueCellShare = 0.65;
-  contentIndent = 0; // none
   contentMargins = CGSizeMake(10, 5);
   labelValueMargin = 16;
   descriptionViewAdjustment = ZDetailCellItemAdjustMiddle;
@@ -609,20 +608,6 @@ static NSInteger numObjs = 0;
 //}
 
 
-@synthesize contentIndent;
-
-- (void)setContentIndent:(CGFloat)aContentIndent
-{
-  if (aContentIndent!=contentIndent) {
-    if (aContentIndent>0) {
-      DBGNSLOG(@"Warning: contentIndent>0 does not look nice with UITableViewCellSeparatorStyleSingleLineEtched!");
-    }
-    contentIndent = floorf(aContentIndent); // make integer pixel count, display artifacts otherwise
-    [self setNeedsLayout];
-  }
-}
-
-
 @synthesize labelText;
 @synthesize autoSetDescriptionLabelText;
 
@@ -783,23 +768,6 @@ static CGRect adjustFrame(CGRect f, ZDetailCellItemAdjust adjust, CGRect r)
     // - background view
     backgroundLeftMargin = bv.frame.origin.x;
     backgroundRightMargin = bv.superview.bounds.size.width - contentLeftMargin - bv.frame.size.width;
-  }
-  // do not try to layout content indent before we have both contentview and background view 
-  if (contentIndent>0 && bv && cv && contentLeftMargin>=0 && backgroundLeftMargin>=0) {
-    // get current frames
-    CGRect cf = cv.frame;
-    CGRect bf = bv.frame;
-    // add any extra indent that might have been added by table editing mode
-    CGFloat totalContentIndent = (cf.origin.x-contentLeftMargin) + contentIndent;
-    // adjust background view
-    bf.origin.x = backgroundLeftMargin+totalContentIndent;
-    bf.size.width = bv.superview.bounds.size.width-backgroundRightMargin-bf.origin.x;
-    bv.frame = bf;
-    self.selectedBackgroundView.frame = bf;
-    // adjust content view
-    cf.origin.x = contentLeftMargin+totalContentIndent;
-    cf.size.width = cv.superview.bounds.size.width-contentRightMargin-cf.origin.x;
-    cv.frame = cf;
   }
   // do not try to layout anything before we have the content view
   if (cv!=nil) {

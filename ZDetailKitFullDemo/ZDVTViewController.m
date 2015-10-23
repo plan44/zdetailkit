@@ -88,23 +88,6 @@
       return YES; // handled
     }];
   }
-  /* layout: cell indentation */ {
-    ZSliderCell *sl = [c detailCell:[ZSliderCell class]];
-    sl.valueConnector.autoSaveValue = YES;
-    sl.labelText = @"Indent";
-    sl.sliderControl.maximumValue = 150; // label/value ratio
-    sl.sliderControl.value = sl.contentIndent; // init with current default content indent
-    [sl.valueConnector setValueChangedHandler:^BOOL(ZValueConnector *aConnector) {
-      [c forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell, NSInteger aSectionNo) {
-        // this and the previous section are not changed
-        if (aSectionNo>1) {
-          aCell.contentIndent = [aConnector.value doubleValue];
-          [aCell prepareForDisplay];
-        }
-      }];
-      return YES; // fully handled value change
-    }];
-  }
   /* Details */ {
     ZSwitchCell *sw = [c detailCell:[ZSwitchCell class]];
     sw.labelText = @"Show more...";

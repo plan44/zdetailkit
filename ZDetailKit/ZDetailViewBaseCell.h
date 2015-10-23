@@ -110,7 +110,7 @@ typedef enum {
 /// share of the entire cell that is used to represent value in
 ///
 /// - positive values describe the share relative to the entire cell width (=table view width)
-/// - negative values describe the share relative to the content view width (which might be indented, see contentIndent)
+/// - negative values describe the share relative to the content view width
 ///
 /// @note valueCellShare applies only to valueView and descriptionView (which are only assigned to the standard UITableViewCell
 ///   labels when ZDetailViewCellStyleFlagAutoLabelLayout flag is set in the cell style)
@@ -120,10 +120,6 @@ typedef enum {
 /// @note to automatically set valueCellShare for all cells to the same value, use ZDetailTableViewController's
 ///   defaultValueCellShare property.
 @property (assign, nonatomic) CGFloat valueCellShare;
-
-/// content view indent (enlarged left margin) in pixels
-/// @warning content indent does not look ok with UITableViewCellSeparatorStyleSingleLineEtched
-@property (assign, nonatomic) CGFloat contentIndent;
 
 /// content margins (free pixels to the left and right or top and bottom of actual cell content)
 @property (assign, nonatomic) CGSize contentMargins;
