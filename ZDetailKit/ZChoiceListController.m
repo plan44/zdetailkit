@@ -10,13 +10,19 @@
 
 #import "ZSwitchCell.h"
 
-@interface ZChoiceListController ()
+#import "ZSoundPlayer.h"
+
+@interface ZChoiceListController ( /* class extension */ )
+{
+  ZSoundPlayer *soundPlayer;
+}
 
 @end
 
+
 @implementation ZChoiceListController
 
-@synthesize choicesManager, valueConnector, buildCellHandler, selectionCloses;
+@synthesize choicesManager, valueConnector, buildCellHandler, selectionCloses, playSoundSample;
 
 
 - (void)internalInit
@@ -25,9 +31,11 @@
   // init my own stuff
   choicesManager = [[ZChoicesManager alloc] init];
   choicesManager.delegate = self;
+  soundPlayer = nil;
   // options
   buildCellHandler = nil;
-  selectionCloses = YES; // non-multiple-choice lists close when selection is made
+  selectionCloses = YES; // non-multiple-choice lists close by default when selection is made
+  playSoundSample = NO; // do not assume list entries to be sound samples to play when selected
   // connector for current choice(s)
   valueConnector = [self registerValueConnector:
     [ZValueConnector connectorWithValuePath:@"currentChoice" owner:choicesManager]
@@ -132,6 +140,10 @@
   if (aActive!=self.active) {
     // the choice manager must be active before value connectors are accessing it 
     choicesManager.active = aActive;
+    // stop playing sound if any
+    if (!aActive && soundPlayer) {
+      [soundPlayer stop];
+    }
   }
   [super setActive:aActive];
 }
@@ -150,14 +162,34 @@
 
 - (void)updateChoicesDisplay
 {
-  [self.detailTableView reloadData];
+
 }
 
+*/
 
 - (void)updateChoiceSelection
 {
-  [self.detailTableView reloadData];
-}*/
+  if (playSoundSample) {
+    for (ZChoiceInfo *info in choicesManager.choiceInfos) {
+      if (info.selected) {
+        NSString *soundName = [info.choice valueForKey:@"soundName"];
+        if (!soundName) {
+          // no separate sound name, assume key is the sound name
+          soundName = info.key;
+        }
+        if (soundName) {
+          // play it
+          if (!soundPlayer) {
+            soundPlayer = [[ZSoundPlayer alloc] init];
+          }
+          soundPlayer.soundName = soundName;
+          [soundPlayer play];
+        }
+      }
+    }
+  }
+}
+
 
 
 

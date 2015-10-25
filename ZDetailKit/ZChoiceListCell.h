@@ -10,4 +10,7 @@
 
 @interface ZChoiceListCell : ZChoicesBaseCell
 
+@property (assign, nonatomic) BOOL selectionClosesList;
+@property (assign, nonatomic) BOOL playSoundSample;
+
 @end

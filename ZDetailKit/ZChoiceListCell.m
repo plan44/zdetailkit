@@ -17,10 +17,14 @@
 
 @implementation ZChoiceListCell
 
+@synthesize selectionClosesList, playSoundSample;
+
+
 - (id)initWithStyle:(ZDetailViewCellStyle)aStyle reuseIdentifier:(NSString *)aReuseIdentifier
 {
   if ((self = [super initWithStyle:aStyle reuseIdentifier:aReuseIdentifier])) {
     // nop
+    selectionClosesList = YES;
   }
   return self;
 }
@@ -92,6 +96,8 @@
   ZChoiceListController *clc = nil;
   if (self.allowsEditing) {
     clc = [ZChoiceListController controllerWithTitle:self.detailTitleText];
+    clc.selectionCloses = self.selectionClosesList;
+    clc.playSoundSample = self.playSoundSample;
     // pass on the choices and config
     clc.choicesManager.choicesArray = self.choicesManager.choicesArray;
     clc.choicesManager.mode = self.choicesManager.mode;

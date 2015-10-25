@@ -306,9 +306,6 @@
 }
 
 
-@synthesize currentChoice;
-
-
 - (id)choicesInMode:(ZChoicesManagerMode)aMode
 {
   if (aMode==ZChoicesManagerModeSingleKey) {
