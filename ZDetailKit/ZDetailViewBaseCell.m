@@ -59,7 +59,7 @@
     valueCellShare = 0.4;
   else
     valueCellShare = 0.65;
-  contentMargins = CGSizeMake(10, 5);
+  contentMargins = CGSizeMake(16, 5);
   labelValueMargin = 16;
   descriptionViewAdjustment = ZDetailCellItemAdjustMiddle;
   valueViewAdjustment = ZDetailCellItemAdjustMiddle;

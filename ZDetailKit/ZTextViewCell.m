@@ -284,7 +284,7 @@
     #endif
     textView.autoresizingMask = UIViewAutoresizingNone; //UIViewAutoresizingFlexibleWidth+UIViewAutoresizingFlexibleHeight;
     textView.contentMode = UIViewContentModeScaleToFill;
-    textView.contentInset = UIEdgeInsetsMake(-8, -8, -8, -8);
+    textView.contentInset = UIEdgeInsetsMake(-8, -0, -8, -0);
     // textView other options
     // Note: font cannot be copied here, because valueLabel might not have set it's font size correctly
     textView.textAlignment = self.valueLabel.textAlignment;
