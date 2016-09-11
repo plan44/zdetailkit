@@ -534,6 +534,7 @@
   modalViewWrapper.modalTransitionStyle = self.modalTransitionStyle;
   modalViewWrapper.modalPresentationStyle = self.modalPresentationStyle;
   modalViewWrapper.modalInPopover = self.modalInPopover;
+  modalViewWrapper.navigationBar.translucent = NO;
   // return the wrapper
   return modalViewWrapper;
 }
