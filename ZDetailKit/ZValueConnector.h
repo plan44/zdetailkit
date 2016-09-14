@@ -69,6 +69,9 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 /// @param aConnector a ZValueConnector, usually created with [ZValueConnector connectorWithValuePath:owner:]
 - (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector;
 
+
+- (void)doTrace;
+
 @end
 
 

@@ -119,6 +119,12 @@
 }
 
 
+- (void)doTrace
+{
+  _trace = YES;
+}
+
+
 - (NSString *)description
 {
   return [NSString stringWithFormat:@"<ZValueConnector '%@.%@' <-> '%@.%@' in owner:%@", [target class], self.keyPath, [owner class], self.valuePath, [owner description]];
