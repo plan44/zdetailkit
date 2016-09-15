@@ -49,16 +49,16 @@
 {
   if (buttonStyle==ZButtonCellStyleCenterText) {
     self.accessoryType = UITableViewCellAccessoryNone;
-    self.descriptionLabel.textAlignment = UITextAlignmentCenter;
+    self.descriptionLabel.textAlignment = NSTextAlignmentCenter;
   }
   else if (buttonStyle==ZButtonCellStyleDisclose) {
     self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    self.descriptionLabel.textAlignment = UITextAlignmentLeft;
+    self.descriptionLabel.textAlignment = NSTextAlignmentLeft;
   }
   else if (buttonStyle==ZButtonCellStyleDestructive) {
     // like centered text
     self.accessoryType = UITableViewCellAccessoryNone;
-    self.descriptionLabel.textAlignment = UITextAlignmentCenter;
+    self.descriptionLabel.textAlignment = NSTextAlignmentCenter;
     // label text is red
     self.textLabel.textColor = [UIColor redColor];
   }
