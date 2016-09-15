@@ -252,7 +252,7 @@
 
 
 // called when detail editor for my content has finished
-- (void)editorFinishedWithCancel:(BOOL)aCancelled
+- (void)editor:(UIViewController *)aEditorViewController finishedWithCancel:(BOOL)aCancelled
 {
   if (self.autoAdjustHeight && !aCancelled) {
     // cause height recalculation and cause reloading cell if so

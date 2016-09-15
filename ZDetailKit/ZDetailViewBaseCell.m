@@ -278,11 +278,11 @@ static NSInteger numObjs = 0;
 
 
 // called when editor (as obtained by editorForTapInAccessory:) has finished
-- (void)editorFinishedWithCancel:(BOOL)aCancelled
+- (void)editor:(UIViewController *)aEditorViewController finishedWithCancel:(BOOL)aCancelled
 {
   // base class calls custom handler, if defined
   if (editorFinishedHandler) {
-    editorFinishedHandler(self,aCancelled);
+    editorFinishedHandler(self, aEditorViewController, aCancelled);
   }
 }
 

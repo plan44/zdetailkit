@@ -447,7 +447,7 @@
     hasAppeared = NO;
     // inform parent
     if (self.parentDetailViewController) {
-      [self.parentDetailViewController childDetailEditingDoneWithCancel:cancelled];
+      [self.parentDetailViewController child:self detailEditingDoneWithCancel:cancelled];
     }
     // let descendants know
     [self detailViewDidClose:aAnimated];
@@ -695,7 +695,7 @@
 
 
 // should be called by child detail editor when editing completes
-- (void)childDetailEditingDoneWithCancel:(BOOL)aCancelled
+- (void)child:(UIViewController *)aChildViewController detailEditingDoneWithCancel:(BOOL)aCancelled
 {
   self.currentChildDetailViewController = nil; // forget it
   // re-evaluate visibilities of cells

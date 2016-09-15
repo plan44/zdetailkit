@@ -53,7 +53,7 @@ typedef enum {
 
 // an object than can act as the parent of a detail view controller
 @protocol ZDetailViewParent <NSObject>
-- (void)childDetailEditingDoneWithCancel:(BOOL)aCancelled; // should be called by child detail editor when editing completes
+- (void)child:(UIViewController *)aChildViewController detailEditingDoneWithCancel:(BOOL)aCancelled; // should be called by child detail editor when editing completes
 @end
 
 
@@ -123,7 +123,7 @@ typedef enum {
 // user interaction
 - (BOOL)handleTapInAccessory:(BOOL)aInAccessory; // called to handle a tap in the cell (instead of in the cellOwner), return YES if handled
 - (UIViewController *)editorForTapInAccessory:(BOOL)aInAccessory;
-- (void)editorFinishedWithCancel:(BOOL)aCancelled; // called when detail editor for a cell (as obtained by editorForTapInAccessory:) has finished (i.e. closed)
+- (void)editor:(UIViewController *)aEditorViewController finishedWithCancel:(BOOL)aCancelled; // called when detail editor for a cell (as obtained by editorForTapInAccessory:) has finished (i.e. closed)
 - (BOOL)keepSelected; // if cell is selected (tapped) and this returns YES, the selection is kept after touch is released
 
 @end

@@ -22,7 +22,7 @@
 // - if no handler is set, processing continues as if the handler had returned NO
 typedef BOOL (^ZDetailCellConnectionHandler)(ZDetailViewBaseCell *aCell, ZValueConnector *aConnector);
 // handler for when detail editor for this cell has finished (was closed)
-typedef BOOL (^ZDetailCellEditorFinishedHandler)(ZDetailViewBaseCell *aCell, BOOL aCancelled);
+typedef BOOL (^ZDetailCellEditorFinishedHandler)(ZDetailViewBaseCell *aCell, UIViewController *aEditorViewController, BOOL aCancelled);
 // handler for tap in cell or cell accessory
 typedef BOOL (^ZDetailCellTapHandler)(ZDetailViewBaseCell *aCell, BOOL aInAccessory);
 // handler for creating editor

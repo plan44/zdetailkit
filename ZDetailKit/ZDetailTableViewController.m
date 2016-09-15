@@ -1067,7 +1067,7 @@ static NSInteger numObjs = 0;
       [super setActive:NO];
       // now deactivate my own cells
       self.cellsActive = NO; // deactivate all cells
-      // Remove table date right now if not (any more) appeared...
+      // Remove table data right now if not (any more) appeared...
       // ...but not otherwise, as during disappearing animation, we still want to see the table
       if (!self.hasAppeared) {
         [self forgetTableData];
@@ -1547,18 +1547,18 @@ static NSInteger numObjs = 0;
 
 
 // should be called by child detail editor when editing completes
-- (void)childDetailEditingDoneWithCancel:(BOOL)aCancelled
+- (void)child:(UIViewController *)aChildViewController detailEditingDoneWithCancel:(BOOL)aCancelled
 {
   if (self.cellThatOpenedChildDetail) {
     // inform the cell that the editor has closed
     if ([self.cellThatOpenedChildDetail conformsToProtocol:@protocol(ZDetailViewCell)]) {
-      [(id<ZDetailViewCell>)(self.cellThatOpenedChildDetail) editorFinishedWithCancel:aCancelled];
+      [(id<ZDetailViewCell>)(self.cellThatOpenedChildDetail) editor:aChildViewController finishedWithCancel:aCancelled];
     }
     // done
     self.cellThatOpenedChildDetail = nil;
   }
   // let superclass handle it as well
-  [super childDetailEditingDoneWithCancel:aCancelled];
+  [super child:aChildViewController detailEditingDoneWithCancel:aCancelled];
 }
 
 
