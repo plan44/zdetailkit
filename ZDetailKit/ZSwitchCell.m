@@ -120,13 +120,9 @@
 {
   BOOL flagVal = self.internalState ^ inverse;
   if (bitMask) {
-    // need read-modify-write
-    if (!updating) {
-      updating = YES;
-      [self.valueConnector loadValue]; // updates switchVal
-      updating = NO;
-    }
-    NSUInteger sv = (switchVal & ~bitMask);
+    // need to combine with existing value
+    NSUInteger currentVal = [[self.valueConnector peekOriginalValue] integerValue];
+    NSUInteger sv = (currentVal & ~bitMask);
     if (flagVal)
       sv |= bitMask;
     return sv;

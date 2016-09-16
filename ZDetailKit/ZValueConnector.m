@@ -695,6 +695,15 @@
 }
 
 
+- (id)peekOriginalValue
+{
+  if (target && keyPath) {
+    return [target valueForKeyPath:keyPath];
+  }
+  return nil;
+}
+
+
 // revert value from last saved (or original) value
 - (void)loadValue
 {

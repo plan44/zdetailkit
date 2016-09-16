@@ -164,6 +164,11 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 /// @warning DO NOT OVERRIDE!
 - (void)loadValue;
 
+/// get current original value from container/keyPath, without updating internals in any way
+/// @note for read/modify/write cycles
+- (id)peekOriginalValue;
+
+
 /// convenience method to collect possible validation errors from connectors
 /// @return YES if all connectors validate ok, NO otherwise
 /// @param aErrorsP can be passed NULL if no errors should be collected.
