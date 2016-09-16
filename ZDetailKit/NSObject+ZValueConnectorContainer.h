@@ -26,6 +26,9 @@
 /// load data in all connectors
 - (void)loadValueConnectors;
 
+/// disconnect - prepare for being deleted (should null everything that might hold references)
+- (void)disconnectValues;
+
 /// check for validation in all connectors and collect errors
 /// @return YES if all connectors validate ok, NO otherwise
 /// @param aErrorsP can be passed NULL if no errors should be collected.

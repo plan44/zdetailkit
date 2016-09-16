@@ -11,6 +11,65 @@
 #import "NSObject+ZValueConnectorContainer.h"
 #import "ZDBGMacros.h"
 
+// if defined, living instances are recorded in a set to monitor if all are closed properly (DEBUG only)
+#define DETAILVIEWCELLS_MONITORINSTANCES 1
+
+
+#if defined(DETAILVIEWCELLS_MONITORINSTANCES) && defined(DEBUG)
+
+#define COUNTONLY 0
+
+#if !COUNTONLY
+NSMutableSet *openDetailViewCellsSet = nil;
+#endif
+static unsigned long totalCells = 0;
+
+void cell_created(id aCell)
+{
+  totalCells++;
+  NSLog(@"+++ (%03lu) 0x%lX : %@", totalCells, (intptr_t)aCell, [aCell description]);
+  #if !COUNTONLY
+  if (!openDetailViewCellsSet) {
+    openDetailViewCellsSet = [[NSMutableSet alloc] init];
+  }
+  [openDetailViewCellsSet addObject:[NSNumber numberWithUnsignedLongLong:(intptr_t)aCell]];
+  #endif
+}
+
+void cell_deleted(id aCell)
+{
+  totalCells--;
+  NSLog(@"--- (%03lu) 0x%lX : %@", totalCells, (intptr_t)aCell, [aCell description]);
+  #if !COUNTONLY
+  [openDetailViewCellsSet removeObject:[NSNumber numberWithUnsignedLongLong:(intptr_t)aCell]];
+  NSMutableString *s = [NSMutableString string];
+  unsigned long cc = 0;
+  for (id cell in openDetailViewCellsSet) {
+    __unsafe_unretained ZDetailViewBaseCell *dvc = (__bridge ZDetailViewBaseCell *)((void *)[cell unsignedLongLongValue]);
+    if (!dvc.disconnected) {
+      cc++;
+      [s appendFormat:@"\n   - 0x%lX : %@", (intptr_t)dvc, [dvc description]];
+    }
+  }
+  NSLog(@"------ Still %lu cells (of %lu existing) are connected:%@", cc, openDetailViewCellsSet.count, s);
+  #endif
+}
+
+#define CELL_CREATED(k) cell_created(k)
+#define CELL_DELETED(k) cell_deleted(k)
+#define CELLNSLOG(...) DBGNSLOG(__VA_ARGS__)
+#define CELLLOGGING 1
+
+#else
+#define CELL_CREATED(k)
+#define CELL_DELETED(k)
+#define CELLNSLOG(...)
+#define CELLLOGGING 0
+#endif
+
+
+
+
 @interface ZDetailViewBaseCell ( /* class extension */ )
 {
   // non-public instance vars
@@ -25,6 +84,9 @@
   CGFloat backgroundRightMargin; // right margin (space to size of superview on the right)
   // image view usage
   BOOL imageViewInUse;
+  #if CELLLOGGING
+  BOOL disconnected;
+  #endif
 }
 
 @end
@@ -40,6 +102,9 @@
 // internal initialisation, might be derived in subclasses
 - (void)internalInit
 {
+  #if CELLLOGGING
+  disconnected = NO;
+  #endif
   // needed mode flags to be visible (included in table view)
   showInModes = ZDetailDisplayModeAlways; // always visible by default
   showsValidationStatus = YES; // show validation problems
@@ -92,43 +157,21 @@
 }
 
 
-- (void)dealloc
-{
-  // disable all connections to make sure no KVO remains active to
-  // embedded objects that might get destroyed before the embedded valueConnectors
-  // (as we don't have any control over ARCs order of deallocation)
-  self.active = NO;
-}
-
-
-
-#if 0
-
-static NSInteger numObjs = 0;
 
 + (id)alloc
 {
-  numObjs++;
-  DBGNSLOG(@"++++ [retain=1, objs=%d] %@", numObjs, [self description]);
-  return [super alloc];
+  id obj = [super alloc];
+  CELL_CREATED(obj);
+  return obj;
 }
 
 
-- (id)retain
+- (void)dealloc
 {
-  DBGNSLOG(@"++++ [retain=%d, objs=%d] %@", [self retainCount]+1, numObjs, [self description]);
-  return [super retain];
+  [self disconnect];
+  CELL_DELETED(self);
 }
 
-
-- (oneway void)release
-{
-  if ([self retainCount]==1) numObjs--; // will go to 0 and get deleted now
-  DBGNSLOG(@"---- [retain=%d, objs=%d] %@", [self retainCount]-1, numObjs, [self description]);
-  [super release];
-}
-
-#endif
 
 
 // UITableViewCell compatible, except that style has extended functionality (includes flags)
@@ -149,11 +192,44 @@ static NSInteger numObjs = 0;
 
 - (NSString *)description
 {
-  return [NSString stringWithFormat:@"<ZDetailViewBaseCell labelText='%@' <%@>", self.labelText, super.description];
+  //return [NSString stringWithFormat:@"<ZDetailViewBaseCell labelText='%@' <%@>>", self.labelText, super.description];
+  return [NSString stringWithFormat:@"<%@ %slabelText='%@'>", [[self class] description], disconnected ? "DISCONNECTED " : "", self.labelText];
 }
 
 
 #pragma mark - ZDetailViewCell protocol methods - might be derived in subclasses
+
+@synthesize disconnected;
+
+- (void)disconnect
+{
+  // make inactive
+  CELLNSLOG(@">>> (%03lu) 0x%lX : %@ -> DISCONNECTING", totalCells, (intptr_t)self, [self description]);
+  // disable all connections to make sure no KVO remains active to
+  // embedded objects that might get destroyed before the embedded valueConnectors
+  // (as we don't have any control over ARCs order of deallocation)
+  self.active = NO;
+  // disconnect all value connectors
+  [self disconnectValues];
+  // clear all blocks to untie all held references
+  self.cellVisibleInModeHandler = nil;
+  self.valueChangedHandler = nil;
+  self.tapHandler = nil;
+  self.editorSetupHandler = nil;
+  self.editorFinishedHandler = nil;
+  self.editingEndedHandler = nil;
+  self.validationStatusHandler = nil;
+  // clear other references
+  self.cellOwner = nil;
+  self.valueLabel = nil;
+  self.valueView = nil;
+  self.descriptionView = nil;
+  self.descriptionLabel = nil;
+  #if CELLLOGGING
+  disconnected = YES;
+  #endif
+}
+
 
 
 @synthesize active;
@@ -548,7 +624,7 @@ static NSInteger numObjs = 0;
     // no horizontal adjustment specified at all, derive from label's textalignment
     return
       descriptionViewAdjustment | ZDetailCellItemAdjustFillWidth |
-      (self.descriptionLabel.textAlignment==UITextAlignmentRight ? ZDetailCellItemAdjustRight : ZDetailCellItemAdjustLeft);
+      (self.descriptionLabel.textAlignment==NSTextAlignmentRight ? ZDetailCellItemAdjustRight : ZDetailCellItemAdjustLeft);
   }
   return descriptionViewAdjustment;
 }
@@ -571,7 +647,7 @@ static NSInteger numObjs = 0;
     // no horizontal adjustment specified at all, derive from label's textalignment
     return
       valueViewAdjustment | ZDetailCellItemAdjustFillWidth |
-      (self.valueLabel.textAlignment==UITextAlignmentRight ? ZDetailCellItemAdjustRight : ZDetailCellItemAdjustLeft);
+      (self.valueLabel.textAlignment==NSTextAlignmentRight ? ZDetailCellItemAdjustRight : ZDetailCellItemAdjustLeft);
   }
   return valueViewAdjustment;
 }

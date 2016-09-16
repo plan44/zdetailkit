@@ -69,9 +69,6 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 /// @param aConnector a ZValueConnector, usually created with [ZValueConnector connectorWithValuePath:owner:]
 - (ZValueConnector *)registerValueConnector:(ZValueConnector *)aConnector;
 
-
-- (void)doTrace;
-
 @end
 
 
@@ -123,6 +120,8 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 /// @note this also is the object which builds the root for internal valuepaths as passed to initWithValuePath:owner:
 @property (unsafe_unretained, readonly, nonatomic) id owner;
 
+/// disconnect - prepare for being deleted (should null everything that might hold references)
+- (void)disconnect;
 
 /// convenience initializer, when ZValueConnector is used for binding the value of a UIControl.
 /// @param aValuePath the key path for the control's value (e.g. "text" for a UITextField or "on" for a UISwitch)

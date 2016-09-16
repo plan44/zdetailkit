@@ -1012,6 +1012,10 @@ static NSInteger numObjs = 0;
   	// first save to objects (unless already deactivated)
     [self save];
     self.cellsActive = NO; // deactivate all cells already to make sure no undisplayed one remains active
+    // then disconnect
+    [self forEachDetailViewCell:^(ZDetailTableViewController *aController, UITableViewCell<ZDetailViewCell> *aCell, NSInteger aSectionNo) {
+      [aCell disconnect];
+    }];
     // then remove
   	[allSectionsAndCells removeAllObjects];
     allSectionsAndCells = nil;
@@ -1023,6 +1027,17 @@ static NSInteger numObjs = 0;
   	[currentSectionsAndCells removeAllObjects];
     currentSectionsAndCells = nil;
   }
+}
+
+
+- (void)disconnect
+{
+  [self forgetTableData];
+  // clean up UITableView cell cache
+  if (detailTableView) [detailTableView reloadData];
+  // clear handlers
+  cellSetupHandler = nil;
+  buildDetailContentHandler = nil;
 }
 
 
@@ -1192,6 +1207,9 @@ static NSInteger numObjs = 0;
   if (!self.active) {
     // forget table cells now (we left them intact to avoid visual effects of them going away during disappearing phase)
     [self forgetTableData];
+    // reloading the empty table here is VERY important, as it frees the cells still held by the UITableView
+    // Otherwise, apparently old cells, despite having no reuse identifier, will be kept cached for a long time
+    if (detailTableView) [detailTableView reloadData];
   }
   [super viewDidDisappear:animated];
 }

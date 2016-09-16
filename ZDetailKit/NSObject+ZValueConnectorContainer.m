@@ -64,6 +64,18 @@ static char VALUECONNECTORS_IDENTIFER; // Note: the identifier is the address of
 }
 
 
+- (void)disconnectValues
+{
+  // disconnect all connectors
+  for (ZValueConnector *connector in self.valueConnectors) {
+    [connector disconnect];
+  }
+  // release the array
+  self.valueConnectors = nil;
+}
+
+
+
 - (BOOL)connectorsValidateWithErrors:(NSMutableArray **)aErrorsP
 {
   BOOL validates = YES;

@@ -108,6 +108,12 @@
 
 - (void)dealloc
 {
+  [self disconnect];
+}
+
+
+- (void)disconnect
+{
   // decativate to remove outside observers
   self.active = NO;
   // forget target
@@ -115,13 +121,11 @@
   // deactivate observation of internal object representing the cellValue
   self.valuePath = nil;
   // release handlers, important, as these may retain other objects!
-  // Note: owner itself is not retained
-}
-
-
-- (void)doTrace
-{
-  _trace = YES;
+  valueChangedHandler = nil;
+  valueSavedHandler = nil;
+  validationHandler = nil;
+  validationChangedHandler = nil;
+  // Note: owner itself is not a strong reference
 }
 
 

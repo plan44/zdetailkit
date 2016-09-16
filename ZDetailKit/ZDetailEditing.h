@@ -85,6 +85,8 @@ typedef enum {
 /// takes place now, and thus should be brought in view. Usually this is the frame of the active cell.
 /// If editing ends, CGRectNull is passed
 - (void)changedEditingRect:(CGRect)aEditingRect;
+/// disconnect - prepare for being deleted (should null everything that might hold references)
+- (void)disconnect;
 @end
 
 
@@ -115,15 +117,18 @@ typedef enum {
 /// visibility check (to determine if cell should be visible in a particulat mode)
 - (BOOL)nowVisibleInMode:(ZDetailDisplayMode)aMode; // true if cell should be visible in the passed mode
 
+// management
+- (void)disconnect; ///< disconnect - prepare for being deleted (should null everything that might hold references)
+
 // appearance
-- (void)prepareForDisplay; // - prepare for (re)display
-- (void)defocusCell; // called to defocus cell (and contained controls)
-- (BOOL)beginEditing; // called to try to begin editing (e.g. getting kbd focus) in this cell. Returns YES if possible (or already editing)
-- (void)setDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated; // set cell presentation mode
+- (void)prepareForDisplay; ///< prepare for (re)display
+- (void)defocusCell; ///< called to defocus cell (and contained controls)
+- (BOOL)beginEditing; ///< called to try to begin editing (e.g. getting kbd focus) in this cell. Returns YES if possible (or already editing)
+- (void)setDisplayMode:(ZDetailDisplayMode)aMode animated:(BOOL)aAnimated; ///< set cell presentation mode
 // user interaction
-- (BOOL)handleTapInAccessory:(BOOL)aInAccessory; // called to handle a tap in the cell (instead of in the cellOwner), return YES if handled
+- (BOOL)handleTapInAccessory:(BOOL)aInAccessory; ///< called to handle a tap in the cell (instead of in the cellOwner), return YES if handled
 - (UIViewController *)editorForTapInAccessory:(BOOL)aInAccessory;
-- (void)editor:(UIViewController *)aEditorViewController finishedWithCancel:(BOOL)aCancelled; // called when detail editor for a cell (as obtained by editorForTapInAccessory:) has finished (i.e. closed)
-- (BOOL)keepSelected; // if cell is selected (tapped) and this returns YES, the selection is kept after touch is released
+- (void)editor:(UIViewController *)aEditorViewController finishedWithCancel:(BOOL)aCancelled; ///< called when detail editor for a cell (as obtained by editorForTapInAccessory:) has finished (i.e. closed)
+- (BOOL)keepSelected; ///< if cell is selected (tapped) and this returns YES, the selection is kept after touch is released
 
 @end

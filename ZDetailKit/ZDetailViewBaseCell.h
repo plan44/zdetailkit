@@ -278,6 +278,9 @@ typedef enum {
 /// normally not be modified directly
 @property (assign, nonatomic) BOOL active;
 
+@property (readonly, nonatomic) BOOL disconnected;
+
+
 
 /// @name Methods for receiving events from embedded ZValueConnector instances
 
