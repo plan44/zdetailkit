@@ -19,6 +19,7 @@
   BOOL loadedValue; // set after cell value has been loaded for the first time
   BOOL saving; // set during saveValue (recursion breaking flag)
   BOOL loading; // set during revertValue (recursion breaking flag)
+  BOOL propagating; // set during propagation of a new value (recursion breaking flag)
   BOOL needsValidation;
 }
 
@@ -97,6 +98,7 @@
     autoSaveValue = NO; // and don't automatically save back
     saving = NO; // not saving right now (recursion breaking flag)
     loading = NO; // not loading right now (recursion breaking flag)
+    propagating = NO; // not propagating value (recursion breaking flag)
     unsavedChanges = NO; // not dirty;
     validated = NO; // currently not validated
     needsValidation = YES; // needs re-validation
@@ -293,23 +295,27 @@
 {      
   // Propagate change
   BOOL handled = NO;
-  // - first call handler block, if any
-  if (valueChangedHandler) {
-    IFTRACE
-    NSLog(@"- calling valueChangedHandler");
-    ENDIFTRACE
-    handled = valueChangedHandler(self);
-  }
-  // - if not yet handled, inform owner
-  if (!handled && [owner respondsToSelector:@selector(valueChangedInConnector:)]) {
-    IFTRACE
-    NSLog(@"- calling valueChangedInConnector delegate method");
-    ENDIFTRACE
-    handled = [owner valueChangedInConnector:self];
-  }
-  if (!handled) {
-    // - autosave/validate if requested
-    [self checkForAutoOps];
+  if (!propagating) {
+    propagating = YES;
+    // - first call handler block, if any
+    if (valueChangedHandler) {
+      IFTRACE
+      NSLog(@"- calling valueChangedHandler");
+      ENDIFTRACE
+      handled = valueChangedHandler(self);
+    }
+    // - if not yet handled, inform owner
+    if (!handled && [owner respondsToSelector:@selector(valueChangedInConnector:)]) {
+      IFTRACE
+      NSLog(@"- calling valueChangedInConnector delegate method");
+      ENDIFTRACE
+      handled = [owner valueChangedInConnector:self];
+    }
+    if (!handled) {
+      // - autosave/validate if requested
+      [self checkForAutoOps];
+    }
+    propagating = NO;
   }
   return handled;
 }
@@ -713,8 +719,10 @@
     ENDIFTRACE
     self.value = [target valueForKeyPath:keyPath];
     needsValidation = YES; // in case we had a validation error before, this is needed to clear it
-    if (callChangedHandlerOnLoad && valueChangedHandler) {
+    if (callChangedHandlerOnLoad && valueChangedHandler && !propagating) {
+      propagating = YES;
       valueChangedHandler(self);
+      propagating = NO;
     }
   }
 }
