@@ -33,7 +33,7 @@ NSDate *dateOnlyInUTC(NSDate *aDate)
 {
   if (aDate==nil) return nil;
   NSDateComponents *comp = [[NSCalendar cachedUTCCalendar]
-    components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit
+    components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay
     fromDate:aDate
   ];
   return [[NSCalendar cachedUTCCalendar] dateFromComponents:comp];
@@ -46,7 +46,7 @@ NSDate *dateOnly(NSDate *aDate)
 {
   if (aDate==nil) return nil;
   NSDateComponents *comp = [[NSCalendar cachedCalendar]
-    components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit
+    components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay
     fromDate:aDate
   ];
   return [[NSCalendar cachedCalendar] dateFromComponents:comp];
@@ -58,7 +58,7 @@ NSDate *localDateOnlyFromUTC(NSDate *aUTCTime)
 {
   if (aUTCTime==nil) return nil;
   NSDateComponents *comp = [[NSCalendar cachedUTCCalendar]
-    components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit
+    components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay
     fromDate:aUTCTime
   ];
   return [[NSCalendar cachedCalendar] dateFromComponents:comp];
@@ -70,7 +70,7 @@ NSDate *sameTimeInUTC(NSDate *aLocalTime)
 {
   if (aLocalTime==nil) return nil;
   NSDateComponents *comp = [[NSCalendar cachedCalendar]
-    components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSSecondCalendarUnit
+    components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond
     fromDate:aLocalTime
   ];
   return [[NSCalendar cachedUTCCalendar] dateFromComponents:comp];
@@ -82,7 +82,7 @@ NSDate *sameTimeInLocalTime(NSDate *aUTCTime)
 {
   if (aUTCTime==nil) return nil;
   NSDateComponents *comp = [[NSCalendar cachedUTCCalendar]
-    components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSSecondCalendarUnit
+    components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond
     fromDate:aUTCTime
   ];
   return [[NSCalendar cachedCalendar] dateFromComponents:comp];
