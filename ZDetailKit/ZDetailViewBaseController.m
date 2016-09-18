@@ -516,16 +516,6 @@
 }
 
 
-
-- (UIPopoverController *)popoverControllerForPresentation
-{
-  // special case, create popover
-  popoverWrapper = [[UIPopoverController alloc] initWithContentViewController:[self viewControllerForModalPresentation]];
-  return popoverWrapper;
-}
-
-
-
 - (UIViewController *)viewControllerForModalPresentation
 {
 	// need to wrap in a navigation controller of my own

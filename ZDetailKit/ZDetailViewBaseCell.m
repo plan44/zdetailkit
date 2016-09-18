@@ -12,7 +12,7 @@
 #import "ZDBGMacros.h"
 
 // if defined, living instances are recorded in a set to monitor if all are closed properly (DEBUG only)
-#define DETAILVIEWCELLS_MONITORINSTANCES 1
+#define DETAILVIEWCELLS_MONITORINSTANCES 0
 
 
 #if defined(DETAILVIEWCELLS_MONITORINSTANCES) && defined(DEBUG)
@@ -51,7 +51,7 @@ void cell_deleted(id aCell)
       [s appendFormat:@"\n   - 0x%lX : %@", (intptr_t)dvc, [dvc description]];
     }
   }
-  NSLog(@"------ Still %lu cells (of %lu existing) are connected:%@", cc, openDetailViewCellsSet.count, s);
+  NSLog(@"------ Still %lu cells (of %lu existing) are connected:%@", cc, (unsigned long)openDetailViewCellsSet.count, s);
   #endif
 }
 

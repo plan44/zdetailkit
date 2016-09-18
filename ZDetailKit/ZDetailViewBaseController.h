@@ -80,14 +80,6 @@ typedef enum {
 /// returns YES if controller is dismissing now
 @property(assign,readonly) BOOL dismissing;
 
-/// returns a popover controller for presenting this detail view
-///
-/// The returned controller wraps a navigation controller which in turn contains this controller
-/// as its root controller. The wrapper controllers inherit the relevant modal presentation
-/// properties from this controller.
-- (UIPopoverController *)popoverControllerForPresentation;
-
-
 /// returns a controller for presenting this detail view modally
 ///
 /// The returned controller is a navigation controller and inherits the relevant modal presentation

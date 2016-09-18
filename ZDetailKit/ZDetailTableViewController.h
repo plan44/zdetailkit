@@ -39,8 +39,7 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 /// Simplest usage of ZDetailTableViewController is setting the buildDetailContentHandler property
 /// with a block which creates some detail editing fields (cells) using the detailCell:withStyle: family of
 /// methods, and then presenting the controller either by pushing it onto a UINavigationController, or
-/// presenting it modally making use of viewControllerForModalPresentation or popoverControllerForPresentation
-/// from ZDetailViewBaseController.
+/// presenting it modally making use of viewControllerForModalPresentation from ZDetailViewBaseController.
 ///
 /// @note ZDetailTableViewController is _not_ a subclass of UITableViewController (but of UIViewController
 ///   via ZDetailViewBaseController).

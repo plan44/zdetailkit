@@ -110,7 +110,7 @@ typedef enum {
 /// share of the entire cell that is used to represent value in
 ///
 /// - positive values describe the share relative to the entire cell width (=table view width)
-/// - negative values describe the share relative to the content view width
+/// - negative values describe the share relative to the content view width (which might be indented or reduced due to accessories)
 ///
 /// @note valueCellShare applies only to valueView and descriptionView (which are only assigned to the standard UITableViewCell
 ///   labels when ZDetailViewCellStyleFlagAutoLabelLayout flag is set in the cell style)
