@@ -102,5 +102,13 @@
 /// for implementing real date-only values (which specify a calendar day, and not an absolute point-in-time)
 @property (assign,nonatomic) BOOL dateOnlyInUTC;
 
+/// when end date is used, and mode is dateOnly, setting this flag makes the end date to be shown
+/// one day earlier as it actually is stored, as data models usually treat the end date day as not included
+@property (assign, nonatomic) BOOL showEndDateInclusive;
+
+/// for dateonly, if this flag is set, the date of the previous day is shown
+@property (assign, nonatomic) BOOL displayPreviousDay;
+
+
 
 @end

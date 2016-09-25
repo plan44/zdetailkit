@@ -157,6 +157,7 @@
 @synthesize transformReversed;
 @synthesize nilNulValue;
 @synthesize saveEmptyAsNil, saveNilAsNull, nilAllowed;
+@synthesize loading;
 
 
 
@@ -345,14 +346,15 @@
       // filter NSNull
       if (newVal==[NSNull null])
         newVal = nil; 
-      self.value = newVal;
-      loading = NO;
+      self.value = newVal; // this resets "loading"
+      loading = YES; // set it again so valueChangedHandler can check it
       if (callChangedHandlerOnLoad && valueChangedHandler) {
         IFTRACE
         NSLog(@"- calling valueChangedHandler");
         ENDIFTRACE
         valueChangedHandler(self);
       }
+      loading = NO;
     }
   }
   else if (aObject==owner && [aKeyPath isEqualToString:[self valuePath]]) {

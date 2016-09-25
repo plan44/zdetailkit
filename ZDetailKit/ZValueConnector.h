@@ -156,6 +156,11 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 /// set if a value is connected
 @property (readonly, nonatomic) BOOL connected;
 
+/// set if currently loading value into internal value
+@property (readonly, nonatomic) BOOL loading;
+
+
+
 /// save the value to the target (model) attribute
 /// @warning DO NOT OVERRIDE!
 - (void)saveValue;

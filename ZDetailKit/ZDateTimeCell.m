@@ -47,7 +47,7 @@
 @synthesize suggestedDateConnector, masterDateConnector;
 @synthesize editInDetailView;
 
-@synthesize dateOnlyInUTC, moveEndWithStart;
+@synthesize dateOnlyInUTC, displayPreviousDay, showEndDateInclusive, moveEndWithStart;
 @synthesize autoEnterDefaultDate, suggestedDuration, minuteInterval;
 
 
@@ -62,6 +62,8 @@
     pickerInstalling = NO;
     suggestedDuration = 60*60; // 1 hour
     minuteInterval = 1; // 1 minute by default
+    displayPreviousDay = NO;
+    showEndDateInclusive = YES;
     // formatter
     formatter = [[NSDateFormatter alloc] init];
     // delete button created on demand
@@ -298,14 +300,18 @@ static UIDatePicker *sharedDatePicker = nil;
 	NSDate *d = nil;
   if (datePicker) {
     NSTimeInterval offs = 0;
-    if (self.dateOnly && self.dateOnlyInUTC) {
-      offs = [datePicker.timeZone secondsFromGMTForDate:datePicker.date];
-      // return as UTC/GMT
-      d = [datePicker.date dateByAddingTimeInterval:offs];
-    }
-    else {
-      // return as-is
-      d = datePicker.date;
+    d = datePicker.date;
+    if (self.dateOnly) {
+      if (self.dateOnlyInUTC) {
+        // return as UTC/GMT
+        offs += [datePicker.timeZone secondsFromGMTForDate:datePicker.date];
+      }
+      if (self.displayPreviousDay) {
+        // picker displays one day earlier than the (excluded) end date, so adjust back here before returning
+        offs += SecondsPerDay;
+      }
+      // adjust
+      d = [d dateByAddingTimeInterval:offs];
     }
     //DBGNSLOG(@"pickerDate returns (offs=%g): %@\n",offs,[d description]);
   }
@@ -323,16 +329,18 @@ static UIDatePicker *sharedDatePicker = nil;
     ];
     // shift in case of dateOnly
     NSTimeInterval offs = 0;
-    if (self.dateOnly && self.dateOnlyInUTC) {
-      // input is UTC, move to local time
-      offs = [datePicker.timeZone secondsFromGMTForDate:aPickerDate];
-      datePicker.date = [aPickerDate dateByAddingTimeInterval:-offs];
+    if (self.dateOnly) {
+      if (self.dateOnlyInUTC) {
+        // input is UTC, move to local time
+        offs -= [datePicker.timeZone secondsFromGMTForDate:aPickerDate];
+      }
+      if (self.displayPreviousDay) {
+        // picker displays one day earlier than the (excluded) end date, so adjust back here before returning
+        offs -= SecondsPerDay;
+      }
     }
-    else {
-      // set as-is
-      datePicker.date = aPickerDate;
-    }
-    DBGNSLOG(@"set pickerDate to (offs=%g): %@\n",offs,[aPickerDate description]);
+    datePicker.date = [aPickerDate dateByAddingTimeInterval:offs];
+    DBGNSLOG(@"set pickerDate to (offs=%g): %@\n", offs, [aPickerDate description]);
   }
 }
 
@@ -480,19 +488,21 @@ static UIDatePicker *sharedDatePicker = nil;
   }
   [formatter setDateFormat:[@"EEE, " stringByAppendingString:[formatter dateFormat]]];
   // now display
+  NSDate *sd = startDate ? [startDate dateByAddingTimeInterval:self.dateOnly && self.displayPreviousDay ? -SecondsPerDay : 0] : nil;
   if (endDateConnector.connected) {
     // show for start and end
+    NSDate *ed = endDate ? [endDate dateByAddingTimeInterval:self.dateOnly && self.showEndDateInclusive ? -SecondsPerDay : 0] : nil;
     self.valueLabel.numberOfLines = 2;
     self.valueLabel.text = [NSString stringWithFormat:@"%@\n%@",
-      startDate ? [formatter stringFromDate:startDate] : @"-",
-      endDate ? [formatter stringFromDate:endDate] : @"-"
+      sd ? [formatter stringFromDate:sd] : @"-",
+      ed ? [formatter stringFromDate:ed] : @"-"
     ];
   }
   else {
   	// single date
     self.valueLabel.numberOfLines = 1;
     self.valueLabel.text =
-    	startDate ? [formatter stringFromDate:startDate] : @"-";
+    	sd ? [formatter stringFromDate:sd] : @"-";
 	}
   // update date picker if present
   if (datePicker && !pickerIsUpdating) {
@@ -529,6 +539,7 @@ static UIDatePicker *sharedDatePicker = nil;
       sd.valueLabel.numberOfLines = 1;
       sd.valueLabel.textAlignment = NSTextAlignmentRight;
       sd.editInDetailView = NO;
+      sd.displayPreviousDay = self.displayPreviousDay;
       [sd.startDateConnector connectTo:self.startDateConnector keyPath:@"internalValue"];
       sd.startDateConnector.nilAllowed = self.startDateConnector.nilAllowed;
       [sd.suggestedDateConnector connectTo:self keyPath:@"defaultDate"];
@@ -546,6 +557,7 @@ static UIDatePicker *sharedDatePicker = nil;
         ed.valueLabel.numberOfLines = 1;
         ed.valueLabel.textAlignment = NSTextAlignmentRight;
         ed.editInDetailView = NO;
+        ed.displayPreviousDay = self.showEndDateInclusive;
         [ed.startDateConnector connectTo:self.endDateConnector keyPath:@"internalValue"];
         ed.startDateConnector.nilAllowed = self.endDateConnector.nilAllowed;
         [ed.suggestedDateConnector connectTo:self keyPath:@"defaultEndDate"];
@@ -562,7 +574,12 @@ static UIDatePicker *sharedDatePicker = nil;
         // preventing end before start
         ed.startDateConnector.autoValidate = YES; // immediately validate to update valueForExternal
         [ed.startDateConnector setValidationHandler:^(ZValueConnector *aConnector, id aValue, NSError **aErrorP) {
-          if (sd.startDateConnector.internalValue && aValue && [sd.startDateConnector.internalValue compare:aValue]==NSOrderedDescending) {
+          NSDate *e = (NSDate *)aValue;
+          if (e && sd.dateOnly && self.showEndDateInclusive) {
+            // if end date is shown inclusive, actual end date must be at least 1 day more than start
+            e = [e dateByAddingTimeInterval:-SecondsPerDay];
+          }
+          if (sd.startDateConnector.internalValue && e && [sd.startDateConnector.internalValue compare:e]==NSOrderedDescending) {
             // error - end before start
             *aErrorP = [NSError errorWithDomain:@"ZValidationError" code:NSKeyValueValidationError userInfo:@{
               NSLocalizedDescriptionKey: ZLocalizedStringWithDefault(@"ZDTK_ValErr_EndBeforeStart",@"End date must be later than or same as start date")
@@ -595,6 +612,18 @@ static UIDatePicker *sharedDatePicker = nil;
         if (ed) [ed.dateOnlyConnector connectTo:adsw.valueConnector keyPath:@"valueForExternal"];
         // prevent tapping cells from defocusing other cells
         adsw.tapClaimsFocus = NO;
+        [adsw.valueConnector setValueChangedHandler:^BOOL(ZValueConnector *aConnector) {
+          if (!aConnector.loading && self.showEndDateInclusive && ed.startDateConnector.internalValue) {
+            if ([[aConnector internalValue] intValue]!=0) {
+              // switching to dateOnly, make sure end date is next day
+              ed.startDateConnector.internalValue = [ed.startDateConnector.internalValue dateByAddingTimeInterval:SecondsPerDay];
+            }
+            else {
+              ed.startDateConnector.internalValue = [ed.startDateConnector.internalValue dateByAddingTimeInterval:-SecondsPerDay];
+            }
+          }
+          return NO; // not fully handled yet
+        }];
       }
       // section done
       [c endSection];
