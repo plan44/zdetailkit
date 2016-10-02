@@ -78,6 +78,8 @@ typedef enum {
 - (void)tempBlockScrolling:(BOOL)aBlockScrolling;
 /// ask owner to refresh single cell (can be animated) or entire table (aCell=nil, not animated)
 - (void)setNeedsReloadingCell:(UITableViewCell *)aCell animated:(BOOL)aAnimated;
+/// ask owner to rebuild the table
+- (void)setNeedsRebuilding;
 /// start editing in next cell (pass nil to start editing in first cell that can edit)
 - (void)beginEditingInNextCellAfter:(UITableViewCell *)aCell;
 /// inform owner of rectangle where editing currently occurs

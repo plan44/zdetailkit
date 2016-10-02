@@ -142,6 +142,7 @@
 - (void)addDetailCell:(UITableViewCell *)aCell neededGroups:(NSUInteger)aNeededGroups nowEnabled:(BOOL)aNowEnabled;
 - (void)updateTableRepresentationWithAdjust:(BOOL)aWithTableAdjust animated:(BOOL)aAnimated;
 - (void)defocusAllBut:(UITableViewCell *)aFocusedCell;
+- (void)checkAutoOpen;
 - (NSIndexPath *)indexPathForCell:(UITableViewCell *)aCell;
 @end
 
@@ -502,8 +503,6 @@ static NSInteger numObjs = 0;
 
 
 
-
-
 #pragma mark - appearance and behaviour properties
 
 @synthesize autoStartEditing;
@@ -673,6 +672,17 @@ static NSInteger numObjs = 0;
     }
   }
 }
+
+
+// ask for complete rebuild of the table
+- (void)setNeedsRebuilding
+{
+  // deactivate and reactivate
+  self.active = NO;
+  self.active = YES;
+}
+
+
 
 
 // start editing in next cell (pass nil to start editing in first cell that can edit)
@@ -1076,6 +1086,8 @@ static NSInteger numObjs = 0;
       [self updateTableRepresentationWithAdjust:NO animated:NO];
       // now reload data
       [detailTableView reloadData]; // have table show them
+      // check auto-open
+      [self checkAutoOpen];
     }
     else {
       // deactivate controller level first
@@ -1149,6 +1161,23 @@ static NSInteger numObjs = 0;
     [aCell setDisplayMode:self.displayMode animated:aAnimated];
   }];
 }
+
+
+- (void)checkAutoOpen
+{
+  BOOL __block mustOpen = NO;
+  [self forEachDetailViewBaseCell:^(ZDetailTableViewController *aController, ZDetailViewBaseCell *aCell, NSInteger aSectionNo) {
+    if (!mustOpen) {
+      mustOpen = aCell.autoOpen;
+      if (mustOpen) {
+        aCell.autoOpen = NO; // do not repeat
+        // simulate tap
+        [self cellTapped:aCell inAccessory:NO];
+      }
+    }
+  }];
+}
+
 
 
 #pragma mark - Input view management (keyboard, custom)

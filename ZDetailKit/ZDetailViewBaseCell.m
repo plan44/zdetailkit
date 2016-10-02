@@ -84,6 +84,8 @@ void cell_deleted(id aCell)
   CGFloat backgroundRightMargin; // right margin (space to size of superview on the right)
   // image view usage
   BOOL imageViewInUse;
+  // autoopening
+  BOOL shouldAutoOpen;
   #if CELLLOGGING
   BOOL disconnected;
   #endif
@@ -109,6 +111,7 @@ void cell_deleted(id aCell)
   showInModes = ZDetailDisplayModeAlways; // always visible by default
   showsValidationStatus = YES; // show validation problems
   active = NO;
+  shouldAutoOpen = NO;
   cellOwner = nil;
   needsDisplayUpdate = YES; // certainy we need a data update at least once after init
   focusedEditing = NO; // focused editing (in-cell editors that can get/loose focus) not in progress
@@ -232,7 +235,7 @@ void cell_deleted(id aCell)
 
 
 
-@synthesize active;
+@synthesize active, autoOpen;
 
 - (void)setActive:(BOOL)aActive
 {
@@ -436,6 +439,14 @@ void cell_deleted(id aCell)
 {
   if ([cellOwner respondsToSelector:@selector(setNeedsReloadingCell:animated:)]) {
     [cellOwner setNeedsReloadingCell:self animated:aAnimated];
+  }
+}
+
+
+- (void)setNeedsTableRebuild
+{
+  if ([cellOwner respondsToSelector:@selector(setNeedsRebuilding)]) {
+    [cellOwner setNeedsRebuilding];
   }
 }
 

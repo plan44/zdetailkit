@@ -164,6 +164,10 @@ typedef void (^ZDetailTableViewDetailBaseCellIterationHandler)(ZDetailTableViewC
 /// (but no regular UITableViewCell that may also be part of the table)
 - (void)forEachDetailViewBaseCell:(ZDetailTableViewDetailBaseCellIterationHandler)aIterationBlock;
 
+/// returns parent (master) detail table view controller (if any)
+- (ZDetailTableViewController *)parentDetailTableViewController;
+
+
 /// @name cell groups
 
 /// convenience method to generate group bitmasks

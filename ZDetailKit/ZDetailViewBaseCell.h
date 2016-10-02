@@ -278,8 +278,12 @@ typedef enum {
 /// normally not be modified directly
 @property (assign, nonatomic) BOOL active;
 
+/// is YES when cell is disconnected, i.e. all callback blocks and references cleared
 @property (readonly, nonatomic) BOOL disconnected;
 
+/// can be set to cause associated detail editor (if any) to open automatically after activating the table
+/// this cell is part of
+@property (assign, nonatomic) BOOL autoOpen;
 
 
 /// @name Methods for receiving events from embedded ZValueConnector instances
@@ -327,7 +331,14 @@ typedef enum {
 - (void)setNeedsUpdate;
 
 /// call when reloading the table of which this cell is part of (e.g. due to cell height changes) is needed
+/// @note reloading means re-displaying the table (and possibly changed cell contents), but does not re-build
+///   the content itself (i.e. does not cause buildDetailContent to be called. Use setNeedsTableRebuild for that
 - (void)setNeedsTableReload;
+
+/// call when rebuilding the content of the table of which this cell is part of is needed.
+/// @note rebuilding means all current cells will be discarded (including this one!) and buildDetailContent
+///   is called to rebuild a set of cells for the tables.
+- (void)setNeedsTableRebuild;
 
 /// call when reloading this cell (re-fetching data from connected model) is needed
 - (void)setNeedsReloadAnimated:(BOOL)aAnimated;

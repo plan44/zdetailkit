@@ -81,10 +81,12 @@ typedef enum {
 @property(assign,readonly) BOOL dismissing;
 
 /// returns a controller for presenting this detail view modally
-///
-/// The returned controller is a navigation controller and inherits the relevant modal presentation
+/// @note The returned controller is a navigation controller and inherits the relevant modal presentation
 /// properties from this controller.
 - (UIViewController *)viewControllerForModalPresentation;
+
+/// returns the parent detail view controller (if any, that is if parent conforms to ZDetailViewParent)
+- (id<ZDetailViewParent>)parentDetailViewController;
 
 /// pushes a view controller as a detail editor
 ///
@@ -115,7 +117,7 @@ typedef enum {
 /// @note value connectors that have autoSaveValue set will immediately save values during editing,
 /// so these values will propagate even if aWithSave is NO. So if you need save/cancel semantics for
 /// a detail editor, make sure to have autoSaveValue NO (the default) in all connectors.
-/// @note If the controller is dismissed using another method (like directly poping it from the
+/// @note If the controller is dismissed using another method (like directly popping it from the
 /// navigation stack or by terminating the app, values will always be saved unless a previous
 /// call to cancel has been made.
 - (BOOL)dismissDetailViewWithSave:(BOOL)aWithSave animated:(BOOL)aAnimated;
