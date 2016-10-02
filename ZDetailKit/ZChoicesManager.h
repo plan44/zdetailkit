@@ -102,9 +102,15 @@ typedef enum {
 /// see aChoiceDict param in addChoice:
 @property (strong, nonatomic) NSArray *choicesArray;
 
-// internal array of choices plus selection status, in display order
-// (for use by subclasses)
+/// internal array of choices plus selection status, in display order
+/// (for use by subclasses)
 @property (readonly, nonatomic) NSMutableArray *choiceInfos;
+
+/// call before changing selection states
+- (void)beginChoiceChanges;
+/// call after changing selection states
+- (void)endChoiceChanges;
+
 
 /// Add a new choice
 /// @param aChoiceDict a dictionary representing the choice with the following possible key/values:

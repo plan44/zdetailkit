@@ -23,8 +23,8 @@
 - (id)initWithStyle:(ZDetailViewCellStyle)aStyle reuseIdentifier:(NSString *)aReuseIdentifier
 {
   if ((self = [super initWithStyle:aStyle reuseIdentifier:aReuseIdentifier])) {
-    // nop
     selectionClosesList = YES;
+    playSoundSample = NO;
   }
   return self;
 }

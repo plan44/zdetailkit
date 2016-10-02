@@ -430,6 +430,19 @@
 
 
 
+- (void)beginChoiceChanges
+{
+  [self willChangeValueForKey:@"currentChoice"];
+}
+
+
+- (void)endChoiceChanges
+{
+  [self didChangeValueForKey:@"currentChoice"];
+  needsChoicesSelectionUpdate = YES;
+}
+
+
 #pragma mark - KVC and KVO for selection states and order of choices
 
 
