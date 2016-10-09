@@ -74,6 +74,7 @@
 @synthesize modalViewWrapper;
 @synthesize hasAppeared;
 @synthesize dismissing;
+@synthesize cancelled;
 
 - (void)internalInit
 {

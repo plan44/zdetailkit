@@ -80,6 +80,11 @@ typedef enum {
 /// returns YES if controller is dismissing now
 @property(assign,readonly) BOOL dismissing;
 
+/// returns YES if controller has been cancelled
+@property(assign,readonly) BOOL cancelled;
+
+
+
 /// returns a controller for presenting this detail view modally
 /// @note The returned controller is a navigation controller and inherits the relevant modal presentation
 /// properties from this controller.
