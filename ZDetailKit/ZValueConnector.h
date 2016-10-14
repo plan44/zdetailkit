@@ -156,8 +156,11 @@ typedef BOOL (^ZValueConnectorValidationHandler)(ZValueConnector *aConnector, id
 /// set if a value is connected
 @property (readonly, nonatomic) BOOL connected;
 
-/// set if currently loading value into internal value
+/// set if currently loading value into internal value (not this may or may not cause "setting" to become true)
 @property (readonly, nonatomic) BOOL loading;
+
+/// set if currently setting internal value (because of loading, or because setting via setInternalValue)
+@property (readonly, nonatomic) BOOL setting;
 
 
 

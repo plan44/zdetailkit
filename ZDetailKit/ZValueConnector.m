@@ -20,6 +20,7 @@
   BOOL saving; // set during saveValue (recursion breaking flag)
   BOOL loading; // set during revertValue (recursion breaking flag)
   BOOL propagating; // set during propagation of a new value (recursion breaking flag)
+  BOOL setting; // set during setting of internal value (recursion breaking flag, especially for valueChangedHandlers)
   BOOL needsValidation;
 }
 
@@ -99,6 +100,7 @@
     saving = NO; // not saving right now (recursion breaking flag)
     loading = NO; // not loading right now (recursion breaking flag)
     propagating = NO; // not propagating value (recursion breaking flag)
+    setting = NO; // not setting internal value right now
     unsavedChanges = NO; // not dirty;
     validated = NO; // currently not validated
     needsValidation = YES; // needs re-validation
@@ -157,7 +159,7 @@
 @synthesize transformReversed;
 @synthesize nilNulValue;
 @synthesize saveEmptyAsNil, saveNilAsNull, nilAllowed;
-@synthesize loading;
+@synthesize loading, setting;
 
 
 
@@ -586,6 +588,7 @@
 // object at owner/valuePath
 - (void)setInternalValue:(id)aInternalValue
 {
+  setting = YES; // Note: flag is not used internally, but valueChangedHandlers might want to check it
   // Note: value for external implicitly changes as well, so alert it
   IFTRACE
   NSLog(@"internalValue set to %@ - %@", aInternalValue, self.shortDesc);
@@ -598,6 +601,7 @@
     DBGNSLOG(@"cannot set internal value to %@ in %@: %@", aInternalValue, self.shortDesc, exception);
   }
   [self didChangeValueForKey:@"valueForExternal"];
+  setting = NO;
 }
 
 

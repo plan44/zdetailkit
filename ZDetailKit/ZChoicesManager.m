@@ -201,7 +201,7 @@
   BOOL choicesChanged = NO;
   // need to rebuild/adapt the choice infos
   // - create a sorted list of choices
-  NSArray *sortedChoices = [choicesArray
+  NSArray *sortedChoices = [self.choicesArray
     sortedArrayUsingDescriptors:@[
       [NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES],
       [NSSortDescriptor sortDescriptorWithKey:@"text" ascending:YES]
@@ -222,7 +222,7 @@
   }
   else {
     // no choiceinfos existed at all, create them now
-    choiceInfos = [[NSMutableArray alloc] initWithCapacity:[choicesArray count]];
+    choiceInfos = [[NSMutableArray alloc] initWithCapacity:[self.choicesArray count]];
   }
   // Deal with new and existing entries
   if (self.keepOrder) {
@@ -241,7 +241,7 @@
   else {
     // sort order is NOT part of currentChoice, just retain selection status,
     // but otherwise replace choice infos with new ones in new sorted order
-    NSMutableArray *newChoiceInfos = [NSMutableArray arrayWithCapacity:[choicesArray count]];
+    NSMutableArray *newChoiceInfos = [NSMutableArray arrayWithCapacity:[self.choicesArray count]];
     for (NSDictionary *d in sortedChoices) {
       id k = [d valueForKey:@"key"];
       ZChoiceInfo *i = [self choiceInfoForKey:k];
@@ -398,7 +398,7 @@
   }
   else if (mode==ZChoicesManagerModeDictArray) {
     // rebuild
-    choiceInfos = [[NSMutableArray alloc] initWithCapacity:[choicesArray count]];
+    choiceInfos = [[NSMutableArray alloc] initWithCapacity:[self.choicesArray count]];
     nextChoiceIndex = 0;
     // rebuild from dictArray (retaining key order!)
     for (NSDictionary *ccd in aCurrentChoice) {
