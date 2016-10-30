@@ -25,6 +25,8 @@ extern NSString* const kZKeyChainWrapperErrorDomain;
 
 /// returns a shared instance of the keyChain wrapper using the bundle identifier
 /// (plus a dot) as a prefix to service and account strings
+/// @note: Applications using keychain must either be signed with an app-specific APPID (not wildcard!) or
+///   using keychain access group entitlements. Otherwise, keychain will return -34018 errors
 + (ZKeyChainWrapper *)sharedKeyChainWrapper; 
 
 /// create a keychain wrapper with a custom service prefix (can be nil to have none)
