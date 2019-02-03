@@ -17,6 +17,7 @@
   BOOL locationTextIsUserInput;
   // internal
   ZMapLocationAnnotation *locationAnnotation;
+  CLLocationManager *locationManagerForAuthorisation;
 }
 // private methods
 - (void)makeSureUserLocationIsCentered;
@@ -96,9 +97,16 @@
         self.locationCoordinate = self.locationCoordinate;
       }
       else {
-        // center on current location
-        self.showUserLocation = YES;
-        [mapView setRegion:MKCoordinateRegionMakeWithDistance(mapView.userLocation.location.coordinate, 1000, 1000)];
+        // center on current location if not already visible
+        if ([CLLocationManager locationServicesEnabled]) {
+          self.showUserLocation = YES;
+          if (!mapView.userLocationVisible) {
+            [mapView setRegion:MKCoordinateRegionMakeWithDistance(mapView.userLocation.location.coordinate, 1000, 1000)];
+          }
+        }
+        else {
+          NSLog(@"Location services not available");
+        }
       }
     }
     else {
@@ -152,6 +160,19 @@
 
 - (void)setShowUserLocation:(BOOL)aShowUserLocation
 {
+  if ([CLLocationManager authorizationStatus]==kCLAuthorizationStatusNotDetermined) {
+    locationManagerForAuthorisation = [[CLLocationManager alloc] init];
+    NSString *alwaysLocation = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
+    if (alwaysLocation) {
+      // app has features that need location tracking all the time, request it now to make sure we're not locked out later
+      [locationManagerForAuthorisation requestAlwaysAuthorization];
+    }
+    else {
+      // only for the purpose of showing user on map here, in-use location tracking is sufficient
+      [locationManagerForAuthorisation requestWhenInUseAuthorization];
+    }
+    NSLog(@"Requesting authorisation for location when app is in use to show current position on map");
+  }
   // actually set map view's user tracking
   mapView.showsUserLocation = aShowUserLocation;
   // and reflect status on button
@@ -183,7 +204,7 @@
       // none exist, create new one
       pinView = [[MKPinAnnotationView alloc]
         initWithAnnotation:annotation reuseIdentifier:MapLocationAnnotationID];
-      pinView.pinColor = MKPinAnnotationColorPurple;
+      pinView.pinTintColor = [MKPinAnnotationView redPinColor];
       pinView.animatesDrop = YES;
       pinView.canShowCallout = YES;
       // can be dragged
@@ -340,16 +361,14 @@ typedef void (^FindLocationCompletionHandler)(CLLocationCoordinate2D aLocation);
 - (void)makeSureUserLocationIsCentered
 {
   // move user in view
+  NSLog(@"Centering on coordinate = %f,%f", mapView.userLocation.location.coordinate.latitude, mapView.userLocation.location.coordinate.longitude);
   [mapView setCenterCoordinate:mapView.userLocation.location.coordinate animated:YES];
 }
 
 
-#if TARGET_IPHONE_SIMULATOR==0
 #define MAPS_BASEURL @"maps:"
-#else
-#define MAPS_BASEURL @"http://maps.google.com/maps?"
-#endif
-
+// pre-Apple maps:
+//#define MAPS_BASEURL @"http://maps.google.com/maps?"
 
 - (void)showInMaps
 {
@@ -371,14 +390,18 @@ typedef void (^FindLocationCompletionHandler)(CLLocationCoordinate2D aLocation);
       if ([locationTextField.text length]>0)
         mapURL =
           [NSString stringWithFormat:MAPS_BASEURL @"q=%@@%.6f,%.6f",
-            [locationTextField.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+            [locationTextField.text stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]],
             locationCoordinate.latitude,locationCoordinate.longitude
           ];
       else
         mapURL = [NSString stringWithFormat:MAPS_BASEURL @"ll=%.6f,%.6f",locationCoordinate.latitude,locationCoordinate.longitude];
-      // launch google maps
+      // launch maps
       // - may cause applicationWillTerminate (before iPhoneOS 3.0) or prepareForPossibleTermination (iPhoneOS 4.0) which saves all open editing
-      [[UIApplication sharedApplication] openURL:[NSURL URLWithString:mapURL]];
+      [[UIApplication sharedApplication] openURL:[NSURL URLWithString:mapURL] options:@{} completionHandler:^(BOOL success) {
+        if (!success) {
+          NSLog(@"Cannot open Maps via URL '%@'", mapURL);
+        }
+      }];
     }
   }
 }
