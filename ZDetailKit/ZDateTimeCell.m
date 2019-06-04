@@ -567,7 +567,7 @@ static UIDatePicker *sharedDatePicker = nil;
         sd.keepSelectedAfterTap = YES;
         ed.keepSelectedAfterTap = YES;
         // moving end with start
-        if (moveEndWithStart) {
+        if (self.moveEndWithStart) {
           // link to start date as master
           [ed.masterDateConnector connectTo:sd.startDateConnector keyPath:@"valueForExternal"];
         }
@@ -589,7 +589,7 @@ static UIDatePicker *sharedDatePicker = nil;
           return YES; // ok
         }];
       }
-      if (clearDateButtonText && (self.startDateConnector.nilAllowed || self.endDateConnector.nilAllowed)) {
+      if (self.clearDateButtonText && (self.startDateConnector.nilAllowed || self.endDateConnector.nilAllowed)) {
         // start or end (or both) can be nil, add extra button to set nil
         ZButtonCell *b = [c detailCell:[ZButtonCell class]];
         b.labelText = self.clearDateButtonText;
