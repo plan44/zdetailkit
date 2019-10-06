@@ -321,10 +321,7 @@ static NSInteger numObjs = 0;
     biglbl.text = aText;
     biglbl.numberOfLines = 0;
     biglbl.font = [UIFont systemFontOfSize:14];
-    biglbl.textColor = [UIColor darkGrayColor];
-    biglbl.shadowColor = [UIColor whiteColor];
-    biglbl.shadowOffset = CGSizeMake(0, 1);
-    biglbl.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    if (@available(iOS 13, *)) biglbl.textColor = [UIColor secondaryLabelColor]; else biglbl.textColor = [UIColor darkGrayColor];
     // adjust sizes
     // - adjust frame of label to fit all text
     CGRect f = biglbl.frame;
