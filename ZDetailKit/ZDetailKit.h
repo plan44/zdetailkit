@@ -27,7 +27,9 @@
 #import "ZColorChooserCell.h"
 #import "ZChoiceListCell.h"
 
-// Note: ZLocationCell requires MapKit and CoreLocation frameworks to be included in the app
+// Note: ZLocationCell requires MapKit and CoreLocation frameworks to be included in the app,
+//       which in turn requires that the app declares usage of location in NSLocationAlwaysUsageDescription,
+//       NSLocationWhenInUseUsageDescription, and NSLocationAlwaysAndWhenInUseUsageDescription in info.plist
 #import "ZLocationCell.h"
 
 // EOF
